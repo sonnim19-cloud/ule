@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>마감을 부탁해</title>
 <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAC4jAAAuIwF4pT92AAACNklEQVRYhe1WP4jTUBz+6pNOgUjB4NRAB+noctCAOY7KLZ07OB4d3NtBCoGcHghObjo4SCeX6+jdYDAcOtwNdeh2SwsXEGylxdAsubb8HGoe+ddcqnYy35KXvLzf7/t+7/u9BMiQIcP/jtw2gmqqSN7YtGycX63Pc/tfJwQAvdMFEyQsnTHM6n7i2ggBf7AXX+xcmmfPu5/BCiUAwPSjDiZIYIUSDuu7iepjocggms9oMeqTpoqkqSLRfBZ5thj1ieYzmnx9T+7AIHdg8HdoPiN3YJAig27KF2GnyKAz00C+WMFyOoTd60Ao1+D8/AHhzl0ACIw9tQCwnA6xdMZggoTD+m6kWjf5gcOvMKxs3Xgx6vNK+NX7Y8VVJNaEpmVDd8ZghRKYIEXmWaHE1QLgVw97v42nyCC90+UVikMsgfMr5I4O6qR3unAuTyGUa7GJ/HAuT/Hq5TsAwIc3TQjlWmB7rq2L9ASAVRVaPOgqcKvd4EnC99VH93n7sUIpkHA5HeLooP5nHeF1hTswKOyNT892Ivvv94Z3n9QRt5IIeIyvrQswQUKr3eAlzRcreLDzEMDKE/liJbDW75/vveONhEegqWJAXZzKcHf458MnpR+pjmLTsvGkd4x7CPZ92N3h7gBW6k3LXhs7tSkUGeS5exPsVfcTzbeRKxUZVC2KaLUbiUSYIOHb2Ws8fvp2c+enJaKpIk1OmuQODFqM+ny/JydN0lQx1XcA+Mv/gXVJtqI6Q4YM28IvZ6/Jez8KBewAAAAASUVORK5CYII=">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root{
     --bg:#f4f5f7; --panel:#fff; --border:#e3e6ea; --text:#1f2328; --muted:#6b7280;
@@ -257,6 +258,8 @@
   .top-actions { display:flex; gap:8px; justify-self:end; align-items:center; flex-wrap:nowrap; }
   .top-actions .top-action-spacer { width:1px; height:22px; margin:0 2px; background:var(--border); flex:0 0 auto; }
   .main-calendar-toggle.active { border-color:var(--accent); background:var(--accent-bg); color:var(--accent); font-weight:700; }
+  #btnGoogleSync.connected { border-color:var(--accent); color:var(--accent); }
+  #btnGoogleSync.syncing { opacity:.55; }
   .top-actions .btn-emoji { display:none; }
   .detail-actions { display:flex; gap:5px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
   @media (max-width:520px){
@@ -472,6 +475,8 @@
     <button class="ghost small" id="btnBackup" aria-label="백업"><span class="btn-full">백업</span><span class="btn-emoji">💾</span></button>
     <button class="ghost small" id="btnRestore" aria-label="불러오기"><span class="btn-full">불러오기</span><span class="btn-emoji">📁</span></button>
     <button class="ghost small" id="btnUndoRestore" aria-label="불러오기 전 데이터 복구" style="display:none"><span class="btn-full">이전 데이터</span><span class="btn-emoji">↩</span></button>
+    <span class="top-action-spacer" aria-hidden="true"></span>
+    <button class="ghost small" id="btnGoogleSync" aria-label="구글 동기화"><span class="btn-full">구글 동기화</span><span class="btn-emoji">☁️</span></button>
     <input type="file" id="restoreFile" accept="application/json" style="display:none" />
   </div>
 </header>
@@ -518,17 +523,21 @@ const BEFORE_RESTORE_KEY = STORAGE_KEY + '_before_restore';
 const SCHEMA_VERSION = 2;
 let lastLoadStats = { inputCount:0, keptCount:0, invalidProjects:0, clearedSegments:0 };
 let lastPersistedJson = null; // 화면만 바뀐 경우 localStorage에 같은 데이터를 반복 기록하지 않기 위한 비교값
+let lastChangedAt = Date.now(); // 데이터가 실제로 바뀐 시각 — 구글 드라이브 동기화 때 어느 기기 데이터가 최신인지 비교하는 용도
 // 데이터가 바뀔 때마다 브라우저 로컬 저장소에 자동 저장. 새로고침/종료해도 유지됨
 function buildPersistedData(){
-  return { schemaVersion: SCHEMA_VERSION, projects, uidCounter, dailyState };
+  return { schemaVersion: SCHEMA_VERSION, projects, uidCounter, dailyState, savedAt: lastChangedAt };
 }
 function saveLocal(){
   if (loadFailed) return false; // 로드 실패 상태에서는 사용자가 확인하기 전까지 원본을 덮어쓰지 않음
-  const json = JSON.stringify(buildPersistedData());
+  let json = JSON.stringify(buildPersistedData());
   if (json === lastPersistedJson) return true;
+  lastChangedAt = Date.now(); // 실제로 내용이 바뀐 시점에만 갱신 (호출할 때마다 바뀌면 비교가 무의미해짐)
+  json = JSON.stringify(buildPersistedData());
   try {
     localStorage.setItem(STORAGE_KEY, json);
     lastPersistedJson = json;
+    schedulePushToDrive(); // 구글 로그인 상태면 잠시 뒤 드라이브에도 올림(로그인 안 했으면 내부에서 조용히 무시됨)
     return true;
   } catch (e) {
     // 용량초과 등으로 저장 실패해도 앱은 계속 동작하되, 사용자에게 알림 — 모르고 있다가 새로고침 시 데이터 유실될 수 있음
@@ -584,6 +593,7 @@ function applyLoadedData(data, opts = {}){
   dailyState = (data.dailyState && typeof data.dailyState === 'object')
     ? data.dailyState : { date: todayStr(), streak: 0, startDoneMap: {}, startTargetMap: {}, bankedGoalMapToday: {}, hadWorkableToday: false };
   normalizeDailyStateAfterLoad({ rebase: !!opts.rebaseDailyState });
+  lastChangedAt = Number(data && data.savedAt) || Date.now();
   return true;
 }
 
@@ -593,7 +603,7 @@ function cloneJsonValue(value){
 // 백업을 실제 화면 상태에 적용하기 전에 임시 상태에서 검증·정규화한다.
 // 검증 중 uidCounter나 프로젝트 배열이 바뀌어도 현재 사용 중인 화면 상태에는 남지 않는다.
 function prepareLoadedData(data, opts = {}){
-  const current = { projects, uidCounter, dailyState, lastLoadStats };
+  const current = { projects, uidCounter, dailyState, lastLoadStats, lastChangedAt };
   try {
     const candidate = cloneJsonValue(data);
     if (!applyLoadedData(candidate, opts)) return null;
@@ -604,12 +614,14 @@ function prepareLoadedData(data, opts = {}){
     uidCounter = current.uidCounter;
     dailyState = current.dailyState;
     lastLoadStats = current.lastLoadStats;
+    lastChangedAt = current.lastChangedAt;
   }
 }
 function activatePreparedData(prepared){
   projects = prepared.data.projects;
   uidCounter = prepared.data.uidCounter;
   dailyState = prepared.data.dailyState;
+  lastChangedAt = Number(prepared.data.savedAt) || Date.now();
   lastLoadStats = { ...prepared.stats };
   loadFailed = false;
   loadFailReason = '';
@@ -634,6 +646,162 @@ function commitRestoreStorage(candidateRaw, beforeRaw){
   }
   lastPersistedJson = candidateRaw;
 }
+
+// ===== 구글 드라이브 동기화 =====
+// 우리 서버 없이, 각자 자기 구글 드라이브의 "이 앱 전용 숨김 폴더"(appDataFolder)에 백업 파일 하나를 두고 기기끼리 그걸로 맞춘다.
+// 그래서 사용자 데이터가 우리 서버를 거치지 않는다 — 파일 하나 읽고 쓰는 권한만 요청함.
+const GOOGLE_CLIENT_ID = '207995007369-g2c6b4ak0ce30k9vjk02rtg6jkts2rs0.apps.googleusercontent.com';
+const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+const DRIVE_FILE_NAME = 'magam-data.json';
+
+let googleAccessToken = null;
+let googleTokenExpiresAt = 0;
+let driveFileId = null;
+let driveTokenClient = null;
+let driveSyncBusy = false;
+let driveLastSyncedAt = null; // 이 세션에서 마지막으로 성공 동기화한 시각(ms) — 새로고침하면 초기화됨(재로그인 필요, v1 한계)
+let drivePushTimer = null;
+
+function isGoogleSignedIn(){
+  return !!googleAccessToken && Date.now() < googleTokenExpiresAt;
+}
+
+function ensureDriveTokenClient(){
+  if (driveTokenClient) return driveTokenClient;
+  if (!window.google || !google.accounts || !google.accounts.oauth2) return null;
+  driveTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: DRIVE_SCOPE,
+    callback: () => {} // requestAccessToken 호출마다 아래에서 그때그때 덮어씀
+  });
+  return driveTokenClient;
+}
+
+// 로그인 버튼 클릭 안에서 바로 호출해야 함(구글 로그인 창이 팝업이라, 버튼 클릭 이벤트 밖에서 부르면 브라우저가 막을 수 있음)
+function signInGoogleDrive(){
+  const client = ensureDriveTokenClient();
+  if (!client) { showToast('구글 로그인 기능을 아직 불러오는 중이에요. 잠시 후 다시 눌러주세요.'); return; }
+  client.callback = (resp) => {
+    if (!resp || resp.error) { showToast('구글 로그인에 실패했어요.'); return; }
+    googleAccessToken = resp.access_token;
+    googleTokenExpiresAt = Date.now() + (Number(resp.expires_in) || 3500) * 1000;
+    render();
+    syncWithDrive();
+  };
+  client.requestAccessToken({ prompt: '' });
+}
+
+async function driveFetch(url, options = {}){
+  const res = await fetch(url, {
+    ...options,
+    headers: { ...(options.headers || {}), Authorization: `Bearer ${googleAccessToken}` }
+  });
+  if (res.status === 401) { googleAccessToken = null; googleTokenExpiresAt = 0; } // 만료됨 — 다음 시도 때 재로그인 유도
+  if (!res.ok) throw new Error('drive api ' + res.status);
+  return res;
+}
+
+async function findDriveFile(){
+  const res = await driveFetch(
+    'https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id,modifiedTime)&q=' +
+    encodeURIComponent(`name='${DRIVE_FILE_NAME}'`)
+  );
+  const data = await res.json();
+  return (data.files && data.files[0]) || null;
+}
+async function downloadDriveFile(fileId){
+  const res = await driveFetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`);
+  return res.json();
+}
+async function uploadDriveFile(jsonObj){
+  const body = JSON.stringify(jsonObj);
+  if (driveFileId) {
+    const res = await driveFetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    });
+    return (await res.json()).id;
+  }
+  const boundary = 'magamsyncboundary';
+  const metadata = { name: DRIVE_FILE_NAME, parents: ['appDataFolder'] };
+  const multipart =
+    `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n` +
+    `--${boundary}\r\nContent-Type: application/json\r\n\r\n${body}\r\n--${boundary}--`;
+  const res = await driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+    method: 'POST',
+    headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
+    body: multipart
+  });
+  const created = await res.json();
+  driveFileId = created.id;
+  return created.id;
+}
+
+// 로그인 직후, 그리고 로그인된 상태에서 화면이 다시 보일 때(다른 앱 갔다 돌아옴)마다 호출.
+// 드라이브에 파일이 없으면 지금 데이터로 새로 만들고, 있으면 내용을 비교해서
+// 다른 기기 게 더 최신이면 확인창을 띄우고(불러오기 기능과 동일한 안전 절차), 이 기기가 더 최신이면 조용히 올린다.
+async function syncWithDrive(){
+  if (!isGoogleSignedIn() || driveSyncBusy) return;
+  driveSyncBusy = true; render();
+  try {
+    const file = await findDriveFile();
+    if (!file) {
+      await uploadDriveFile(buildPersistedData());
+      driveLastSyncedAt = Date.now();
+      showToast('구글 드라이브에 처음으로 백업했어요.');
+      return;
+    }
+    driveFileId = file.id;
+    const remote = await downloadDriveFile(file.id);
+    if (JSON.stringify(remote) === lastPersistedJson) { driveLastSyncedAt = Date.now(); return; } // 이미 동일
+    const remoteSavedAt = Number(remote && remote.savedAt) || 0;
+    if (remoteSavedAt > lastChangedAt) {
+      const prepared = prepareLoadedData(remote, { rebaseDailyState: true });
+      if (!prepared) { driveLastSyncedAt = Date.now(); return; } // 원격 데이터가 이상하면 조용히 무시(로컬 유지)
+      customConfirm('다른 기기에서 저장된 더 최신 데이터가 있어요. 불러올까요?\n(지금 데이터는 불러오기 직전 상태로 별도 보관돼요.)', () => {
+        try {
+          const currentRaw = JSON.stringify(buildPersistedData());
+          commitRestoreStorage(prepared.raw, currentRaw);
+          activatePreparedData(prepared);
+          view.screen = 'dash'; view.projectId = null;
+          driveLastSyncedAt = Date.now();
+          render();
+          showToast('다른 기기 데이터를 불러왔어요.');
+        } catch (_) {
+          showToast('불러오지 못했어요. 지금 데이터는 그대로예요.');
+        }
+      }, { confirmLabel:'불러오기', confirmClass:'accent small' });
+    } else {
+      await uploadDriveFile(buildPersistedData());
+      driveLastSyncedAt = Date.now();
+      showToast('구글 드라이브에 동기화했어요.');
+    }
+  } catch (e) {
+    showToast('구글 드라이브 동기화에 실패했어요. 다시 시도해주세요.');
+  } finally {
+    driveSyncBusy = false; render();
+  }
+}
+
+// 데이터가 바뀔 때마다(디바운스) 조용히 드라이브에 올림. saveLocal()이 실제로 저장했을 때만 호출됨
+function schedulePushToDrive(){
+  if (!isGoogleSignedIn()) return;
+  clearTimeout(drivePushTimer);
+  drivePushTimer = setTimeout(async () => {
+    if (driveSyncBusy || !isGoogleSignedIn()) return;
+    driveSyncBusy = true;
+    try {
+      await uploadDriveFile(buildPersistedData());
+      driveLastSyncedAt = Date.now();
+    } catch (_) {
+      // 조용히 실패 — 다음 저장 시점에 다시 시도됨. "구글 동기화" 버튼으로 언제든 수동 확인 가능.
+    } finally {
+      driveSyncBusy = false;
+    }
+  }, 2000);
+}
+
 // 불러온 프로젝트 배열 검증·정규화. 배열이 아니거나 필수 필드(id/name/deadline) 없으면 null 반환
 const ALLOWED_UNITS = ['컷', '장', '개', ''];
 const SAFE_ID_RE = /^id(\d+)$/;
@@ -1625,6 +1793,14 @@ function render(){
     mainCalendarBtn.style.display = available ? '' : 'none';
     mainCalendarBtn.classList.toggle('active', available && mainCalendarOpen);
     mainCalendarBtn.setAttribute('aria-expanded', String(available && mainCalendarOpen));
+  }
+  const googleSyncBtn = document.getElementById('btnGoogleSync');
+  if (googleSyncBtn) {
+    googleSyncBtn.classList.toggle('connected', isGoogleSignedIn());
+    googleSyncBtn.classList.toggle('syncing', driveSyncBusy);
+    googleSyncBtn.title = isGoogleSignedIn()
+      ? (driveLastSyncedAt ? `마지막 동기화 ${new Date(driveLastSyncedAt).toLocaleTimeString()} — 눌러서 지금 동기화` : '동기화 중...')
+      : '구글 계정으로 로그인해서 기기 간 데이터를 동기화해요.';
   }
   const banner = loadFailed ? renderLoadFailedBanner() : '';
   if (view.screen === 'dash') main.innerHTML = banner + renderDashboard();
@@ -3096,6 +3272,11 @@ function bindCommonEvents(){
   };
   const mainCalendarRoot = document.getElementById('mainCalendarRoot');
   if (mainCalendarRoot) renderDeadlineViewer(mainCalendarRoot, { mode:'main' });
+  const googleSyncBtn = document.getElementById('btnGoogleSync');
+  if (googleSyncBtn) googleSyncBtn.onclick = () => {
+    if (!isGoogleSignedIn()) signInGoogleDrive();
+    else syncWithDrive(); // 로그인된 상태에서 누르면 "지금 동기화"
+  };
   const btnDownloadCorrupt = document.getElementById('btnDownloadCorrupt');
   if (btnDownloadCorrupt) btnDownloadCorrupt.onclick = () => {
     let raw = null;
@@ -3889,6 +4070,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
     if (rolloverDailyStateIfNeeded()) render();
     scheduleMidnightRollover();
+    if (isGoogleSignedIn()) syncWithDrive(); // 다른 기기/앱 갔다 돌아왔을 때 최신 데이터 있는지 확인
   }
 });
 
