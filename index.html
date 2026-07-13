@@ -83,7 +83,7 @@
 
   /* 토스트 (네이티브 alert() 중 확인 클릭 필요없는 단순 경고 대체) */
   .toast-overlay { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:200; pointer-events:none; }
-  .toast-box { background:rgba(31,35,40,.92); color:#fff; font-size:13px; padding:12px 20px; border-radius:6px; box-shadow:0 8px 24px rgba(0,0,0,.2); opacity:0; transform:translateY(6px); transition:opacity .18s, transform .18s; text-align:center; max-width:280px; line-height:1.5; }
+  .toast-box { background:rgba(31,35,40,.92); color:#fff; font-size:13px; padding:12px 20px; border-radius:6px; box-shadow:0 8px 24px rgba(0,0,0,.2); opacity:0; transform:translateY(6px); transition:opacity .18s, transform .18s; text-align:center; max-width:280px; line-height:1.5; white-space:pre-line; }
   .toast-box.show { opacity:1; transform:translateY(0); }
 
   /* 커스텀 확인창 (네이티브 confirm() 대체) */
@@ -262,7 +262,7 @@
   #btnGoogleSync.syncing { opacity:.55; }
   .top-actions .btn-emoji { display:none; }
   .detail-actions { display:flex; gap:5px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
-  @media (max-width:800px){
+  @media (max-width:900px){
     .top-actions .btn-full { display:none; }
     .top-actions .btn-emoji { display:inline; }
     .top-actions { gap:5px; }
@@ -723,7 +723,7 @@ const LANG = {
     'license.verifyBtn': '확인',
     'license.emptyError': '라이선스 키를 입력해주세요.',
     'license.verifying': '확인하는 중...',
-    'license.unlockSuccess': '인증 완료! 구글 동기화를 사용할 수 있어요.',
+    'license.unlockSuccess': '인증 완료!\n구글 동기화를 사용할 수 있어요.',
     'license.invalidKey': '유효하지 않은 라이선스 키예요. 다시 확인해주세요.',
     'license.networkError': '인증 서버에 연결할 수 없어요. 인터넷 연결을 확인하고 다시 시도해주세요.',
     'license.tooltipLocked': '눌러서 라이선스 키를 입력하면 구글 동기화를 사용할 수 있어요.',
@@ -970,7 +970,7 @@ const LANG = {
     'license.verifyBtn': 'Verify',
     'license.emptyError': 'Please enter a license key.',
     'license.verifying': 'Verifying...',
-    'license.unlockSuccess': 'Unlocked! Google sync is now available.',
+    'license.unlockSuccess': 'Unlocked!\nGoogle sync is now available.',
     'license.invalidKey': 'Invalid license key. Please check and try again.',
     'license.networkError': "Couldn't reach the verification server. Please check your connection and try again.",
     'license.tooltipLocked': 'Tap to enter your license key and unlock Google sync.',
