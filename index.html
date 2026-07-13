@@ -262,16 +262,18 @@
   #btnGoogleSync.syncing { opacity:.55; }
   .top-actions .btn-emoji { display:none; }
   .detail-actions { display:flex; gap:5px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
+  @media (max-width:800px){
+    .top-actions .btn-full { display:none; }
+    .top-actions .btn-emoji { display:inline; }
+    .top-actions { gap:5px; }
+    .top-actions .top-action-spacer { margin:0; height:20px; }
+  }
   @media (max-width:520px){
     header { grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"title actions" "nav nav"; padding:12px 14px; gap:10px; }
     header h1 { grid-area:title; white-space:nowrap; min-width:0; }
     nav { grid-area:nav; justify-self:stretch; }
     nav button { flex:1; padding:7px 10px; }
     .top-actions { grid-area:actions; }
-    .top-actions .btn-full { display:none; }
-    .top-actions .btn-emoji { display:inline; }
-    .top-actions { gap:5px; }
-    .top-actions .top-action-spacer { margin:0; height:20px; }
     main { padding:14px 10px 48px; }
     .form-line1 { flex-direction:column; gap:6px; }
     .form-line1 .name-box, .form-line1 .total-box { width:100%; flex:auto; }
@@ -295,7 +297,7 @@
   .workload-hint { margin:0 2px 4px; color:var(--muted); font-size:10px; line-height:1.35; text-align:right; }
   .workload-box { width:100%; padding:0 0 0 10px; overflow:hidden; }
   .workload-box > label { width:48px; flex:0 0 48px; }
-  .workload-input { flex:1; min-width:0; border:none !important; background:transparent !important; padding:7px 0 !important; }
+  .workload-input { flex:1; min-width:0; border:none !important; background:transparent !important; padding:7px 0 !important; text-align:right; }
   .workload-input:focus { border-color:transparent !important; }
   .workload-box select { flex:0 0 auto; width:50px; align-self:stretch; border:none; border-left:1px solid var(--border); border-radius:0; padding-left:7px; }
   @media (max-width:520px){
@@ -464,19 +466,20 @@
 <body>
 
 <header style="position:relative">
-  <h1>마감을 부탁해<span class="version">v2.3.8</span></h1>
+  <h1 id="appTitle">마감을 부탁해<span class="version">v2.3.8</span></h1>
   <nav>
-    <button id="tabDash" class="active">대시보드</button>
-    <button id="tabList">프로젝트</button>
+    <button id="tabDash" class="active" data-i18n="nav.dash">대시보드</button>
+    <button id="tabList" data-i18n="nav.list">프로젝트</button>
   </nav>
   <div class="top-actions">
-    <button class="ghost small main-calendar-toggle" id="btnMainCalendar" aria-label="메인달력" aria-expanded="false"><span class="btn-full">메인달력</span><span class="btn-emoji">🗓️</span></button>
+    <button class="ghost small main-calendar-toggle" id="btnMainCalendar" aria-label="메인달력" aria-expanded="false"><span class="btn-full" data-i18n="btn.mainCalendar">메인달력</span><span class="btn-emoji">🗓️</span></button>
     <span class="top-action-spacer" aria-hidden="true"></span>
-    <button class="ghost small" id="btnBackup" aria-label="백업"><span class="btn-full">백업</span><span class="btn-emoji">💾</span></button>
-    <button class="ghost small" id="btnRestore" aria-label="불러오기"><span class="btn-full">불러오기</span><span class="btn-emoji">📁</span></button>
-    <button class="ghost small" id="btnUndoRestore" aria-label="불러오기 전 데이터 복구" style="display:none"><span class="btn-full">이전 데이터</span><span class="btn-emoji">↩</span></button>
+    <button class="ghost small" id="btnBackup" aria-label="백업"><span class="btn-full" data-i18n="btn.backup">백업</span><span class="btn-emoji">💾</span></button>
+    <button class="ghost small" id="btnRestore" aria-label="불러오기"><span class="btn-full" data-i18n="btn.restore">불러오기</span><span class="btn-emoji">📁</span></button>
+    <button class="ghost small" id="btnUndoRestore" aria-label="불러오기 전 데이터 복구" style="display:none"><span class="btn-full" data-i18n="btn.undoRestore">이전 데이터</span><span class="btn-emoji">↩</span></button>
     <span class="top-action-spacer" aria-hidden="true"></span>
-    <button class="ghost small" id="btnGoogleSync" aria-label="구글 동기화"><span class="btn-full">구글 동기화</span><span class="btn-emoji">☁️</span></button>
+    <button class="ghost small" id="btnGoogleSync" aria-label="구글 동기화"><span class="btn-full" data-i18n="btn.googleSync">구글 동기화</span><span class="btn-emoji">☁️</span></button>
+    <button class="ghost small icon-btn" id="btnLangToggle" aria-label="Language" title="한국어 / English" style="font-size:16px">🌐</button>
     <input type="file" id="restoreFile" accept="application/json" style="display:none" />
   </div>
 </header>
@@ -484,6 +487,544 @@
 <main id="main"></main>
 
 <script>
+// ===== 다국어(i18n) =====
+const LANG_KEY = 'magamManagerLang';
+let currentLang = (localStorage.getItem(LANG_KEY) === 'en') ? 'en' : 'ko';
+
+const LANG = {
+  ko: {
+    'app.title': '마감을 부탁해',
+    'nav.dash': '대시보드',
+    'nav.list': '프로젝트',
+    'btn.mainCalendar': '메인달력',
+    'btn.backup': '백업',
+    'btn.restore': '불러오기',
+    'btn.undoRestore': '이전 데이터',
+    'btn.googleSync': '구글 동기화',
+    // 상태 라벨
+    'status.relaxed': '여유',
+    'status.danger': '위험',
+    'status.done': '완료',
+    'status.inprogress': '진행중',
+    'status.overdue': '마감초과',
+    'status.deadline': '마감일',
+    'status.rest': '쉼',
+    'status.over': '초과',
+    'status.unassigned': '미지정',
+    // 단위
+    'unit.cut': '컷',
+    'unit.sheet': '장',
+    'unit.piece': '개',
+    // 요일
+    'dow.sun': '일', 'dow.mon': '월', 'dow.tue': '화', 'dow.wed': '수', 'dow.thu': '목', 'dow.fri': '금', 'dow.sat': '토',
+    // 대시보드/오늘 목표
+    'dash.todayQuota': '오늘 목표량',
+    'dash.todayDone': '오늘 해야 할 양',
+    'dash.todayWork': '오늘 한 작업',
+    'dash.msg.achieved': '오늘 목표 달성!',
+    'dash.msg.almost': '조금만 더!',
+    'dash.msg.halfway': '절반 넘었어요!',
+    'dash.msg.goodStart': '좋은 시작이에요!',
+    'dash.msg.startToday': '오늘도 시작해볼까요?',
+    'dash.streakPrefix': '연속 작업 ',
+    'dash.streakSuffix': '일째',
+    'dash.todayTotalGoal': '오늘 전체 목표',
+    'dash.more': '더보기',
+    'dash.startDday': '시작 D-',
+    // 캘린더
+    'cal.prevMonth': '이전 달',
+    'cal.nextMonth': '다음 달',
+    'cal.collapse': '접기',
+    'cal.finalDeadline': '최종 마감',
+    'cal.segment': '작업 구간',
+    'cal.changeStart': '시작일',
+    'cal.changeDeadline': '마감일',
+    // 프로젝트 상세
+    'detail.notFound': '<p>프로젝트를 찾을 수 없어요.</p>',
+    'detail.edit': '수정',
+    'detail.editProject': '프로젝트 수정',
+    'detail.delete': '삭제',
+    'detail.deleteProject': '프로젝트 삭제',
+    'detail.numberInput': '숫자로 입력',
+    'detail.buttonView': '버튼으로 보기',
+    'detail.segmentEditCollapse': '작업 구간 편집 접기',
+    'detail.segmentEditExpand': '작업 구간 편집 펼치기',
+    'detail.segmentDeleteAll': '작업 구간 전체 삭제',
+    'detail.lastSegmentNote': '마지막 작업 구간의 마감은 프로젝트 마감일을 따라가요',
+    'detail.moveMode': '이동 모드',
+    'detail.checklistExpand': '펼치기',
+    // 대시보드 카드/목록
+    'dash.today': '오늘',
+    'dash.remaining': '남음',
+    'list.newSchedule': '새로운 일정',
+    'list.usageGuide': '사용 안내',
+    'list.dragHint': '카드를 길게 눌러 순서를 바꿀 수 있어요.',
+    'list.empty': '등록된 일정이 없어요.',
+    'list.deadlinePrefix': '마감',
+    'list.total': '전체',
+    'list.done': '완료',
+    'list.ddayNoAmount': '작업량 미지정 (D-DAY)',
+    'menu.more': '더보기',
+    'menu.duplicate': '복제',
+    'menu.delete': '삭제',
+    // 프로젝트 생성 폼
+    'form.workload': '작업량',
+    'form.workloadPlaceholder': '예: 240 또는 80/80/80',
+    'form.workloadAria': '전체 작업량 또는 작업 구간별 작업량',
+    'form.name': '이름',
+    'form.namePlaceholder': '이름을 입력해주세요',
+    'form.start': '시작',
+    'form.deadline': '마감',
+    'form.addProject': '일정 추가',
+    'form.workloadHint': '작업을 여러 구간으로 나누고 싶다면 수량 사이에 /를 넣어주세요. 예: 콘티 30컷, 채색 30컷 → 30/30',
+    'form.includeStart': '시작일 포함',
+    'form.includeDeadline': '마감일 포함',
+    'form.includeWeekend': '주말 포함',
+    'form.periodTooltip': '작업 일수 계산에 포함해요.',
+    'err.maxSegments6': '작업 구간은 최대 6개까지 입력할 수 있어요.',
+    'err.workloadFormat': '작업량은 30/30/30처럼 숫자 사이를 /로 구분해주세요.',
+    'err.workloadPositiveInt': '작업량은 1 이상의 정수로 입력해주세요.',
+    'err.workloadTooBig': '작업량이 너무 커요.',
+    // 체크리스트
+    'cl.addItem': '항목 추가',
+    'cl.countSuffix': '개',
+    'cl.changeSegment': '눌러서 작업 구간 변경',
+    'cl.assignSegment': '작업 구간 할당',
+    'cl.deleteItem': '체크리스트 삭제',
+    'cl.memo': '메모형',
+    'cl.qty': '수량형',
+    'cl.qtyPlaceholder': '완료에 더해져요',
+    'cl.itemName': '항목 이름',
+    'cl.addItemAria': '체크리스트 추가',
+    'cl.noItems': '항목 없음',
+    'cl.todoCount': '할 일',
+    'cl.countUnit': '개',
+    'cl.addTodoFor': '에 할 일 추가',
+    'cl.noLinkedTodo': '연결된 할 일이 없어요.',
+    // 미니 캘린더
+    'minical.legend.start': '시작일',
+    'minical.legend.segment': '작업 구간',
+    'minical.legend.deadline': '마감일',
+    'minical.legend.rest': '쉬는날',
+    'minical.editHint': '날짜를 눌러주세요.',
+    'minical.editHintPrefix': '변경할',
+    'minical.hint': '클릭하면 쉬는날로 지정돼요.<br>시작일·마감일을 누르면 날짜 이동이 가능해요.',
+    'minical.year': '년',
+    'minical.month': '월',
+    'form.save': '저장',
+    // 저장/토스트
+    'toast.saveFailed': '저장 실패 — 기기 저장공간을 확인해주세요. (백업 권장)',
+    // 구글 드라이브 동기화
+    'sync.loadingSignIn': '구글 로그인 기능을 아직 불러오는 중이에요. 잠시 후 다시 눌러주세요.',
+    'sync.signInFailed': '구글 로그인에 실패했어요.',
+    'sync.firstBackupDone': '구글 드라이브에 처음으로 백업했어요.',
+    'sync.loadedFromDrive': '구글 드라이브 데이터를 불러왔어요.',
+    'sync.loadFailedKeepCurrent': '불러오지 못했어요. 지금 데이터는 그대로예요.',
+    'sync.newerRemoteConfirm': '다른 기기에서 저장된 더 최신 데이터가 있어요. 불러올까요?\n(지금 데이터는 불러오기 직전 상태로 별도 보관돼요.)',
+    'sync.syncedToDrive': '구글 드라이브에 동기화했어요.',
+    'sync.syncFailed': '구글 드라이브 동기화에 실패했어요. 다시 시도해주세요.',
+    'sync.loadBtn': '불러오기',
+    'sync.lastSyncPrefix': '마지막 동기화',
+    'sync.lastSyncSuffix': '— 눌러서 지금 동기화',
+    'sync.syncingNow': '동기화 중...',
+    'sync.signInPrompt': '구글 계정으로 로그인해서 기기 간 데이터를 동기화해요.',
+    'banner.partialTitle': '일부 데이터를 복구했어요',
+    'banner.failTitle': '이전 데이터를 불러오지 못했어요',
+    'banner.newerFormatMsg': '저장된 데이터가 이 앱보다 새 버전 형식이라 안전하게 불러오지 못했어요.',
+    'banner.partialMsg': '저장 데이터 중 깨진 프로젝트 {invalid}개와 작업 구간 {cleared}개를 제외하고 나머지를 복구했어요.',
+    'banner.corruptMsg': '저장된 데이터를 읽는 중 문제가 생겨서 안전하게 불러오지 못했어요.',
+    'banner.continuePartial': '복구된 상태로 계속하기',
+    'banner.continueEmpty': '빈 상태로 계속하기',
+    'banner.originalKeptNote': '원본은 그대로 남아있고, 확인하기 전까지는 자동저장을 멈춰뒀어요.',
+    'banner.downloadOriginal': '원본 파일 다운로드',
+    // 일정/구간 검증
+    'err.needStartAndDeadline': '시작일과 마감일이 필요해요.',
+    'err.startAfterDeadline': '시작일이 마감일보다 늦을 수 없어요.',
+    'err.deadlineCannotBeRest': '마감일은 쉬는날로 지정할 수 없어요.',
+    'err.startMustBeWorkable': '시작일 포함 상태에서는 시작일이 작업 가능한 날이어야 해요.',
+    'err.deadlineMustBeWorkable': '마감일 포함 상태에서는 마감일이 작업 가능한 날이어야 해요.',
+    'err.needAtLeast1Workday': '작업량을 나눌 작업일이 1일 이상 필요해요.',
+    'err.maxSegmentsN': '작업 구간은 최대 {n}개까지 만들 수 있어요.',
+    'err.maxSegmentsNCurrentSchedule': '현재 일정에서는 작업 구간을 최대 {n}개까지 만들 수 있어요.',
+    'err.cannotSplitAmount1': '이 위치의 작업량이 1이라 더 나눌 수 없어요.',
+    'err.eachSegmentNeeds1': '각 작업 구간에는 작업량이 1 이상 필요해요.',
+    'err.cannotPlaceSegmentDates': '작업 구간 날짜를 배치할 수 없어요. 작업일이나 작업량을 확인해주세요.',
+    'err.cannotPlaceSegmentDatesShort': '작업 구간 날짜를 배치할 수 없어요.',
+    'err.newScheduleNotEnoughWorkdays': '새 일정에는 작업 구간을 나눌 작업일이 부족해요.',
+    'err.thisPositionNotEnoughWorkdays': '이 위치에는 작업 구간을 나눌 작업일이 부족해요.',
+    'err.segmentsMustBeInRange': '작업 구간은 {start} ~ {deadline} 사이 날짜만 가능해요.',
+    'err.segmentsMustBeWorkable': '작업 구간은 작업 가능한 날로만 지정할 수 있어요.',
+    'err.segmentsMustHaveWorkableDay': '작업 구간에 작업 가능한 날이 없어요. 쉬는날이나 날짜를 조정해주세요.',
+    'err.cannotCleanSegments': '작업 구간을 정리할 수 없어요. 날짜나 작업량을 확인해주세요.',
+    'err.segmentOrderMismatch': '작업 구간 날짜 순서가 맞지 않아요.',
+    'err.segmentOrderMismatchAdjacent': '작업 구간 날짜 순서가 앞뒤 구간과 맞지 않아요.',
+    'err.segmentDateEmpty': '작업 구간 날짜가 비어 있어요.',
+    'err.segmentStartEmpty': '작업 구간 시작일이 비어 있어요.',
+    'err.segmentDateFormat': '작업 구간 날짜 형식이 올바르지 않아요.',
+    'err.segmentStartDeadlineOrder': '작업 구간 시작일과 마감일 순서가 맞지 않아요.',
+    'err.segmentMustBeBetween': '작업 구간은 시작일과 마감일 사이에 있어야 해요.',
+    'err.segmentAmountMin1': '작업 구간 작업량은 1 이상이어야 해요.',
+    'err.totalLessThanSegCount': '전체 작업량이 작업 구간 수보다 적어요. 작업 구간을 줄인 뒤 저장해주세요.',
+    'err.workloadMinOrEmpty': '작업량은 1 이상의 정수로 입력하거나 비워두세요.',
+    'err.completedMinZero': '완료량은 0 이상의 정수로 입력해주세요.',
+    'err.noQtyForDday': '작업량 미지정 일정에는 수량형을 추가할 수 없어요.',
+    'err.qtyMin1': '수량형 체크리스트는 1 이상의 정수로 입력해주세요.',
+    'err.deadlineBeforeStart': '마감일이 시작일보다 빠를 수 없어요.',
+    'err.startAfterDeadlineShort': '시작일이 마감일보다 늦을 수 없어요.',
+    'err.weekendAlreadyRest': '주말 포함이 꺼져 있어서 이미 쉬는 날이에요. 이 날짜만 따로 쉬는 날로 지정할 순 없어요.',
+    'err.lastSegFollowsDeadline': '마지막 작업 구간의 마감은 프로젝트 마감일을 따라가요.',
+    'err.originalDataNotFound': '원본 데이터를 찾을 수 없어요.',
+    // 확인창/알림
+    'confirm.clearAllSegments': '작업 구간을 전부 지울까요?',
+    'confirm.clearWorkloadWarning': '작업량을 비우면 작업 구간·완료량·수량형 체크리스트 수량이 모두 초기화돼요. 계속할까요?',
+    'confirm.continueLabel': '계속',
+    'confirm.deleteProjectConfirm': '"{name}" 프로젝트를 삭제할까요?\n되돌릴 수 없어요.',
+    'toast.movedSchedule': '{name} 일정을 {n}일 {dir} 옮겼어요.',
+    'dir.forward': '뒤로',
+    'dir.backward': '앞으로',
+    'toast.unassignedTodos': '연결된 할 일 {n}개는 미지정으로 옮겼어요.',
+    'toast.unassignedExisting': '기존 연결 {n}개는 미지정으로 옮겼어요.',
+    // 복구/불러오기 관련(4300번대)
+    'toast.noPrevDataToRestore': '복구할 이전 데이터가 없어요.',
+    'confirm.undoRestore': '불러오기 직전 데이터로 되돌릴까요? 현재 데이터와 서로 교체됩니다.',
+    'toast.restoredPrevData': '이전 데이터로 복구했어요.',
+    'toast.restorePrevDataFailed': '이전 데이터를 복구할 수 없어요. 현재 데이터는 유지됩니다.',
+    'toast.restoreCompleteWithNotes': '불러오기 완료 — {notes}',
+    'toast.restoreCompletePlain': '불러오기를 완료했어요.',
+    'toast.applyBackupFailed': '백업을 적용하지 못했어요. 현재 데이터는 유지됩니다.',
+    'alert.invalidBackupFile': '백업 파일을 읽을 수 없어요. 올바른 백업 json인지 확인해주세요.',
+    'alert.fileReadError': '파일을 읽는 중 오류가 났어요. 다시 시도해주세요.',
+    'restore.previewLoad': '백업 {input}개 중 {kept}개를 불러옵니다.',
+    'restore.previewInvalid': '깨진 프로젝트 {n}개는 제외됩니다.',
+    'restore.previewCleared': '깨진 작업 구간 {n}개는 삭제됩니다.',
+    'restore.previewCurrentKept': '현재 데이터는 불러오기 직전 상태로 별도 보관됩니다.',
+    'restore.doneExcluded': '프로젝트 {n}개 제외',
+    'restore.doneCleared': '작업 구간 {n}개 삭제',
+    'backup.filenamePrefix': '마감을부탁해_백업_',
+    'detail.restoreLabel': '복구',
+    'viewer.dateSep1': '년',
+    'viewer.dateSep2': '월',
+    'viewer.dateSep3': '일',
+    'viewer.deadlineCountAria': ', 마감 {n}개',
+    'viewer.prevMonth': '이전 달',
+    'viewer.nextMonth': '다음 달',
+    'viewer.dragHelp': '프로젝트 선을 드래그하면 일정 전체가 이동해요.',
+    'confirm.cancelLabel': '취소',
+    'detail.copySuffix': ' 사본',
+    'banner.corruptFilenamePrefix': '마감을부탁해_불러오기실패원본_',
+    'banner.confirmPartial': '복구된 상태로 계속할까요? 제외된 항목 없이 지금 보이는 데이터가 자동저장돼요. 원본 다운로드는 먼저 받아두는 걸 추천해요.',
+    'banner.confirmEmpty': '빈 상태로 계속할까요? 지금부터는 이 상태가 자동저장돼요. 원본 다운로드는 먼저 받아두는 걸 추천해요.',
+    // 프로젝트 상세
+    'detail.noAmount': '작업량 미지정',
+    'detail.workDone': '작업 완료',
+    'detail.startsFrom': '부터 시작 예정',
+    'detail.basisSuffix': ' 기준 ',
+    'detail.completedLabel': '완료된 일감',
+    'detail.qtyClickHelp': '완료된 일감 숫자를 클릭해주세요.',
+    'detail.checklistSum': '체크리스트',
+    'detail.manualSum': '직접',
+    'detail.completedSum': '완료',
+    'detail.segCount': '작업 구간',
+    'detail.segTooltip': '작업량을 여러 작업 구간으로 나눌 수 있어요.',
+    'detail.noAmountNoSeg': '작업량이 없어서 작업 구간을 만들 수 없어요.',
+    'detail.noSegYet': '현재 작업 구간이 없어요.',
+    'detail.create': '생성',
+    'detail.segDone': '완료',
+    'detail.lastSegDisabledTitle': '마지막 작업 구간의 마감은 프로젝트 마감일을 따라가요',
+    'detail.segNameEditAria': '할 일',
+    'detail.nextWorkdayAvg': '다음 작업일 기준 평균',
+    'detail.remainingDaysAvg': '남은날 기준 평균',
+    'detail.setManualDoneTo': '직접 완료 {n}{unit}로 설정',
+    'detail.midlineHelp': '프로젝트 마감일까지의 작업량과 기간을 단계별 비율로 나눌 수 있어요.<br>예: 콘티 30% · 밑색 70%',
+    'detail.dblclickRename': '이름을 더블클릭하면 수정할 수 있어요.',
+    'detail.cannotMakeSegments': '남은 작업 가능일 또는 작업량이 부족해서 작업 구간을 만들 수 없어요.',
+    'detail.checklistTitle': '체크리스트',
+    'detail.backToList': '목록으로',
+    'detail.total': '전체',
+    'detail.done': '완료',
+    'detail.remaining': '남음',
+    'detail.bulkFormHelp': '바를 누르면 작업 구간이 추가되고, 손잡이를 누르면 구간이 합쳐져요. 화면이 좁을 경우 기본 이름으로 생성돼요.',
+  },
+  en: {
+    'app.title': 'Deadline Buddy',
+    'nav.dash': 'Dashboard',
+    'nav.list': 'Projects',
+    'btn.mainCalendar': 'Calendar',
+    'btn.backup': 'Backup',
+    'btn.restore': 'Restore',
+    'btn.undoRestore': 'Undo Restore',
+    'btn.googleSync': 'Google Sync',
+    'status.relaxed': 'Relaxed',
+    'status.danger': 'Danger',
+    'status.done': 'Done',
+    'status.inprogress': 'In Progress',
+    'status.overdue': 'Overdue',
+    'status.deadline': 'Deadline',
+    'status.rest': 'Off',
+    'status.over': 'Over',
+    'status.unassigned': 'Unassigned',
+    'unit.cut': 'ct',
+    'unit.sheet': 'sh',
+    'unit.piece': 'pc',
+    'dow.sun': 'Sun', 'dow.mon': 'Mon', 'dow.tue': 'Tue', 'dow.wed': 'Wed', 'dow.thu': 'Thu', 'dow.fri': 'Fri', 'dow.sat': 'Sat',
+    'dash.todayQuota': "Today's Quota",
+    'dash.todayDone': "Today's Target",
+    'dash.todayWork': "Today's Work",
+    'dash.msg.achieved': "Today's goal reached!",
+    'dash.msg.almost': 'Almost there!',
+    'dash.msg.halfway': 'Past halfway!',
+    'dash.msg.goodStart': 'Great start!',
+    'dash.msg.startToday': 'Ready to start today?',
+    'dash.streakPrefix': '',
+    'dash.streakSuffix': '-day streak',
+    'dash.todayTotalGoal': "Today's overall goal",
+    'dash.more': 'More',
+    'dash.startDday': 'Starts in D-',
+    'cal.prevMonth': 'Previous month',
+    'cal.nextMonth': 'Next month',
+    'cal.collapse': 'Collapse',
+    'cal.finalDeadline': 'Final deadline',
+    'cal.segment': 'Segment',
+    'cal.changeStart': 'Start date',
+    'cal.changeDeadline': 'Deadline',
+    'detail.notFound': '<p>Project not found.</p>',
+    'detail.edit': 'Edit',
+    'detail.editProject': 'Edit project',
+    'detail.delete': 'Delete',
+    'detail.deleteProject': 'Delete project',
+    'detail.numberInput': 'Number input',
+    'detail.buttonView': 'Button view',
+    'detail.segmentEditCollapse': 'Collapse segment edit',
+    'detail.segmentEditExpand': 'Expand segment edit',
+    'detail.segmentDeleteAll': 'Delete all segments',
+    'detail.lastSegmentNote': "The last segment's deadline follows the project deadline",
+    'detail.moveMode': 'Move mode',
+    'detail.checklistExpand': 'Expand',
+    'dash.today': 'Today',
+    'dash.remaining': 'Left',
+    'list.newSchedule': 'New Project',
+    'list.usageGuide': 'Tip',
+    'list.dragHint': 'Press and hold a card to reorder.',
+    'list.empty': 'No projects yet.',
+    'list.deadlinePrefix': 'Due',
+    'list.total': 'Total',
+    'list.done': 'Done',
+    'list.ddayNoAmount': 'No workload (D-DAY)',
+    'menu.more': 'More',
+    'menu.duplicate': 'Duplicate',
+    'menu.delete': 'Delete',
+    'form.workload': 'Workload',
+    'form.workloadPlaceholder': 'e.g. 240 or 80/80/80',
+    'form.workloadAria': 'Total workload or per-segment workload',
+    'form.name': 'Name',
+    'form.namePlaceholder': 'Enter a name',
+    'form.start': 'Start',
+    'form.deadline': 'Deadline',
+    'form.addProject': 'Add Project',
+    'form.workloadHint': 'To split work into segments, separate amounts with /. e.g. Storyboard 30 cuts, coloring 30 cuts → 30/30',
+    'form.includeStart': 'Start date',
+    'form.includeDeadline': 'Deadline',
+    'form.includeWeekend': 'Weekends',
+    'form.periodTooltip': 'Included in the workday calculation.',
+    'err.maxSegments6': 'You can enter up to 6 segments.',
+    'err.workloadFormat': 'Separate amounts with / like 30/30/30.',
+    'err.workloadPositiveInt': 'Enter a whole number of 1 or more.',
+    'err.workloadTooBig': 'The workload is too large.',
+    'cl.addItem': 'Add item',
+    'cl.countSuffix': '',
+    'cl.changeSegment': 'Tap to change segment',
+    'cl.assignSegment': 'Assign segment',
+    'cl.deleteItem': 'Delete item',
+    'cl.memo': 'Memo',
+    'cl.qty': 'Quantity',
+    'cl.qtyPlaceholder': 'Added to completed amount',
+    'cl.itemName': 'Item name',
+    'cl.addItemAria': 'Add checklist item',
+    'cl.noItems': 'No items',
+    'cl.todoCount': 'To-dos',
+    'cl.countUnit': '',
+    'cl.addTodoFor': 'Add to-do for ',
+    'cl.noLinkedTodo': 'No linked to-dos.',
+    'minical.legend.start': 'Start',
+    'minical.legend.segment': 'Segment',
+    'minical.legend.deadline': 'Deadline',
+    'minical.legend.rest': 'Day off',
+    'minical.editHint': 'Tap a date.',
+    'minical.editHintPrefix': 'New',
+    'minical.hint': 'Tap a date to mark it as a day off.<br>Tap start/deadline to move them.',
+    'minical.year': '',
+    'minical.month': '',
+    'form.save': 'Save',
+    'toast.saveFailed': 'Save failed — please check your device storage. (Backup recommended)',
+    'sync.loadingSignIn': 'Still loading Google sign-in. Please try again in a moment.',
+    'sync.signInFailed': 'Google sign-in failed.',
+    'sync.firstBackupDone': 'Backed up to Google Drive for the first time.',
+    'sync.loadedFromDrive': 'Loaded data from Google Drive.',
+    'sync.loadFailedKeepCurrent': "Couldn't load. Your current data is unchanged.",
+    'sync.newerRemoteConfirm': 'There is newer data saved on another device. Load it?\n(Your current data will be kept separately as a pre-load backup.)',
+    'sync.syncedToDrive': 'Synced to Google Drive.',
+    'sync.syncFailed': 'Google Drive sync failed. Please try again.',
+    'sync.loadBtn': 'Load',
+    'sync.lastSyncPrefix': 'Last synced',
+    'sync.lastSyncSuffix': '— tap to sync now',
+    'sync.syncingNow': 'Syncing...',
+    'sync.signInPrompt': 'Sign in with Google to sync data across devices.',
+    'banner.partialTitle': 'Some data was recovered',
+    'banner.failTitle': "Couldn't load previous data",
+    'banner.newerFormatMsg': "The saved data is in a newer format than this app, so it couldn't be loaded safely.",
+    'banner.partialMsg': 'Recovered the data, excluding {invalid} corrupted project(s) and {cleared} corrupted segment(s).',
+    'banner.corruptMsg': "There was a problem reading the saved data, so it couldn't be loaded safely.",
+    'banner.continuePartial': 'Continue with recovered data',
+    'banner.continueEmpty': 'Continue with empty state',
+    'banner.originalKeptNote': "The original is kept as-is, and autosave is paused until you confirm.",
+    'banner.downloadOriginal': 'Download original file',
+    'err.needStartAndDeadline': 'A start date and deadline are required.',
+    'err.startAfterDeadline': 'Start date cannot be after the deadline.',
+    'err.deadlineCannotBeRest': 'The deadline cannot be set as a day off.',
+    'err.startMustBeWorkable': 'With "include start date" on, the start date must be a workable day.',
+    'err.deadlineMustBeWorkable': 'With "include deadline" on, the deadline must be a workable day.',
+    'err.needAtLeast1Workday': 'At least 1 workday is needed to split the workload.',
+    'err.maxSegmentsN': 'You can create up to {n} segments.',
+    'err.maxSegmentsNCurrentSchedule': 'With the current schedule, you can create up to {n} segments.',
+    'err.cannotSplitAmount1': "This position's workload is 1, so it can't be split further.",
+    'err.eachSegmentNeeds1': 'Each segment needs a workload of at least 1.',
+    'err.cannotPlaceSegmentDates': "Couldn't place segment dates. Please check workdays or workload.",
+    'err.cannotPlaceSegmentDatesShort': "Couldn't place segment dates.",
+    'err.newScheduleNotEnoughWorkdays': 'Not enough workdays in the new schedule to split segments.',
+    'err.thisPositionNotEnoughWorkdays': 'Not enough workdays at this position to split segments.',
+    'err.segmentsMustBeInRange': 'Segments must fall between {start} and {deadline}.',
+    'err.segmentsMustBeWorkable': 'Segments can only be set on workable days.',
+    'err.segmentsMustHaveWorkableDay': 'This segment has no workable days. Please adjust days off or dates.',
+    'err.cannotCleanSegments': "Couldn't clean up segments. Please check dates or workload.",
+    'err.segmentOrderMismatch': "Segment dates are out of order.",
+    'err.segmentOrderMismatchAdjacent': "Segment dates don't match the order of adjacent segments.",
+    'err.segmentDateEmpty': 'Segment date is empty.',
+    'err.segmentStartEmpty': 'Segment start date is empty.',
+    'err.segmentDateFormat': 'Segment date format is invalid.',
+    'err.segmentStartDeadlineOrder': "Segment start and deadline are out of order.",
+    'err.segmentMustBeBetween': 'Segments must fall between the start date and deadline.',
+    'err.segmentAmountMin1': 'Segment workload must be at least 1.',
+    'err.totalLessThanSegCount': 'Total workload is less than the number of segments. Reduce segments and save again.',
+    'err.workloadMinOrEmpty': 'Enter a whole number of 1 or more, or leave it blank.',
+    'err.completedMinZero': 'Enter a whole number of 0 or more.',
+    'err.noQtyForDday': 'Quantity-type items cannot be added to a project with no workload.',
+    'err.qtyMin1': 'Enter a whole number of 1 or more for quantity-type items.',
+    'err.deadlineBeforeStart': 'Deadline cannot be before the start date.',
+    'err.startAfterDeadlineShort': 'Start date cannot be after the deadline.',
+    'err.weekendAlreadyRest': "Weekends are excluded, so it's already a day off. This date can't be set as a day off on its own.",
+    'err.lastSegFollowsDeadline': "The last segment's deadline follows the project deadline.",
+    'err.originalDataNotFound': 'Original data not found.',
+    'confirm.clearAllSegments': 'Clear all segments?',
+    'confirm.clearWorkloadWarning': 'Clearing the workload will reset segments, completed amount, and quantity-type checklist amounts. Continue?',
+    'confirm.continueLabel': 'Continue',
+    'confirm.deleteProjectConfirm': 'Delete project "{name}"?\nThis cannot be undone.',
+    'toast.movedSchedule': "Moved {name}'s schedule {n} days {dir}.",
+    'dir.forward': 'forward',
+    'dir.backward': 'backward',
+    'toast.unassignedTodos': '{n} linked to-do(s) were moved to unassigned.',
+    'toast.unassignedExisting': '{n} existing link(s) were moved to unassigned.',
+    'toast.noPrevDataToRestore': 'No previous data to restore.',
+    'confirm.undoRestore': 'Revert to the data from just before loading? This will swap with your current data.',
+    'toast.restoredPrevData': 'Restored the previous data.',
+    'toast.restorePrevDataFailed': "Couldn't restore the previous data. Your current data is kept.",
+    'toast.restoreCompleteWithNotes': 'Load complete — {notes}',
+    'toast.restoreCompletePlain': 'Load complete.',
+    'toast.applyBackupFailed': "Couldn't apply the backup. Your current data is kept.",
+    'alert.invalidBackupFile': "Couldn't read the backup file. Please check it's a valid backup JSON.",
+    'alert.fileReadError': 'There was an error reading the file. Please try again.',
+    'restore.previewLoad': 'Loading {kept} of {input} backup item(s).',
+    'restore.previewInvalid': '{n} corrupted project(s) will be excluded.',
+    'restore.previewCleared': '{n} corrupted segment(s) will be deleted.',
+    'restore.previewCurrentKept': 'Your current data will be kept separately as a pre-load backup.',
+    'restore.doneExcluded': '{n} project(s) excluded',
+    'restore.doneCleared': '{n} segment(s) deleted',
+    'backup.filenamePrefix': 'DeadlineBuddy_Backup_',
+    'detail.restoreLabel': 'Restore',
+    'viewer.dateSep1': '',
+    'viewer.dateSep2': '',
+    'viewer.dateSep3': '',
+    'viewer.deadlineCountAria': ', {n} deadline(s)',
+    'viewer.prevMonth': 'Previous month',
+    'viewer.nextMonth': 'Next month',
+    'viewer.dragHelp': 'Drag a project line to move its entire schedule.',
+    'confirm.cancelLabel': 'Cancel',
+    'detail.copySuffix': ' (copy)',
+    'banner.corruptFilenamePrefix': 'DeadlineBuddy_LoadFailed_Original_',
+    'banner.confirmPartial': "Continue with the recovered state? What you see now (with no items excluded) will be autosaved. It's recommended to download the original first.",
+    'banner.confirmEmpty': "Continue with an empty state? This state will be autosaved from now on. It's recommended to download the original first.",
+    'detail.noAmount': 'No workload set',
+    'detail.workDone': 'Completed',
+    'detail.startsFrom': 'Starts on ',
+    'detail.basisSuffix': ' basis ',
+    'detail.completedLabel': 'Completed amount',
+    'detail.qtyClickHelp': 'Click the number of completed items.',
+    'detail.checklistSum': 'Checklist',
+    'detail.manualSum': 'Manual',
+    'detail.completedSum': 'Done',
+    'detail.segCount': 'Segments',
+    'detail.segTooltip': 'You can split the workload into multiple segments.',
+    'detail.noAmountNoSeg': 'No workload set, so segments cannot be created.',
+    'detail.noSegYet': 'No segments yet.',
+    'detail.create': 'Create',
+    'detail.segDone': 'Done',
+    'detail.lastSegDisabledTitle': "The last segment's deadline follows the project deadline",
+    'detail.segNameEditAria': 'to-dos',
+    'detail.nextWorkdayAvg': 'Next workday average',
+    'detail.remainingDaysAvg': 'Average over remaining days',
+    'detail.setManualDoneTo': 'Set completed to {n}{unit}',
+    'detail.midlineHelp': 'Split the workload and time until the deadline into stepped percentages.<br>e.g. Storyboard 30% · Coloring 70%',
+    'detail.dblclickRename': 'Double-click a name to rename it.',
+    'detail.cannotMakeSegments': 'Not enough remaining workdays or workload to create segments.',
+    'detail.checklistTitle': 'Checklist',
+    'detail.backToList': 'Back to list',
+    'detail.total': 'Total',
+    'detail.done': 'Done',
+    'detail.remaining': 'Left',
+    'detail.bulkFormHelp': 'Tap the bar to add a segment, and tap a handle to merge segments. On narrow screens, default names are used.',
+  }
+};
+
+// t(key): 현재 언어 사전에서 문구를 찾아 반환. 없으면 한글판으로 대체(누락 시 화면이 비지 않도록).
+function t(key){
+  const dict = LANG[currentLang] || LANG.ko;
+  return (dict && dict[key] != null) ? dict[key] : (LANG.ko[key] != null ? LANG.ko[key] : key);
+}
+// t()와 동일하지만 {placeholder} 자리를 vars 객체 값으로 치환
+function tf(key, vars){
+  let str = t(key);
+  Object.keys(vars || {}).forEach(k => { str = str.split('{'+k+'}').join(vars[k]); });
+  return str;
+}
+// 프로젝트에 저장된 단위 원본값('컷'/'장'/'개')을 현재 언어의 표시용 단위로 변환
+function unitLabel(unit){
+  if (unit === '컷') return t('unit.cut');
+  if (unit === '장') return t('unit.sheet');
+  if (unit === '개') return t('unit.piece');
+  return unit || '';
+}
+
+// data-i18n 속성이 붙은 요소들의 텍스트를 현재 언어로 갱신
+function applyStaticLang(){
+  document.documentElement.lang = (currentLang === 'en') ? 'en' : 'ko';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  const titleEl = document.getElementById('appTitle');
+  if (titleEl) {
+    const versionSpan = titleEl.querySelector('.version');
+    titleEl.firstChild.textContent = t('app.title');
+    if (versionSpan && !titleEl.contains(versionSpan)) titleEl.appendChild(versionSpan);
+  }
+  document.title = t('app.title');
+}
+
+function setLang(lang){
+  currentLang = (lang === 'en') ? 'en' : 'ko';
+  try { localStorage.setItem(LANG_KEY, currentLang); } catch (_) {}
+  applyStaticLang();
+  render(); // 동적으로 그려지는 화면(대시보드/프로젝트 상세 등)도 현재 언어로 다시 그림
+}
+
 const RELAXED_RATIO = 0.5; // 현재 필요한 하루량이 현재 일정 기준 하루량의 50% 이하일 때 '여유'
 const DANGER_RATIO = 1.0; // 기준 하루량을 넘기면 '위험'
 
@@ -541,7 +1082,7 @@ function saveLocal(){
     return true;
   } catch (e) {
     // 용량초과 등으로 저장 실패해도 앱은 계속 동작하되, 사용자에게 알림 — 모르고 있다가 새로고침 시 데이터 유실될 수 있음
-    showToast('저장 실패 — 기기 저장공간을 확인해주세요. (백업 권장)');
+    showToast(t('toast.saveFailed'));
     return false;
   }
 }
@@ -680,9 +1221,9 @@ function ensureDriveTokenClient(){
 // 로그인 버튼 클릭 안에서 바로 호출해야 함(구글 로그인 창이 팝업이라, 버튼 클릭 이벤트 밖에서 부르면 브라우저가 막을 수 있음)
 function signInGoogleDrive(){
   const client = ensureDriveTokenClient();
-  if (!client) { showToast('구글 로그인 기능을 아직 불러오는 중이에요. 잠시 후 다시 눌러주세요.'); return; }
+  if (!client) { showToast(t('sync.loadingSignIn')); return; }
   client.callback = (resp) => {
-    if (!resp || resp.error) { showToast('구글 로그인에 실패했어요.'); return; }
+    if (!resp || resp.error) { showToast(t('sync.signInFailed')); return; }
     googleAccessToken = resp.access_token;
     googleTokenExpiresAt = Date.now() + (Number(resp.expires_in) || 3500) * 1000;
     render();
@@ -749,7 +1290,7 @@ async function syncWithDrive(){
     if (!file) {
       await uploadDriveFile(buildPersistedData());
       driveLastSyncedAt = Date.now();
-      showToast('구글 드라이브에 처음으로 백업했어요.');
+      showToast(t('sync.firstBackupDone'));
       return;
     }
     driveFileId = file.id;
@@ -769,20 +1310,20 @@ async function syncWithDrive(){
           view.screen = 'dash'; view.projectId = null;
           driveLastSyncedAt = Date.now();
           render();
-          showToast('구글 드라이브 데이터를 불러왔어요.');
+          showToast(t('sync.loadedFromDrive'));
         } catch (_) {
-          showToast('불러오지 못했어요. 지금 데이터는 그대로예요.');
+          showToast(t('sync.loadFailedKeepCurrent'));
         }
       };
       if (localIsPristine) applyRemote();
-      else customConfirm('다른 기기에서 저장된 더 최신 데이터가 있어요. 불러올까요?\n(지금 데이터는 불러오기 직전 상태로 별도 보관돼요.)', applyRemote, { confirmLabel:'불러오기', confirmClass:'accent small' });
+      else customConfirm(t('sync.newerRemoteConfirm'), applyRemote, { confirmLabel:t('sync.loadBtn'), confirmClass:'accent small' });
     } else {
       await uploadDriveFile(buildPersistedData());
       driveLastSyncedAt = Date.now();
-      showToast('구글 드라이브에 동기화했어요.');
+      showToast(t('sync.syncedToDrive'));
     }
   } catch (e) {
-    showToast('구글 드라이브 동기화에 실패했어요. 다시 시도해주세요.');
+    showToast(t('sync.syncFailed'));
   } finally {
     driveSyncBusy = false; render();
   }
@@ -1003,12 +1544,12 @@ function currentScheduleDailyAvg(project){
 }
 function validatePlanDatesForWork(project, opts = {}){
   const hasTotal = opts.hasTotal !== undefined ? opts.hasTotal : !isDdayProject(project);
-  if (!project.startDate || !project.deadline) return '시작일과 마감일이 필요해요.';
-  if (project.startDate > project.deadline) return '시작일이 마감일보다 늦을 수 없어요.';
-  if (isRestDay(project.deadline, project.restDays)) return '마감일은 쉬는날로 지정할 수 없어요.';
-  if (hasTotal && project.includeToday && !isBaseWorkableDate(project, project.startDate)) return '시작일 포함 상태에서는 시작일이 작업 가능한 날이어야 해요.';
-  if (hasTotal && project.includeDeadline && !isBaseWorkableDate(project, project.deadline)) return '마감일 포함 상태에서는 마감일이 작업 가능한 날이어야 해요.';
-  if (hasTotal && projectWorkableDays(project, project.startDate, project.deadline) < 1) return '작업량을 나눌 작업일이 1일 이상 필요해요.';
+  if (!project.startDate || !project.deadline) return t('err.needStartAndDeadline');
+  if (project.startDate > project.deadline) return t('err.startAfterDeadline');
+  if (isRestDay(project.deadline, project.restDays)) return t('err.deadlineCannotBeRest');
+  if (hasTotal && project.includeToday && !isBaseWorkableDate(project, project.startDate)) return t('err.startMustBeWorkable');
+  if (hasTotal && project.includeDeadline && !isBaseWorkableDate(project, project.deadline)) return t('err.deadlineMustBeWorkable');
+  if (hasTotal && projectWorkableDays(project, project.startDate, project.deadline) < 1) return t('err.needAtLeast1Workday');
   return '';
 }
 function normalizeChecklistForProject(project){
@@ -1091,7 +1632,7 @@ function duplicateProject(project){
   const copy = {
     ...project,
     id: uid(),
-    name: project.name + ' 사본',
+    name: project.name + t('detail.copySuffix'),
     restDays: [...(project.restDays || [])],
     manualDone: 0,
     done: 0,
@@ -1238,21 +1779,21 @@ function normalizeSegmentAmounts(project){
 function validateSegmentStructure(project){
   if (!project || isDdayProject(project) || !project.segments || !project.segments.length) return '';
   const sorted = sortSegments(project);
-  if (sorted.length > Math.floor(Number(project.total) || 0)) return '전체 작업량이 작업 구간 수보다 적어요. 작업 구간을 줄인 뒤 저장해주세요.';
+  if (sorted.length > Math.floor(Number(project.total) || 0)) return t('err.totalLessThanSegCount');
   for (let i=0; i<sorted.length; i++) {
     const seg = sorted[i];
     const isLast = i === sorted.length - 1;
-    if (!(Number(seg.amount) >= 1)) return '작업 구간 작업량은 1 이상이어야 해요.';
-    if (!seg.deadline) return '작업 구간 날짜가 비어 있어요.';
-    if (!seg.planStartDate) return '작업 구간 시작일이 비어 있어요.';
-    if (!isValidDateString(seg.deadline) || !isValidDateString(seg.planStartDate)) return '작업 구간 날짜 형식이 올바르지 않아요.';
-    if (seg.planStartDate < project.startDate || seg.planStartDate > seg.deadline) return '작업 구간 시작일과 마감일 순서가 맞지 않아요.';
-    if (i > 0 && seg.deadline <= sorted[i-1].deadline) return '작업 구간 날짜 순서가 맞지 않아요.';
+    if (!(Number(seg.amount) >= 1)) return t('err.segmentAmountMin1');
+    if (!seg.deadline) return t('err.segmentDateEmpty');
+    if (!seg.planStartDate) return t('err.segmentStartEmpty');
+    if (!isValidDateString(seg.deadline) || !isValidDateString(seg.planStartDate)) return t('err.segmentDateFormat');
+    if (seg.planStartDate < project.startDate || seg.planStartDate > seg.deadline) return t('err.segmentStartDeadlineOrder');
+    if (i > 0 && seg.deadline <= sorted[i-1].deadline) return t('err.segmentOrderMismatch');
     if (!isLast) {
-      if (seg.deadline < project.startDate || seg.deadline >= project.deadline) return '작업 구간은 시작일과 마감일 사이에 있어야 해요.';
-      if (!isBaseWorkableDate(project, seg.deadline)) return '작업 구간은 작업 가능한 날로만 지정할 수 있어요.';
+      if (seg.deadline < project.startDate || seg.deadline >= project.deadline) return t('err.segmentMustBeBetween');
+      if (!isBaseWorkableDate(project, seg.deadline)) return t('err.segmentsMustBeWorkable');
     }
-    if (projectWorkableDays(project, seg.planStartDate, seg.deadline) < 1) return '작업 구간에 작업 가능한 날이 없어요. 쉬는날이나 날짜를 조정해주세요.';
+    if (projectWorkableDays(project, seg.planStartDate, seg.deadline) < 1) return t('err.segmentsMustHaveWorkableDay');
   }
   return '';
 }
@@ -1262,7 +1803,7 @@ function cloneSegmentsForEdit(project){
 function validateNormalizedSegments(project, opts = {}){
   const backup = cloneSegmentsForEdit(project);
   const ok = normalizeSegmentStructure(project, opts);
-  const err = ok ? validateSegmentStructure(project) : '작업 구간을 정리할 수 없어요. 날짜나 작업량을 확인해주세요.';
+  const err = ok ? validateSegmentStructure(project) : t('err.cannotCleanSegments');
   if (err) {
     project.segments = backup;
     applySpillover(project);
@@ -1373,7 +1914,7 @@ function reallocateExistingSegmentDates(project){
 // 각 구간 날짜만 새 작업 가능일에 맞춰 다시 배치한다.
 function reallocateSegmentsForPlanChange(project){
   if (!project || !project.segments || !project.segments.length) return '';
-  if (!reallocateExistingSegmentDates(project)) return '새 일정에는 작업 구간을 나눌 작업일이 부족해요.';
+  if (!reallocateExistingSegmentDates(project)) return t('err.newScheduleNotEnoughWorkdays');
   const err = validateSegmentStructure(project);
   if (err) return err;
   applySpillover(project);
@@ -1398,7 +1939,7 @@ function shiftProjectSchedule(project, deltaDays){
   if (project.segments && project.segments.length) {
     if (!reallocateExistingSegmentDates(project)) {
       restoreProjectSnapshot(project, snapshot);
-      return '이 위치에는 작업 구간을 나눌 작업일이 부족해요.';
+      return t('err.thisPositionNotEnoughWorkdays');
     }
     const segError = validateSegmentStructure(project);
     if (segError) { restoreProjectSnapshot(project, snapshot); return segError; }
@@ -1462,7 +2003,7 @@ function calcProjectRisk(project){
   if (isDdayProject(project)) {
     const days = daysBetween(todayStr(), project.deadline);
     const badgeVariant = days < 0 ? 'over' : days === 0 ? 'deadline' : 'dday';
-    const ddayLabel = days < 0 ? '마감초과' : days === 0 ? '마감일' : 'D-'+days;
+    const ddayLabel = days < 0 ? t('status.overdue') : days === 0 ? t('status.deadline') : 'D-'+days;
     return { risk: 'dday', days, ddayLabel, badgeVariant };
   }
   const pct = project.total > 0 ? Math.round((project.done / project.total) * 100) : 0;
@@ -1471,7 +2012,7 @@ function calcProjectRisk(project){
   }
   if (notStartedYet(project)) {
     const startsIn = daysBetween(todayStr(), project.startDate);
-    return { risk: 'notstarted', startsIn, notStartedLabel: '시작 D-'+startsIn };
+    return { risk: 'notstarted', startsIn, notStartedLabel: t('dash.startDday')+startsIn };
   }
   const remaining = project.total - project.done;
   const today = todayStr();
@@ -1554,7 +2095,10 @@ function calcTodayDisplay(project){
 }
 
 
-const riskLabel = { done:'완료', relaxed:'여유', neutral:'진행중', danger:'위험', over:'마감초과', deadline:'마감일', dday:'D-DAY' };
+function riskLabel(key){
+  const map = { done:'status.done', relaxed:'status.relaxed', neutral:'status.inprogress', danger:'status.danger', over:'status.overdue', deadline:'status.deadline', dday:'D-DAY' };
+  return map[key] === 'D-DAY' ? 'D-DAY' : t(map[key]);
+}
 
 // 오늘 목표 게이지바: 새 목표를 잡을 때는 현재 미완료·작업 가능 프로젝트만 대상으로 삼는다.
 // 단, 이미 오늘 목표가 잡힌 프로젝트는 오늘 완료되거나 일정이 바뀌어도 자정까지 추적 대상에 남긴다.
@@ -1743,11 +2287,11 @@ function computeTodayGoal(){
   return { pct, streak };
 }
 function todayGoalMessage(pct){
-  if (pct >= 100) return '오늘 목표 달성!';
-  if (pct >= 70) return '조금만 더!';
-  if (pct >= 40) return '절반 넘었어요!';
-  if (pct > 0) return '좋은 시작이에요!';
-  return '오늘도 시작해볼까요?';
+  if (pct >= 100) return t('dash.msg.achieved');
+  if (pct >= 70) return t('dash.msg.almost');
+  if (pct >= 40) return t('dash.msg.halfway');
+  if (pct > 0) return t('dash.msg.goodStart');
+  return t('dash.msg.startToday');
 }
 function renderTodayGoalBar(){
   const goal = computeTodayGoal();
@@ -1756,27 +2300,27 @@ function renderTodayGoalBar(){
       <div class="goal-bar-fill" style="width:${goal.pct}%"></div>
       <div class="goal-bar-shine" style="width:${goal.pct}%"></div>
       <div class="goal-bar-row">
-        <span class="streak-text">연속 작업 ${goal.streak}일째 — ${todayGoalMessage(goal.pct)}</span>
-        <span class="pct-pill">오늘 전체 목표 ${goal.pct}%</span>
+        <span class="streak-text">${t('dash.streakPrefix')}${goal.streak}${t('dash.streakSuffix')} — ${todayGoalMessage(goal.pct)}</span>
+        <span class="pct-pill">${t('dash.todayTotalGoal')} ${goal.pct}%</span>
       </div>
     </div>`;
 }
 
 function renderLoadFailedBanner(){
   const isPartial = loadFailReason === 'partial';
-  const title = isPartial ? '일부 데이터를 복구했어요' : '이전 데이터를 불러오지 못했어요';
+  const title = isPartial ? t('banner.partialTitle') : t('banner.failTitle');
   const msg = loadFailReason === 'newer'
-    ? '저장된 데이터가 이 앱보다 새 버전 형식이라 안전하게 불러오지 못했어요.'
+    ? t('banner.newerFormatMsg')
     : isPartial
-      ? `저장 데이터 중 깨진 프로젝트 ${lastLoadStats.invalidProjects}개와 작업 구간 ${lastLoadStats.clearedSegments}개를 제외하고 나머지를 복구했어요.`
-      : '저장된 데이터를 읽는 중 문제가 생겨서 안전하게 불러오지 못했어요.';
-  const continueLabel = isPartial ? '복구된 상태로 계속하기' : '빈 상태로 계속하기';
+      ? tf('banner.partialMsg', { invalid: lastLoadStats.invalidProjects, cleared: lastLoadStats.clearedSegments })
+      : t('banner.corruptMsg');
+  const continueLabel = isPartial ? t('banner.continuePartial') : t('banner.continueEmpty');
   return `
     <div class="card" style="border-color:var(--danger);background:var(--danger-bg)">
       <p style="margin:0 0 8px;font-size:14px;color:var(--danger);font-weight:600">${title}</p>
-      <p class="muted" style="margin:0 0 12px">${msg} 원본은 그대로 남아있고, 확인하기 전까지는 자동저장을 멈춰뒀어요.</p>
+      <p class="muted" style="margin:0 0 12px">${msg} ${t('banner.originalKeptNote')}</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="ghost small" id="btnDownloadCorrupt">원본 파일 다운로드</button>
+        <button class="ghost small" id="btnDownloadCorrupt">${t('banner.downloadOriginal')}</button>
         <button class="accent small" id="btnAckLoadFail">${continueLabel}</button>
       </div>
     </div>`;
@@ -1803,8 +2347,8 @@ function render(){
     googleSyncBtn.classList.toggle('connected', isGoogleSignedIn());
     googleSyncBtn.classList.toggle('syncing', driveSyncBusy);
     googleSyncBtn.title = isGoogleSignedIn()
-      ? (driveLastSyncedAt ? `마지막 동기화 ${new Date(driveLastSyncedAt).toLocaleTimeString()} — 눌러서 지금 동기화` : '동기화 중...')
-      : '구글 계정으로 로그인해서 기기 간 데이터를 동기화해요.';
+      ? (driveLastSyncedAt ? `${t('sync.lastSyncPrefix')} ${new Date(driveLastSyncedAt).toLocaleTimeString()} ${t('sync.lastSyncSuffix')}` : t('sync.syncingNow'))
+      : t('sync.signInPrompt');
   }
   const banner = loadFailed ? renderLoadFailedBanner() : '';
   if (view.screen === 'dash') main.innerHTML = banner + renderDashboard();
@@ -1841,26 +2385,26 @@ function renderDashboard(){
     if (pr.risk === 'dday') {
       cardColor = RISK_HEX[pr.badgeVariant] || RISK_HEX.dday;
       ribbonLabel = pr.ddayLabel;
-      remainVal = '미지정';
+      remainVal = t('status.unassigned');
     } else if (pr.risk === 'done') {
       cardColor = RISK_HEX.done;
-      ribbonLabel = '완료';
-      todayVal = '완료';
-      remainVal = `0${p.unit}`;
+      ribbonLabel = t('status.done');
+      todayVal = t('status.done');
+      remainVal = `0${unitLabel(p.unit)}`;
       ringPct = 100;
       ringLabelHtml = `<span class="pct">100%</span>`;
     } else if (pr.risk === 'notstarted') {
       cardColor = RISK_HEX.notstarted;
       ribbonLabel = pr.notStartedLabel;
-      remainVal = `${p.total}${p.unit}`;
+      remainVal = `${p.total}${unitLabel(p.unit)}`;
     } else {
       const seg = disp.seg;
       nameLabel = seg ? `${escapeHtml(p.name)} · ${escapeHtml(seg.name)}` : escapeHtml(p.name);
-      remainVal = seg ? `${seg.amount - seg.done}${p.unit}` : `${pr.remaining}${p.unit}`;
-      todayVal = (!disp.workableToday && !disp.overdue && !disp.isDeadlineDay) ? '쉼' : (disp.overdue ? '초과' : `${disp.todayRemaining ?? disp.perDay}${p.unit}`);
+      remainVal = seg ? `${seg.amount - seg.done}${unitLabel(p.unit)}` : `${pr.remaining}${unitLabel(p.unit)}`;
+      todayVal = (!disp.workableToday && !disp.overdue && !disp.isDeadlineDay) ? t('status.rest') : (disp.overdue ? t('status.over') : `${disp.todayRemaining ?? disp.perDay}${unitLabel(p.unit)}`);
       cardColor = RISK_HEX[pr.risk] || '#6b7280';
       ringPct = pr.pct;
-      ribbonLabel = riskLabel[pr.risk];
+      ribbonLabel = riskLabel(pr.risk);
       ringLabelHtml = `<span class="pct">${pr.pct}%</span>`;
     }
 
@@ -1873,8 +2417,8 @@ function renderDashboard(){
         </div>
         <div class="vcard-name">${nameLabel}</div>
         <div class="vcard-stats">
-          <div class="vcard-stat"><div class="lbl">오늘</div><div class="val">${todayVal}</div></div>
-          <div class="vcard-stat"><div class="lbl">남음</div><div class="val">${remainVal}</div></div>
+          <div class="vcard-stat"><div class="lbl">${t('dash.today')}</div><div class="val">${todayVal}</div></div>
+          <div class="vcard-stat"><div class="lbl">${t('dash.remaining')}</div><div class="val">${remainVal}</div></div>
         </div>
       </div>
       <div class="vcard-compact" style="background:${hexToRgba(cardColor,0.12)}">
@@ -1882,7 +2426,7 @@ function renderDashboard(){
         <div class="vcard-compact-row">
           <div style="min-width:0;flex:1">
             <div class="vcard-compact-name">${nameLabel}</div>
-            <div class="vcard-compact-stats">오늘 ${todayVal} · 남음 ${remainVal}</div>
+            <div class="vcard-compact-stats">${t('dash.today')} ${todayVal} · ${t('dash.remaining')} ${remainVal}</div>
           </div>
           <span class="vcard-compact-badge" style="color:${cardColor}">${escapeHtml(ribbonLabel)}</span>
         </div>
@@ -1913,9 +2457,9 @@ function ringSvg(pct, color){
 function renderList(){
   const rows = projects.map(p => {
     const pr = calcProjectRisk(p);
-    const doneStr = isDdayProject(p) ? '' : ` · 완료 ${p.done}${p.unit}`;
-    const totalStr = isDdayProject(p) ? '작업량 미지정 (D-DAY)' : `전체 ${p.total}${p.unit}${doneStr}`;
-    const badgeText = pr.risk === 'dday' ? pr.ddayLabel : pr.risk === 'notstarted' ? pr.notStartedLabel : riskLabel[pr.risk];
+    const doneStr = isDdayProject(p) ? '' : ` · ${t('list.done')} ${p.done}${unitLabel(p.unit)}`;
+    const totalStr = isDdayProject(p) ? t('list.ddayNoAmount') : `${t('list.total')} ${p.total}${unitLabel(p.unit)}${doneStr}`;
+    const badgeText = pr.risk === 'dday' ? pr.ddayLabel : pr.risk === 'notstarted' ? pr.notStartedLabel : riskLabel(pr.risk);
     const badgeClass = pr.risk === 'dday' ? pr.badgeVariant : pr.risk;
     return `<div class="card proj-card" data-id="${p.id}" draggable="true">
       <div class="proj-card-layout">
@@ -1923,15 +2467,15 @@ function renderList(){
           <div class="row"><strong>${escapeHtml(p.name)}</strong>
             <span style="display:flex;align-items:center;gap:8px;position:relative">
               <span class="badge ${badgeClass}">${badgeText}</span>
-              <button class="icon-btn" data-proj-menu="${p.id}" aria-label="더보기" title="더보기" style="font-size:16px;padding:2px 4px">⋯</button>
+              <button class="icon-btn" data-proj-menu="${p.id}" aria-label="${t('menu.more')}" title="${t('menu.more')}" style="font-size:16px;padding:2px 4px">⋯</button>
               ${openProjMenuId === p.id ? `
               <div class="proj-menu" data-proj-menu-box="${p.id}">
-                <button data-dup-proj="${p.id}">복제</button>
-                <button class="proj-menu-danger" data-del-proj="${p.id}">삭제</button>
+                <button data-dup-proj="${p.id}">${t('menu.duplicate')}</button>
+                <button class="proj-menu-danger" data-del-proj="${p.id}">${t('menu.delete')}</button>
               </div>` : ''}
             </span>
           </div>
-          <p class="muted">마감 ${p.deadline} · ${totalStr}</p>
+          <p class="muted">${t('list.deadlinePrefix')} ${p.deadline} · ${totalStr}</p>
         </div>
       </div>
     </div>`;
@@ -1940,12 +2484,12 @@ function renderList(){
     ${renderMainCalendarBlock()}
     <div class="card">
       <div class="section-title-row">
-        <h2>새로운 일정</h2>
+        <h2>${t('list.newSchedule')}</h2>
       </div>
       ${projectForm()}
     </div>
-    ${(!reorderHintDismissed && projects.length > 1) ? '<div class="reorder-hint" id="reorderHint"><span class="reorder-hint-label">사용 안내</span><span class="reorder-hint-text">카드를 길게 눌러 순서를 바꿀 수 있어요.</span></div>' : ''}
-    ${rows || '<p class="empty">등록된 일정이 없어요.</p>'}
+    ${(!reorderHintDismissed && projects.length > 1) ? `<div class="reorder-hint" id="reorderHint"><span class="reorder-hint-label">${t('list.usageGuide')}</span><span class="reorder-hint-text">${t('list.dragHint')}</span></div>` : ''}
+    ${rows || `<p class="empty">${t('list.empty')}</p>`}
   `;
 }
 
@@ -1980,22 +2524,22 @@ function parseWorkloadText(raw){
   const text = String(raw ?? '').trim().replace(/／/g, '/');
   if (!text) return { ok:true, amounts:[], total:null, normalized:'' };
   const pieces = text.split('/').map(piece => piece.trim());
-  if (pieces.length > 6) return { ok:false, message:'작업 구간은 최대 6개까지 입력할 수 있어요.' };
-  if (pieces.some(piece => !piece)) return { ok:false, message:'작업량은 30/30/30처럼 숫자 사이를 /로 구분해주세요.' };
+  if (pieces.length > 6) return { ok:false, message:t('err.maxSegments6') };
+  if (pieces.some(piece => !piece)) return { ok:false, message:t('err.workloadFormat') };
   if (pieces.some(piece => !/^\d+$/.test(piece) || !isPositiveIntegerValue(piece))) {
-    return { ok:false, message:'작업량은 1 이상의 정수로 입력해주세요.' };
+    return { ok:false, message:t('err.workloadPositiveInt') };
   }
   const amounts = pieces.map(Number);
   const total = amounts.reduce((sum, value) => sum + value, 0);
-  if (!Number.isSafeInteger(total)) return { ok:false, message:'작업량이 너무 커요.' };
+  if (!Number.isSafeInteger(total)) return { ok:false, message:t('err.workloadTooBig') };
   return { ok:true, amounts, total, normalized:amounts.join('/') };
 }
 function workloadFieldHtml(value, unit){
   return `<div class="workload-field-wrap">
     <div class="field-box total-box workload-box">
-      <label>작업량</label>
-      <input id="f_workload" class="workload-input" type="text" inputmode="text" autocapitalize="off" value="${escapeHtml(value)}" placeholder="예: 240 또는 80/80/80" aria-label="전체 작업량 또는 작업 구간별 작업량" />
-      <select id="f_unit"><option value="" ${!unit?'selected':''}></option><option ${unit==='컷'?'selected':''}>컷</option><option ${unit==='장'?'selected':''}>장</option><option ${unit==='개'?'selected':''}>개</option></select>
+      <label>${t('form.workload')}</label>
+      <input id="f_workload" class="workload-input" type="text" inputmode="text" autocapitalize="off" value="${escapeHtml(value)}" placeholder="${t('form.workloadPlaceholder')}" aria-label="${t('form.workloadAria')}" />
+      <select id="f_unit"><option value="" ${!unit?'selected':''}></option><option value="컷" ${unit==='컷'?'selected':''}>${t('unit.cut')}</option><option value="장" ${unit==='장'?'selected':''}>${t('unit.sheet')}</option><option value="개" ${unit==='개'?'selected':''}>${t('unit.piece')}</option></select>
     </div>
   </div>`;
 }
@@ -2006,29 +2550,29 @@ function projectForm(){
   const deadline = draft.deadline || todayStr();
   const unit = ALLOWED_UNITS.includes(draft.unit) ? draft.unit : '';
   return `
-    <p class="workload-hint">작업을 여러 구간으로 나누고 싶다면 수량 사이에 /를 넣어주세요. 예: 콘티 30컷, 채색 30컷 → 30/30</p>
+    <p class="workload-hint">${t('form.workloadHint')}</p>
     <div class="form-line1">
       <div class="field-box name-box">
-        <label>이름</label>
-        <input id="f_name" value="${escapeHtml(draft.name || '')}" placeholder="이름을 입력해주세요" />
+        <label>${t('form.name')}</label>
+        <input id="f_name" value="${escapeHtml(draft.name || '')}" placeholder="${t('form.namePlaceholder')}" />
       </div>
       ${workloadFieldHtml(normalizeDraftWorkloadText(draft), unit)}
     </div>
     <div class="form-divider"></div>
     <div class="form-line2">
       <div class="field-box date-box">
-        <label>시작</label>
+        <label>${t('form.start')}</label>
         <input id="f_start" type="date" value="${escapeHtml(startDate)}" class="num-right" />
       </div>
       <i class="arrow">→</i>
       <div class="field-box date-box">
-        <label>마감</label>
+        <label>${t('form.deadline')}</label>
         <input id="f_deadline" type="date" value="${escapeHtml(deadline)}" class="num-right" />
       </div>
       ${renderPeriodOptions()}
     </div>
     <div class="form-actions">
-      <button class="accent" id="addProjectBtn">일정 추가</button>
+      <button class="accent" id="addProjectBtn">${t('form.addProject')}</button>
     </div>
   `;
 }
@@ -2036,10 +2580,10 @@ function projectForm(){
 function renderPeriodOptions(){
   return `
     <div class="chip-row has-tooltip" style="margin:0">
-      <span class="chip on" data-opt="f_today">시작일 포함</span>
-      <span class="chip on" data-opt="f_deadline_inc">마감일 포함</span>
-      <span class="chip on" data-opt="f_weekend">주말 포함</span>
-      <span class="tooltip-bubble">작업 일수 계산에 포함해요.</span>
+      <span class="chip on" data-opt="f_today">${t('form.includeStart')}</span>
+      <span class="chip on" data-opt="f_deadline_inc">${t('form.includeDeadline')}</span>
+      <span class="chip on" data-opt="f_weekend">${t('form.includeWeekend')}</span>
+      <span class="tooltip-bubble">${t('form.periodTooltip')}</span>
     </div>
   `;
 }
@@ -2066,16 +2610,16 @@ function renderChecklistHeader(target){
   const items = target.checklist || [];
   return `
     <span style="display:flex;align-items:center;gap:6px;flex:1">
-      <button class="icon-btn" style="font-size:14px;padding:0 4px" data-cl-addopen="${target.id}" aria-label="항목 추가">+</button>
+      <button class="icon-btn" style="font-size:14px;padding:0 4px" data-cl-addopen="${target.id}" aria-label="${t('cl.addItem')}">+</button>
       <span style="flex:1"></span>
-      <span class="muted" style="font-size:12px">${items.length}개</span>
+      <span class="muted" style="font-size:12px">${items.length}${t('cl.countSuffix')}</span>
       <span class="cl-head-arrow" data-cl-toggle="${target.id}">${isOpen?'▾':'▸'}</span>
     </span>`;
 }
 
 function checklistSegmentOptions(project, selectedId){
   const segments = (project.segments || []).slice().sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
-  return `<option value="" ${selectedId ? '' : 'selected'}>미지정</option>` + segments.map(seg =>
+  return `<option value="" ${selectedId ? '' : 'selected'}>${t('status.unassigned')}</option>` + segments.map(seg =>
     `<option value="${seg.id}" ${selectedId === seg.id ? 'selected' : ''}>${escapeHtml(seg.name)}</option>`
   ).join('');
 }
@@ -2083,9 +2627,9 @@ function checklistSegmentOptions(project, selectedId){
 function renderChecklistItem(project, item, unit, showAssignment = true){
   const assignedSegment = (project.segments || []).find(seg => seg.id === item.segmentId) || null;
   const assignment = showAssignment && (project.segments || []).length ? `
-    <span class="cl-segment-picker ${assignedSegment ? 'assigned' : 'unassigned'}" title="눌러서 작업 구간 변경">
-      <span class="cl-segment-label">${escapeHtml(assignedSegment ? assignedSegment.name : '미지정')}</span>
-      <select class="cl-segment-select" data-cl-assign="${project.id}:${item.id}" aria-label="작업 구간 할당">
+    <span class="cl-segment-picker ${assignedSegment ? 'assigned' : 'unassigned'}" title="${t('cl.changeSegment')}">
+      <span class="cl-segment-label">${escapeHtml(assignedSegment ? assignedSegment.name : t('status.unassigned'))}</span>
+      <select class="cl-segment-select" data-cl-assign="${project.id}:${item.id}" aria-label="${t('cl.assignSegment')}">
         ${checklistSegmentOptions(project, assignedSegment ? assignedSegment.id : null)}
       </select>
     </span>` : '';
@@ -2094,23 +2638,23 @@ function renderChecklistItem(project, item, unit, showAssignment = true){
       <input type="checkbox" ${item.checked?'checked':''} data-cl-item="${project.id}:${item.id}" />
       <span class="cl-name-wrap">
         <span class="cl-name ${item.checked?'checked':''}" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>
-        <button class="cl-del-x" data-cl-del="${project.id}:${item.id}" aria-label="체크리스트 삭제">×</button>
+        <button class="cl-del-x" data-cl-del="${project.id}:${item.id}" aria-label="${t('cl.deleteItem')}">×</button>
       </span>
-      ${item.type === 'qty' ? `<span class="cl-qty">${item.qty}${escapeHtml(unit)}</span>` : ''}
+      ${item.type === 'qty' ? `<span class="cl-qty">${item.qty}${escapeHtml(unitLabel(unit))}</span>` : ''}
       ${assignment}
     </div>`;
 }
 
 function renderChecklistAddForm(project, segmentId = null){
   const assignmentSelect = !segmentId && (project.segments || []).length ? `
-    <select name="cl_segment" aria-label="작업 구간 할당">${checklistSegmentOptions(project, null)}</select>` : '';
+    <select name="cl_segment" aria-label="${t('cl.assignSegment')}">${checklistSegmentOptions(project, null)}</select>` : '';
   return `
     <div class="checklist-add" ${segmentId ? `data-cl-segment="${segmentId}"` : ''}>
-      <select name="cl_type" data-cl-target="${project.id}"><option value="memo">메모형</option>${isDdayProject(project) ? '' : '<option value="qty">수량형</option>'}</select>
+      <select name="cl_type" data-cl-target="${project.id}"><option value="memo">${t('cl.memo')}</option>${isDdayProject(project) ? '' : `<option value="qty">${t('cl.qty')}</option>`}</select>
       ${assignmentSelect}
-      <input name="cl_qty" type="number" min="1" step="1" placeholder="완료에 더해져요" style="display:none" data-cl-target="${project.id}" />
-      <input name="cl_name" placeholder="항목 이름" data-cl-target="${project.id}" />
-      <button class="cl-add-btn" data-cl-confirm="${project.id}" aria-label="체크리스트 추가">+</button>
+      <input name="cl_qty" type="number" min="1" step="1" placeholder="${t('cl.qtyPlaceholder')}" style="display:none" data-cl-target="${project.id}" />
+      <input name="cl_name" placeholder="${t('cl.itemName')}" data-cl-target="${project.id}" />
+      <button class="cl-add-btn" data-cl-confirm="${project.id}" aria-label="${t('cl.addItemAria')}">+</button>
     </div>`;
 }
 
@@ -2119,7 +2663,7 @@ function renderChecklistBody(project, unit){
   if (!isOpen) return '';
   const items = project.checklist || [];
   const itemsHtml = items.length ? (`<div style="margin-top:8px">` + items.map(i => renderChecklistItem(project, i, unit, true)).join('') + `</div>`)
-    : `<div style="margin-top:8px;min-height:70px;display:flex;align-items:center;justify-content:center"><p class="muted" style="font-size:12px;margin:0">항목 없음</p></div>`;
+    : `<div style="margin-top:8px;min-height:70px;display:flex;align-items:center;justify-content:center"><p class="muted" style="font-size:12px;margin:0">${t('cl.noItems')}</p></div>`;
   const addOpen = items.length > 0 || !!checklistAddOpenState[project.id];
   return `${itemsHtml}${addOpen ? renderChecklistAddForm(project) : ''}`;
 }
@@ -2132,10 +2676,10 @@ function renderSegmentChecklist(project, segment){
   return `
     <div class="segment-checklist">
       <div class="segment-checklist-head">
-        <span class="segment-checklist-title">할 일 ${items.length}개</span>
-        <button class="icon-btn" style="font-size:14px;padding:0 4px" data-cl-addopen="${segment.id}" aria-label="${escapeHtml(segment.name)}에 할 일 추가">${addOpen ? '−' : '+'}</button>
+        <span class="segment-checklist-title">${t('cl.todoCount')} ${items.length}${t('cl.countUnit')}</span>
+        <button class="icon-btn" style="font-size:14px;padding:0 4px" data-cl-addopen="${segment.id}" aria-label="${escapeHtml(segment.name)}${t('cl.addTodoFor')}">${addOpen ? '−' : '+'}</button>
       </div>
-      ${items.length ? items.map(i => renderChecklistItem(project, i, project.unit, true)).join('') : `<p class="segment-checklist-empty">연결된 할 일이 없어요.</p>`}
+      ${items.length ? items.map(i => renderChecklistItem(project, i, project.unit, true)).join('') : `<p class="segment-checklist-empty">${t('cl.noLinkedTodo')}</p>`}
       ${addOpen ? renderChecklistAddForm(project, segment.id) : ''}
     </div>`;
 }
@@ -2153,7 +2697,7 @@ function renderMiniCalendar(project){
   const todayS = todayStr();
   const midDeadlines = (project.segments || []).map(s => s.deadline);
   let cells = '';
-  ['일','월','화','수','목','금','토'].forEach(d => cells += `<div class="cal-cell dow">${d}</div>`);
+  [t('dow.sun'),t('dow.mon'),t('dow.tue'),t('dow.wed'),t('dow.thu'),t('dow.fri'),t('dow.sat')].forEach(d => cells += `<div class="cal-cell dow">${d}</div>`);
   for (let i=0;i<firstDow;i++) cells += `<div class="cal-cell pad">.</div>`;
   for (let day=1; day<=daysInMonth; day++){
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
@@ -2174,24 +2718,24 @@ function renderMiniCalendar(project){
   }
   const legend = `
     <div class="cal-legend">
-      <span><span class="dot" style="background:var(--accent-bg);border:1px solid var(--accent)"></span>시작일</span>
-      <span><span class="dot" style="background:var(--midline-bg)"></span>작업 구간</span>
-      <span><span class="dot" style="background:var(--danger-bg)"></span>마감일</span>
-      <span><span class="dot" style="background:#eceff1"></span>쉬는날</span>
+      <span><span class="dot" style="background:var(--accent-bg);border:1px solid var(--accent)"></span>${t('minical.legend.start')}</span>
+      <span><span class="dot" style="background:var(--midline-bg)"></span>${t('minical.legend.segment')}</span>
+      <span><span class="dot" style="background:var(--danger-bg)"></span>${t('minical.legend.deadline')}</span>
+      <span><span class="dot" style="background:#eceff1"></span>${t('minical.legend.rest')}</span>
     </div>`;
   const hint = calEditingField
-    ? `<p class="cal-hint" style="color:var(--accent)">변경할 ${calEditingField === 'start' ? '시작일' : '마감일'} 날짜를 눌러주세요.</p>`
-    : `<p class="cal-hint">클릭하면 쉬는날로 지정돼요.<br>시작일·마감일을 누르면 날짜 이동이 가능해요.</p>`;
+    ? `<p class="cal-hint" style="color:var(--accent)">${t('minical.editHintPrefix')} ${calEditingField === 'start' ? t('cal.changeStart') : t('cal.changeDeadline')} ${t('minical.editHint')}</p>`
+    : `<p class="cal-hint">${t('minical.hint')}</p>`;
   const periodChecks = `
     <div class="checkbox-row" style="margin-top:8px;margin-bottom:0">
-      <label><input type="checkbox" id="d_today" ${project.includeToday?'checked':''} /> 시작일 포함</label>
-      <label><input type="checkbox" id="d_deadline_inc" ${project.includeDeadline?'checked':''} /> 마감일 포함</label>
-      <label><input type="checkbox" id="d_weekend" ${project.includeWeekend?'checked':''} /> 주말 포함</label>
+      <label><input type="checkbox" id="d_today" ${project.includeToday?'checked':''} /> ${t('form.includeStart')}</label>
+      <label><input type="checkbox" id="d_deadline_inc" ${project.includeDeadline?'checked':''} /> ${t('form.includeDeadline')}</label>
+      <label><input type="checkbox" id="d_weekend" ${project.includeWeekend?'checked':''} /> ${t('form.includeWeekend')}</label>
     </div>`;
   return `
     <div class="cal-nav">
       <button id="calPrev">‹</button>
-      <span>${year}년 ${month+1}월</span>
+      <span>${year}${t('minical.year')} ${month+1}${t('minical.month')}</span>
       <button id="calNext">›</button>
     </div>
     <div class="cal-grid">${cells}</div>
@@ -2250,64 +2794,64 @@ function renderProjectEditForm(p){
   return `
     <div class="form-line1" style="margin-top:10px">
       <div class="field-box name-box">
-        <label>이름</label>
+        <label>${t('form.name')}</label>
         <input id="e_name" value="${escapeHtml(editName)}" />
       </div>
       <div class="field-box total-box">
-        <label>작업량</label>
+        <label>${t('form.workload')}</label>
         <input id="e_total" type="number" min="1" step="1" class="num-right" value="${escapeHtml(editTotal)}" placeholder="80" />
         <select id="e_unit">
           <option value="" ${!editUnit?'selected':''}></option>
-          <option ${editUnit==='컷'?'selected':''}>컷</option><option ${editUnit==='장'?'selected':''}>장</option><option ${editUnit==='개'?'selected':''}>개</option>
+          <option value="컷" ${editUnit==='컷'?'selected':''}>${t('unit.cut')}</option><option value="장" ${editUnit==='장'?'selected':''}>${t('unit.sheet')}</option><option value="개" ${editUnit==='개'?'selected':''}>${t('unit.piece')}</option>
         </select>
       </div>
     </div>
     <div class="form-line2">
       <div class="field-box date-box">
-        <label>시작</label>
+        <label>${t('form.start')}</label>
         <input id="e_start" type="date" value="${editStart}" class="num-right" />
       </div>
       <i class="arrow">→</i>
       <div class="field-box date-box">
-        <label>마감</label>
+        <label>${t('form.deadline')}</label>
         <input id="e_deadline" type="date" value="${editDeadline}" class="num-right" />
       </div>
     </div>
     <div class="chip-row has-tooltip">
-      <span class="chip ${editPeriodState.today?'on':''}" data-eopt="today">시작일 포함</span>
-      <span class="chip ${editPeriodState.deadline_inc?'on':''}" data-eopt="deadline_inc">마감일 포함</span>
-      <span class="chip ${editPeriodState.weekend?'on':''}" data-eopt="weekend">주말 포함</span>
-      <span class="tooltip-bubble">작업 일수 계산에 포함해요.</span>
+      <span class="chip ${editPeriodState.today?'on':''}" data-eopt="today">${t('form.includeStart')}</span>
+      <span class="chip ${editPeriodState.deadline_inc?'on':''}" data-eopt="deadline_inc">${t('form.includeDeadline')}</span>
+      <span class="chip ${editPeriodState.weekend?'on':''}" data-eopt="weekend">${t('form.includeWeekend')}</span>
+      <span class="tooltip-bubble">${t('form.periodTooltip')}</span>
     </div>
     <div class="form-actions">
-      <button class="accent" id="saveProjectEditBtn">저장</button>
+      <button class="accent" id="saveProjectEditBtn">${t('form.save')}</button>
     </div>
   `;
 }
 
 function renderDetail(id){
   const p = projects.find(x => x.id === id);
-  if (!p) return '<p>프로젝트를 찾을 수 없어요.</p>';
+  if (!p) return `<p>${t('detail.notFound').replace(/<\/?p>/g,'')}</p>`;
   const pr = calcProjectRisk(p);
   const disp = calcTodayDisplay(p);
   const dday = isDdayProject(p);
 
   let todayLine = '';
   if (dday) {
-    todayLine = `<p class="row" style="font-size:14px"><b>작업량 미지정</b><strong>${pr.ddayLabel}</strong></p>`;
+    todayLine = `<p class="row" style="font-size:14px"><b>${t('detail.noAmount')}</b><strong>${pr.ddayLabel}</strong></p>`;
   } else if (pr.risk === 'done') {
-    todayLine = `<p class="row" style="font-size:14px"><b>작업 완료</b><strong>완료</strong></p>`;
+    todayLine = `<p class="row" style="font-size:14px"><b>${t('detail.workDone')}</b><strong>${t('status.done')}</strong></p>`;
   } else if (pr.risk === 'notstarted') {
-    todayLine = `<p style="font-size:14px">${p.startDate}부터 시작 예정</p>`;
+    todayLine = `<p style="font-size:14px">${p.startDate}${t('detail.startsFrom')}</p>`;
   } else {
-    const label = disp.seg ? escapeHtml(disp.seg.name) + ' 기준 ' : '';
+    const label = disp.seg ? escapeHtml(disp.seg.name) + t('detail.basisSuffix') : '';
     const restToday = (!disp.workableToday && !disp.overdue && !disp.isDeadlineDay);
-    const mainVal = restToday ? '쉼' : (disp.overdue ? '마감 지남' : `${disp.todayRemaining ?? disp.perDay}${p.unit}`);
+    const mainVal = restToday ? t('status.rest') : (disp.overdue ? t('minical.legend.deadline') + ' ' + t('status.overdue') : `${disp.todayRemaining ?? disp.perDay}${unitLabel(p.unit)}`);
     const avgLine = restToday
-      ? `다음 작업일 기준 평균 ${disp.perDay}${p.unit}`
-      : (disp.overdue || disp.isDeadlineDay ? '' : `남은날 기준 평균 ${disp.perDay}${p.unit}`);
+      ? `${t('detail.nextWorkdayAvg')} ${disp.perDay}${unitLabel(p.unit)}`
+      : (disp.overdue || disp.isDeadlineDay ? '' : `${t('detail.remainingDaysAvg')} ${disp.perDay}${unitLabel(p.unit)}`);
     todayLine = `
-      <p class="row" style="font-size:14px"><b>${label}오늘 해야 할 양</b><strong>${mainVal}</strong></p>
+      <p class="row" style="font-size:14px"><b>${label}${t('dash.todayDone')}</b><strong>${mainVal}</strong></p>
       ${avgLine ? `<p class="muted" style="font-size:12px;text-align:right;margin:2px 0 0">${avgLine}</p>` : ''}
     `;
   }
@@ -2323,23 +2867,23 @@ function renderDetail(id){
           const n = i + 1;
           const on = n <= manual;
           const current = n === manual;
-          return `<button type="button" class="quick-done-btn ${on?'on':''} ${current?'current':''}" data-quick-done="${n}" aria-pressed="${current?'true':'false'}" title="직접 완료 ${n}${escapeHtml(p.unit)}로 설정">${n}</button>`;
+          return `<button type="button" class="quick-done-btn ${on?'on':''} ${current?'current':''}" data-quick-done="${n}" aria-pressed="${current?'true':'false'}" title="${t('detail.setManualDoneTo').replace('{n}', n).replace('{unit}', escapeHtml(unitLabel(p.unit)))}">${n}</button>`;
         }).join('')}
       </div>
-      <p class="quick-done-help">완료된 일감 숫자를 클릭해주세요.</p>
+      <p class="quick-done-help">${t('detail.qtyClickHelp')}</p>
     </div>` : '';
   const doneInput = dday ? '' : `
     <div class="done-input-head">
-      <span class="done-input-label">완료한 일감</span>
+      <span class="done-input-label">${t('detail.completedLabel')}</span>
       <div class="done-input-control">
         ${doneInputMode === 'number' ? `<input type="number" min="0" step="1" max="${p.total}" value="${manual}" id="totalDoneInput" class="num-right" style="width:56px;flex:0 0 auto" />` : ''}
-        ${canUseButtonMode ? `<button type="button" class="done-mode-toggle" id="doneModeToggle">${doneInputMode === 'buttons' ? '숫자로 입력' : '버튼으로 보기'}</button>` : ''}
+        ${canUseButtonMode ? `<button type="button" class="done-mode-toggle" id="doneModeToggle">${doneInputMode === 'buttons' ? t('detail.numberInput') : t('detail.buttonView')}</button>` : ''}
       </div>
     </div>
     ${quickDoneButtons}
-    ${qtySum > 0 ? `<p class="muted" style="font-size:12px;text-align:right;margin:4px 0 0">체크리스트 ${qtySum}${p.unit} + 직접 ${manual}${p.unit} = 완료 ${p.done}${p.unit}</p>` : ''}`;
+    ${qtySum > 0 ? `<p class="muted" style="font-size:12px;text-align:right;margin:4px 0 0">${t('detail.checklistSum')} ${qtySum}${unitLabel(p.unit)} + ${t('detail.manualSum')} ${manual}${unitLabel(p.unit)} = ${t('detail.completedSum')} ${p.done}${unitLabel(p.unit)}</p>` : ''}`;
 
-  const badgeText = pr.risk === 'dday' ? pr.ddayLabel : pr.risk === 'notstarted' ? pr.notStartedLabel : riskLabel[pr.risk];
+  const badgeText = pr.risk === 'dday' ? pr.ddayLabel : pr.risk === 'notstarted' ? pr.notStartedLabel : riskLabel(pr.risk);
   const badgeClass = pr.risk === 'dday' ? pr.badgeVariant : pr.risk;
 
   let midlineSection = '';
@@ -2348,11 +2892,11 @@ function renderDetail(id){
       <div class="subcard">
         <div class="row" style="align-items:center">
           <span class="has-tooltip">
-            <strong style="font-size:13px">작업 구간 (0개)</strong>
-            <span class="tooltip-bubble">작업량을 여러 작업 구간으로 나눌 수 있어요.</span>
+            <strong style="font-size:13px">${t('detail.segCount')} (0${t('cl.countUnit')})</strong>
+            <span class="tooltip-bubble">${t('detail.segTooltip')}</span>
           </span>
         </div>
-        <p class="muted" style="font-size:12px">작업량이 없어서 작업 구간을 만들 수 없어요.</p>
+        <p class="muted" style="font-size:12px">${t('detail.noAmountNoSeg')}</p>
       </div>`;
   } else {
     const canMakeMidline = midlineMaxAllowed(p) >= 2;
@@ -2364,20 +2908,20 @@ function renderDetail(id){
       const sr = calcSegmentRisk(p, s);
       const isDone = s.done >= s.amount;
       const isLastSeg = s.id === lastSegId;
-      const todayPart = (sr.isActive && !sr.overdue) ? ` · 오늘 ${sr.isDeadlineDay?'마감일':Math.ceil(sr.perDay)+p.unit}` : '';
+      const todayPart = (sr.isActive && !sr.overdue) ? ` · ${t('dash.today')} ${sr.isDeadlineDay?t('status.deadline'):Math.ceil(sr.perDay)+unitLabel(p.unit)}` : '';
       const segChecklistOpen = segmentChecklistOpenState[s.id] !== false;
       const nameHtml = editingSegNameId === s.id
         ? `<input class="seg-name-input" value="${escapeHtml(s.name)}" data-segname="${s.id}" />`
-        : `<button class="seg-collapse-arrow" data-seg-cl-toggle="${s.id}" aria-label="${escapeHtml(s.name)} 할 일 ${segChecklistOpen ? '접기' : '펼치기'}">${segChecklistOpen ? '▾' : '▸'}</button><span class="seg-name" data-dblclick-segname="${s.id}">${isDone?'✓ ':''}${escapeHtml(s.name)}</span>`;
+        : `<button class="seg-collapse-arrow" data-seg-cl-toggle="${s.id}" aria-label="${escapeHtml(s.name)} ${t('detail.segNameEditAria')} ${segChecklistOpen ? t('cal.collapse') : t('detail.checklistExpand')}">${segChecklistOpen ? '▾' : '▸'}</button><span class="seg-name" data-dblclick-segname="${s.id}">${isDone?'✓ ':''}${escapeHtml(s.name)}</span>`;
       const isEditingName = editingSegNameId === s.id;
       return `<div class="seg-row ${sr.isActive?'active':''} ${isDone?'done':''}">
         <div class="seg-row-top">
           <span class="seg-name-slot" style="${isEditingName ? 'flex:1;min-width:0;width:auto' : ''}">${nameHtml}</span>
           <span class="right-group">
-            <span class="seg-meta">완료 ${s.done}/${s.amount}${p.unit}${todayPart}</span>
-            <span class="badge ${sr.risk}">${riskLabel[sr.risk]}</span>
-            <input type="date" value="${s.deadline}" data-seg="${s.id}" class="segDeadlineInput seg-deadline-pill num-right" ${isLastSeg ? 'disabled title="마지막 작업 구간의 마감은 프로젝트 마감일을 따라가요"' : ''} />
-            <button class="danger-btn" data-delseg="${s.id}">삭제</button>
+            <span class="seg-meta">${t('detail.segDone')} ${s.done}/${s.amount}${unitLabel(p.unit)}${todayPart}</span>
+            <span class="badge ${sr.risk}">${riskLabel(sr.risk)}</span>
+            <input type="date" value="${s.deadline}" data-seg="${s.id}" class="segDeadlineInput seg-deadline-pill num-right" ${isLastSeg ? `disabled title="${t('detail.lastSegDisabledTitle')}"` : ''} />
+            <button class="danger-btn" data-delseg="${s.id}">${t('menu.delete')}</button>
           </span>
         </div>
         ${renderSegmentChecklist(p, s)}
@@ -2385,30 +2929,30 @@ function renderDetail(id){
     }).join('');
 
     const emptyBlock = (!p.segments.length && !sliderOpen) ? `
-      <p class="muted">현재 작업 구간이 없어요.</p>
-      <button class="ghost small" id="midlineEmptyCreateBtn">생성</button>
+      <p class="muted">${t('detail.noSegYet')}</p>
+      <button class="ghost small" id="midlineEmptyCreateBtn">${t('detail.create')}</button>
     ` : '';
 
     const sliderBlock = sliderOpen ? `
       <div id="bulkFormWrap">${renderBulkForm()}</div>
-      <button class="primary small" id="confirmBulkAdd" style="width:100%;margin-top:8px">생성</button>
+      <button class="primary small" id="confirmBulkAdd" style="width:100%;margin-top:8px">${t('detail.create')}</button>
     ` : '';
 
     midlineSection = `
       <div class="subcard">
         <div class="row" style="align-items:center">
           <span class="has-tooltip">
-            <strong style="font-size:13px">작업 구간 (${p.segments.length}개)</strong>
-            <span class="tooltip-bubble">작업량을 여러 작업 구간으로 나눌 수 있어요.</span>
+            <strong style="font-size:13px">${t('detail.segCount')} (${p.segments.length}${t('cl.countUnit')})</strong>
+            <span class="tooltip-bubble">${t('detail.segTooltip')}</span>
           </span>
           ${p.segments.length ? `<span class="midline-header-actions">
-            <button class="icon-btn" id="midlineDeleteAllBtn" style="font-size:16px;color:var(--danger)" aria-label="작업 구간 전체 삭제" title="작업 구간 전체 삭제">−</button>
-            ${canMakeMidline ? `<button class="icon-btn midline-fold-arrow" id="midlineToggleBtn" aria-label="${sliderOpen?'작업 구간 편집 접기':'작업 구간 편집 펼치기'}" title="${sliderOpen?'작업 구간 편집 접기':'작업 구간 편집 펼치기'}">${sliderOpen?'▾':'▸'}</button>` : ''}
+            <button class="icon-btn" id="midlineDeleteAllBtn" style="font-size:16px;color:var(--danger)" aria-label="${t('detail.segmentDeleteAll')}" title="${t('detail.segmentDeleteAll')}">−</button>
+            ${canMakeMidline ? `<button class="icon-btn midline-fold-arrow" id="midlineToggleBtn" aria-label="${sliderOpen?t('detail.segmentEditCollapse'):t('detail.segmentEditExpand')}" title="${sliderOpen?t('detail.segmentEditCollapse'):t('detail.segmentEditExpand')}">${sliderOpen?'▾':'▸'}</button>` : ''}
           </span>` : ''}
         </div>
-        <div class="midline-help">프로젝트 마감일까지의 작업량과 기간을 단계별 비율로 나눌 수 있어요.<br>예: 콘티 30% · 밑색 70%</div>
-        ${p.segments.length ? `<p class="muted" style="font-size:12px;margin:4px 0 8px">이름을 더블클릭하면 수정할 수 있어요.</p>${segRows}` : ''}
-        ${!canMakeMidline ? `<p class="muted" style="font-size:12px">남은 작업 가능일 또는 작업량이 부족해서 작업 구간을 만들 수 없어요.</p>` : `${emptyBlock}${sliderBlock}`}
+        <div class="midline-help">${t('detail.midlineHelp')}</div>
+        ${p.segments.length ? `<p class="muted" style="font-size:12px;margin:4px 0 8px">${t('detail.dblclickRename')}</p>${segRows}` : ''}
+        ${!canMakeMidline ? `<p class="muted" style="font-size:12px">${t('detail.cannotMakeSegments')}</p>` : `${emptyBlock}${sliderBlock}`}
       </div>`;
   }
 
@@ -2416,7 +2960,7 @@ function renderDetail(id){
   const checklistCard = `
     <div class="card">
       <div class="row" style="align-items:center">
-        <h2 style="margin:0">체크리스트</h2>
+        <h2 style="margin:0">${t('detail.checklistTitle')}</h2>
         ${renderChecklistHeader(p)}
       </div>
       ${renderChecklistBody(p, p.unit)}
@@ -2424,21 +2968,21 @@ function renderDetail(id){
   const calAndChecklist = `<div class="two-col">${calendarCard}${checklistCard}</div>`;
 
   return `
-    <button class="back-btn" id="backToList">&larr; 목록으로</button>
+    <button class="back-btn" id="backToList">&larr; ${t('detail.backToList')}</button>
     <div class="card">
       <div class="row detail-head" style="align-items:center">
         <h2 style="margin:0">${escapeHtml(p.name)}</h2>
         <div class="detail-actions">
           <span class="badge ${badgeClass}">${badgeText}</span>
-          <button class="icon-btn" id="editProjectBtn" aria-label="프로젝트 수정" title="수정" style="font-size:14px">✎</button>
-          <button class="icon-btn" id="deleteProjectBtn" aria-label="프로젝트 삭제" title="삭제" style="font-size:14px;color:var(--danger)">✕</button>
+          <button class="icon-btn" id="editProjectBtn" aria-label="${t('detail.editProject')}" title="${t('detail.edit')}" style="font-size:14px">✎</button>
+          <button class="icon-btn" id="deleteProjectBtn" aria-label="${t('detail.deleteProject')}" title="${t('detail.delete')}" style="font-size:14px;color:var(--danger)">✕</button>
         </div>
       </div>
       <div class="info-stats">
-        <div class="info-stat"><span class="lbl">마감</span><span class="val">${p.deadline}</span></div>
-        <div class="info-stat"><span class="lbl">전체</span><span class="val">${dday ? '미지정' : p.total+p.unit}</span></div>
-        <div class="info-stat"><span class="lbl">완료</span><span class="val">${dday ? '-' : p.done+p.unit}</span></div>
-        <div class="info-stat"><span class="lbl">남음</span><span class="val">${dday ? '-' : (p.total-p.done)+p.unit}</span></div>
+        <div class="info-stat"><span class="lbl">${t('list.deadlinePrefix')}</span><span class="val">${p.deadline}</span></div>
+        <div class="info-stat"><span class="lbl">${t('detail.total')}</span><span class="val">${dday ? t('status.unassigned') : p.total+unitLabel(p.unit)}</span></div>
+        <div class="info-stat"><span class="lbl">${t('detail.done')}</span><span class="val">${dday ? '-' : p.done+unitLabel(p.unit)}</span></div>
+        <div class="info-stat"><span class="lbl">${t('detail.remaining')}</span><span class="val">${dday ? '-' : (p.total-p.done)+unitLabel(p.unit)}</span></div>
       </div>
       <div id="projectEditWrap">${projectEditOpenState[p.id] ? renderProjectEditForm(p) : ''}</div>
       <div class="subcard">
@@ -2510,14 +3054,14 @@ const MIDLINE_PASTELS = ['#ffd9d9','#ffe6bf','#fff6b8','#d9f2d3','#c8ecdf','#c6e
 
 function renderBulkForm(){
   const manyMobileClass = midlineNames.length >= 4 ? ' hide-mobile-many' : '';
-  const namesHtml = midlineNames.map((n,i) => `<input value="${escapeHtml(n)}" data-mi="${i}" class="midlineNameInput" placeholder="작업 구간 ${i+1}" />`).join('');
+  const namesHtml = midlineNames.map((n,i) => `<input value="${escapeHtml(n)}" data-mi="${i}" class="midlineNameInput" placeholder="${t('cal.segment')} ${i+1}" />`).join('');
   const boundaries = midlineBoundariesFromAmounts();
   const bounds = [0, ...boundaries, 100];
   const percents = midlinePercents();
   let segHtml = '';
   midlineNames.forEach((n,i) => {
     const color = MIDLINE_PASTELS[i % MIDLINE_PASTELS.length];
-    segHtml += `<div class="midline-seg" style="width:${bounds[i+1]-bounds[i]}%;background:${color};color:#4a4a4a" aria-label="작업 구간 ${i+1} ${percents[i]}%">${percents[i]}%</div>`;
+    segHtml += `<div class="midline-seg" style="width:${bounds[i+1]-bounds[i]}%;background:${color};color:#4a4a4a" aria-label="${t('cal.segment')} ${i+1} ${percents[i]}%">${percents[i]}%</div>`;
   });
   const handlesHtml = boundaries.map((b,i) => `<div class="midline-handle" data-handle="${i}" style="left:${b}%"></div>`).join('');
   return `
@@ -2525,7 +3069,7 @@ function renderBulkForm(){
       <div class="midline-bar" id="midlineBar">${segHtml}${handlesHtml}</div>
     </div>
     <div class="midline-names${manyMobileClass}">${namesHtml}</div>
-    <p class="muted" style="margin:4px 0 0;font-size:11px">바를 누르면 작업 구간이 추가되고, 손잡이를 누르면 구간이 합쳐져요. 화면이 좁을 경우 기본 이름으로 생성돼요.</p>
+    <p class="muted" style="margin:4px 0 0;font-size:11px">${t('detail.bulkFormHelp')}</p>
   `;
 }
 
@@ -2541,7 +3085,7 @@ function updateMidlineBarDom(){
   segs.forEach((seg, i) => {
     seg.style.width = `${bounds[i+1] - bounds[i]}%`;
     seg.textContent = `${percents[i]}%`;
-    seg.setAttribute('aria-label', `작업 구간 ${i+1} ${percents[i]}%`);
+    seg.setAttribute('aria-label', `${t('cal.segment')} ${i+1} ${percents[i]}%`);
   });
   handles.forEach((handle, i) => { handle.style.left = `${boundaries[i]}%`; });
   return true;
@@ -2613,7 +3157,7 @@ function bindBulkEvents(){
     if (Date.now() < midlineIgnoreClickUntil || e.target.classList.contains('midline-handle')) return;
     const p = projects.find(x=>x.id===view.projectId);
     const max = midlineMaxAllowed(p);
-    if (midlineNames.length >= max) { showToast(`작업 구간은 최대 ${max}개까지 만들 수 있어요.`); return; }
+    if (midlineNames.length >= max) { showToast(tf('err.maxSegmentsN', { n: max })); return; }
     const rect = bar.getBoundingClientRect();
     const total = midlineAmounts.reduce((a,b)=>a+b,0);
     let unitPos = Math.max(1, Math.min(total - 1, Math.round(((e.clientX - rect.left) / rect.width) * total)));
@@ -2622,11 +3166,11 @@ function bindBulkEvents(){
       if (unitPos > cumulative && unitPos < cumulative + midlineAmounts[i]) { splitIndex = i; break; }
       cumulative += midlineAmounts[i];
     }
-    if (splitIndex === -1) { showToast('이 위치의 작업량이 1이라 더 나눌 수 없어요.'); return; }
+    if (splitIndex === -1) { showToast(t('err.cannotSplitAmount1')); return; }
     const before = midlineAmounts.slice(0, splitIndex).reduce((a,b)=>a+b,0);
     const left = unitPos - before;
     const right = midlineAmounts[splitIndex] - left;
-    if (left < 1 || right < 1) { showToast('각 작업 구간에는 작업량이 1 이상 필요해요.'); return; }
+    if (left < 1 || right < 1) { showToast(t('err.eachSegmentNeeds1')); return; }
     midlineAmounts[splitIndex] = left;
     midlineAmounts.splice(splitIndex+1, 0, right);
     midlineNames.splice(splitIndex+1, 0, '');
@@ -2643,7 +3187,10 @@ function maxDateStr(a, b){ return a > b ? a : b; }
 function minDateStr(a, b){ return a < b ? a : b; }
 function deadlineViewerDateLabel(dateStr){
   const d = toDateOnly(dateStr);
-  return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
+  if (currentLang === 'en') {
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+  return `${d.getFullYear()}${t('viewer.dateSep1')} ${d.getMonth()+1}${t('viewer.dateSep2')} ${d.getDate()}${t('viewer.dateSep3')}`;
 }
 function deadlineViewerProjectColor(projectId){
   const id = String(projectId || '');
@@ -2670,7 +3217,7 @@ function collectDeadlineViewerData(rangeStart, rangeEnd){
       .map((segment, segmentIndex) => ({
         date: segment.deadline,
         type: 'mid',
-        label: `${project.name} · ${segment.name || `작업 구간 ${segmentIndex + 1}`}`
+        label: `${project.name} · ${segment.name || `${t('cal.segment')} ${segmentIndex + 1}`}`
       }));
 
     midMarkers.forEach(marker => {
@@ -2758,7 +3305,7 @@ function renderDeadlineViewer(overlay, opts = {}){
     else deadlineViewerSelectedDate = null;
   }
 
-  const dowHtml = ['일','월','화','수','목','금','토']
+  const dowHtml = [t('dow.sun'),t('dow.mon'),t('dow.tue'),t('dow.wed'),t('dow.thu'),t('dow.fri'),t('dow.sat')]
     .map((day, index) => `<div class="deadline-calendar-dow ${index === 0 || index === 6 ? 'weekend' : ''}">${day}</div>`)
     .join('');
 
@@ -2813,7 +3360,7 @@ function renderDeadlineViewer(overlay, opts = {}){
         dateStr === todayStr() ? 'today' : '',
         dateStr === selectedDate ? 'selected' : ''
       ].filter(Boolean).join(' ');
-      const ariaLabel = `${deadlineViewerDateLabel(dateStr)}${dayEvents.length ? `, 마감 ${dayEvents.length}개` : ''}`;
+      const ariaLabel = `${deadlineViewerDateLabel(dateStr)}${dayEvents.length ? tf('viewer.deadlineCountAria', { n: dayEvents.length }) : ''}`;
       dateCellsHtml += `<button type="button" class="${classes}" data-deadline-date="${dateStr}" aria-label="${ariaLabel}">
         <span class="deadline-calendar-date">${day}</span>
       </button>`;
@@ -2871,7 +3418,7 @@ function renderDeadlineViewer(overlay, opts = {}){
     }).join('') + '</div>';
     const hiddenTitle = hiddenTimelines.map(t => t.projectName).join(' · ');
     const moreHtml = isMain && (hiddenTimelines.length || expanded)
-      ? `<button type="button" class="deadline-calendar-more" data-calendar-more-week="${weekStart}" title="${escapeHtml(hiddenTitle)}">${expanded ? '접기' : `+${hiddenTimelines.length}`}</button>` : '';
+      ? `<button type="button" class="deadline-calendar-more" data-calendar-more-week="${weekStart}" title="${escapeHtml(hiddenTitle)}">${expanded ? t('cal.collapse') : `+${hiddenTimelines.length}`}</button>` : '';
     weeksHtml += `<div class="deadline-calendar-week" data-week-start="${weekStart}">
       <div class="deadline-week-date-row">${dateCellsHtml}</div>
       <div class="deadline-week-schedule" style="--schedule-height:${scheduleHeight}px">
@@ -2890,19 +3437,19 @@ function renderDeadlineViewer(overlay, opts = {}){
       <h4>${deadlineViewerDateLabel(selectedDate)}</h4>
       ${selectedEvents.map(event => `
         <button type="button" class="deadline-viewer-item" data-deadline-project="${event.projectId}" style="--item-color:${event.color}">
-          <span class="deadline-viewer-item-type ${event.type}">${event.type === 'final' ? '최종 마감' : '작업 구간'}</span>
+          <span class="deadline-viewer-item-type ${event.type}">${event.type === 'final' ? t('cal.finalDeadline') : t('cal.segment')}</span>
           <span class="deadline-viewer-item-name">${escapeHtml(event.label)}</span>
         </button>`).join('')}
     </div>` : '';
 
   overlay.querySelector('.deadline-viewer-content').innerHTML = `
     <div class="deadline-viewer-nav">
-      <strong>${year}년 ${month + 1}월</strong>
-      <button type="button" data-deadline-prev aria-label="이전 달">‹</button>
-      <button type="button" data-deadline-next aria-label="다음 달">›</button>
+      <strong>${year}${t('minical.year')} ${month + 1}${t('minical.month')}</strong>
+      <button type="button" data-deadline-prev aria-label="${t('viewer.prevMonth')}">‹</button>
+      <button type="button" data-deadline-next aria-label="${t('viewer.nextMonth')}">›</button>
     </div>
     ${isMain ? `<div class="main-calendar-help-row">
-      <span class="main-calendar-help-drag">프로젝트 선을 드래그하면 일정 전체가 이동해요.</span>
+      <span class="main-calendar-help-drag">${t('viewer.dragHelp')}</span>
     </div>` : ``}
     <div class="deadline-calendar-month">
       <div class="deadline-calendar-dow-row">${dowHtml}</div>
@@ -3059,7 +3606,7 @@ function bindCalendarProjectDrag(root){
           render();
           return;
         }
-        showToast(`${project.name} 일정을 ${Math.abs(delta)}일 ${delta > 0 ? '뒤로' : '앞으로'} 옮겼어요.`);
+        showToast(tf('toast.movedSchedule', { name: project.name, n: Math.abs(delta), dir: delta > 0 ? t('dir.forward') : t('dir.backward') }));
         render();
       };
       const onUp = e => finish(e, false);
@@ -3103,8 +3650,8 @@ function showToast(message){
 function customConfirm(message, onConfirm, opts = {}){
   const overlay = document.createElement('div');
   overlay.className = 'confirm-overlay';
-  const confirmLabel = opts.confirmLabel || '삭제';
-  const cancelLabel = opts.cancelLabel || '취소';
+  const confirmLabel = opts.confirmLabel || t('menu.delete');
+  const cancelLabel = opts.cancelLabel || t('confirm.cancelLabel');
   const confirmClass = opts.confirmClass || 'danger-btn';
   overlay.innerHTML = `
     <div class="confirm-box">
@@ -3285,12 +3832,12 @@ function bindCommonEvents(){
   if (btnDownloadCorrupt) btnDownloadCorrupt.onclick = () => {
     let raw = null;
     try { raw = localStorage.getItem(STORAGE_KEY + '_corrupt'); } catch (_) {}
-    if (!raw) { showToast('원본 데이터를 찾을 수 없어요.'); return; }
+    if (!raw) { showToast(t('err.originalDataNotFound')); return; }
     const blob = new Blob([raw], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `마감을부탁해_불러오기실패원본_${todayStr()}.json`;
+    a.download = `${t('banner.corruptFilenamePrefix')}${todayStr()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -3298,14 +3845,14 @@ function bindCommonEvents(){
   if (btnAckLoadFail) btnAckLoadFail.onclick = () => {
     const isPartial = loadFailReason === 'partial';
     const message = isPartial
-      ? '복구된 상태로 계속할까요? 제외된 항목 없이 지금 보이는 데이터가 자동저장돼요. 원본 다운로드는 먼저 받아두는 걸 추천해요.'
-      : '빈 상태로 계속할까요? 지금부터는 이 상태가 자동저장돼요. 원본 다운로드는 먼저 받아두는 걸 추천해요.';
+      ? t('banner.confirmPartial')
+      : t('banner.confirmEmpty');
     customConfirm(message, () => {
       loadFailed = false;
       loadFailReason = '';
       lastPersistedJson = null;
       render();
-    }, { confirmLabel:'계속', confirmClass:'accent small' });
+    }, { confirmLabel:t('confirm.continueLabel'), confirmClass:'accent small' });
   };
 
   const undoRestoreBtn = document.getElementById('btnUndoRestore');
@@ -3402,9 +3949,9 @@ function bindListEvents(){
     if (planError) { showToast(planError); return; }
     if (segmentAmounts.length > 1) {
       const max = midlineMaxAllowed(p);
-      if (segmentAmounts.length > max) { showToast(`현재 일정에서는 작업 구간을 최대 ${max}개까지 만들 수 있어요.`); return; }
+      if (segmentAmounts.length > max) { showToast(tf('err.maxSegmentsNCurrentSchedule', { n: max })); return; }
       const rows = segmentAmounts.map((amount, i) => ({ id:null, name:`작업 구간 ${i+1}`, amount }));
-      if (!bulkCreateSegments(p, rows)) { showToast('작업 구간 날짜를 배치할 수 없어요. 작업일이나 작업량을 확인해주세요.'); return; }
+      if (!bulkCreateSegments(p, rows)) { showToast(t('err.cannotPlaceSegmentDates')); return; }
       const segmentError = validateSegmentStructure(p);
       if (segmentError) { showToast(segmentError); return; }
     }
@@ -3421,7 +3968,7 @@ function bindListEvents(){
       const id = el.dataset.delProj;
       const p = projects.find(x => x.id === id);
       if (!p) return;
-      customConfirm(`"${p.name}" 프로젝트를 삭제할까요?\n되돌릴 수 없어요.`, () => {
+      customConfirm(tf('confirm.deleteProjectConfirm', { name: p.name }), () => {
         if (view.projectId === id) closeProjectEdit(id);
         bankProjectTodayContribution(p);
         projects = projects.filter(x => x.id !== id);
@@ -3522,7 +4069,7 @@ function bindDetailEvents(){
   const delProjectBtn = document.getElementById('deleteProjectBtn');
   if (delProjectBtn) delProjectBtn.onclick = () => {
     const p = projects.find(x=>x.id===view.projectId);
-    customConfirm(`"${p.name}" 프로젝트를 삭제할까요?\n되돌릴 수 없어요.`, () => {
+    customConfirm(tf('confirm.deleteProjectConfirm', { name: p.name }), () => {
       closeProjectEdit(view.projectId);
       bankProjectTodayContribution(p);
       projects = projects.filter(x=>x.id!==view.projectId);
@@ -3535,7 +4082,7 @@ function bindDetailEvents(){
   if (totalDoneInput) totalDoneInput.onchange = (e) => {
     rolloverDailyStateIfNeeded();
     const p = projects.find(x=>x.id===view.projectId);
-    if (!isNonNegativeIntegerValue(e.target.value)) { showToast('완료량은 0 이상의 정수로 입력해주세요.'); render(); return; }
+    if (!isNonNegativeIntegerValue(e.target.value)) { showToast(t('err.completedMinZero')); render(); return; }
     let val = Number(e.target.value);
     // 직접 입력분 상한 = 전체 − 체크리스트 완료분 (합쳐서 전체를 못 넘게)
     if (p.total !== null) val = Math.min(val, p.total);
@@ -3577,14 +4124,14 @@ function bindDetailEvents(){
   };
   const midlineDeleteAllBtn = document.getElementById('midlineDeleteAllBtn');
   if (midlineDeleteAllBtn) midlineDeleteAllBtn.onclick = () => {
-    customConfirm('작업 구간을 전부 지울까요?', () => {
+    customConfirm(t('confirm.clearAllSegments'), () => {
       const p = projects.find(x=>x.id===view.projectId);
       const unassigned = (p.checklist || []).filter(i => i.segmentId).length;
       p.segments = [];
       reconcileChecklistAssignments(p);
       resetTodayTarget(p.id);
       render();
-      if (unassigned) showToast(`연결된 할 일 ${unassigned}개는 미지정으로 옮겼어요.`);
+      if (unassigned) showToast(tf('toast.unassignedTodos', { n: unassigned }));
     });
   };
   const midlineEmptyCreateBtn = document.getElementById('midlineEmptyCreateBtn');
@@ -3601,7 +4148,7 @@ function bindDetailEvents(){
     normalizeMidlineDefaultNames();
     const rows = midlineNames.map((n,i) => ({ id:midlineIds[i] || null, name:useDefaultNames ? defaultSegmentName(i) : (n.trim() || defaultSegmentName(i)), amount:midlineAmounts[i] }));
     const max = midlineMaxAllowed(p);
-    if (rows.length > max) { showToast(`작업 구간은 최대 ${max}개까지 만들 수 있어요.`); return; }
+    if (rows.length > max) { showToast(tf('err.maxSegmentsN', { n: max })); return; }
     const segBackup = cloneSegmentsForEdit(p);
     const checklistBackup = (p.checklist || []).map(i => ({...i}));
     const assignedBefore = (p.checklist || []).filter(i => i.segmentId).length;
@@ -3609,7 +4156,7 @@ function bindDetailEvents(){
       p.segments = segBackup;
       p.checklist = checklistBackup;
       applySpillover(p);
-      showToast('작업 구간 날짜를 배치할 수 없어요.');
+      showToast(t('err.cannotPlaceSegmentDatesShort'));
       render();
       return;
     }
@@ -3626,7 +4173,7 @@ function bindDetailEvents(){
     midlineNames = ['', '']; midlineAmounts = [1,1]; midlineIds = [null,null]; midlineFormProjectId = null;
     bulkFormOpenState[view.projectId] = false;
     render();
-    if (assignedBefore) showToast(`기존 연결 ${assignedBefore}개는 미지정으로 옮겼어요.`);
+    if (assignedBefore) showToast(tf('toast.unassignedExisting', { n: assignedBefore }));
   };
 
   document.querySelectorAll('[data-dblclick-segname]').forEach(el => {
@@ -3667,7 +4214,7 @@ function bindDetailEvents(){
     const name = document.getElementById('e_name').value.trim();
     if (!name) return;
     const totalVal = document.getElementById('e_total').value;
-    if (totalVal !== '' && !isPositiveIntegerValue(totalVal)) { showToast('작업량은 1 이상의 정수로 입력하거나 비워두세요.'); return; }
+    if (totalVal !== '' && !isPositiveIntegerValue(totalVal)) { showToast(t('err.workloadMinOrEmpty')); return; }
     const newTotal = (totalVal === '' ? null : Number(totalVal));
     const next = {
       ...p,
@@ -3689,7 +4236,7 @@ function bindDetailEvents(){
     const includeChanged = p.includeToday !== next.includeToday || p.includeDeadline !== next.includeDeadline || p.includeWeekend !== next.includeWeekend;
     const planError = validatePlanDatesForWork(next, { hasTotal: newTotal !== null });
     if (planError) { showToast(planError); return; }
-    if (newTotal !== null && p.segments.length > newTotal) { showToast('전체 작업량이 작업 구간 수보다 적어요. 작업 구간을 줄인 뒤 저장해주세요.'); return; }
+    if (newTotal !== null && p.segments.length > newTotal) { showToast(t('err.totalLessThanSegCount')); return; }
     if (newTotal === null) next.segments = [];
     else if (next.segments.length) {
       if (totalChanged) scaleSegmentAmounts(next, p.total);
@@ -3742,7 +4289,7 @@ function bindDetailEvents(){
     };
 
     if (hasDestructibleContent) {
-      customConfirm('작업량을 비우면 작업 구간·완료량·수량형 체크리스트 수량이 모두 초기화돼요. 계속할까요?', applyChanges, { confirmLabel: '계속', confirmClass: 'danger-btn' });
+      customConfirm(t('confirm.clearWorkloadWarning'), applyChanges, { confirmLabel: t('confirm.continueLabel'), confirmClass: 'danger-btn' });
     } else {
       applyChanges();
     }
@@ -3794,8 +4341,8 @@ function bindDetailEvents(){
     const requestedSegmentId = wrap.dataset.clSegment || (segmentSelect ? segmentSelect.value : '');
     const segmentId = requestedSegmentId && p.segments.some(s => s.id === requestedSegmentId) ? requestedSegmentId : null;
     if (!name) return;
-    if (type === 'qty' && isDdayProject(p)) { showToast('작업량 미지정 일정에는 수량형을 추가할 수 없어요.'); return; }
-    if (type === 'qty' && !isPositiveIntegerValue(qty)) { showToast('수량형 체크리스트는 1 이상의 정수로 입력해주세요.'); return; }
+    if (type === 'qty' && isDdayProject(p)) { showToast(t('err.noQtyForDday')); return; }
+    if (type === 'qty' && !isPositiveIntegerValue(qty)) { showToast(t('err.qtyMin1')); return; }
     addChecklistItem(p, { name, type, qty: type === 'qty' ? Number(qty) : qty, segmentId });
     if (wrap.dataset.clSegment) checklistAddOpenState[wrap.dataset.clSegment] = false;
     if (type === 'qty') resetTodayTarget(p.id);
@@ -3887,7 +4434,7 @@ function bindDetailEvents(){
 
       if (calEditingField === 'deadline') {
         const cancelling = isDeadlineCell;
-        if (!cancelling && date < p.startDate) { showToast('마감일이 시작일보다 빠를 수 없어요.'); return; }
+        if (!cancelling && date < p.startDate) { showToast(t('err.deadlineBeforeStart')); return; }
         calEditingField = null;
         if (!cancelling) {
           const prevDeadline = p.deadline;
@@ -3906,7 +4453,7 @@ function bindDetailEvents(){
       }
       if (calEditingField === 'start') {
         const cancelling = isStartCell;
-        if (!cancelling && date > p.deadline) { showToast('시작일이 마감일보다 늦을 수 없어요.'); return; }
+        if (!cancelling && date > p.deadline) { showToast(t('err.startAfterDeadlineShort')); return; }
         calEditingField = null;
         if (!cancelling) {
           const prevStart = p.startDate;
@@ -3924,7 +4471,7 @@ function bindDetailEvents(){
       if (isDeadlineCell) { calEditingField = 'deadline'; render(); return; }
       if (isStartCell) { calEditingField = 'start'; render(); return; }
       if (el.dataset.locked) return;
-      if (isWeekendDate(date) && !p.includeWeekend) { showToast('주말 포함이 꺼져 있어서 이미 쉬는 날이에요. 이 날짜만 따로 쉬는 날로 지정할 순 없어요.'); return; }
+      if (isWeekendDate(date) && !p.includeWeekend) { showToast(t('err.weekendAlreadyRest')); return; }
       const before = p.restDays.slice();
       const segBackup = cloneSegmentsForEdit(p);
       const idx = p.restDays.indexOf(date);
@@ -3948,17 +4495,17 @@ function bindDetailEvents(){
       const s = p.segments.find(s=>s.id===e.target.dataset.seg);
       const idx = sorted.findIndex(x => x.id === s.id);
       const val = e.target.value;
-      if (idx === sorted.length - 1) { showToast('마지막 작업 구간의 마감은 프로젝트 마감일을 따라가요.'); render(); return; }
+      if (idx === sorted.length - 1) { showToast(t('err.lastSegFollowsDeadline')); render(); return; }
       if (val < p.startDate || val >= p.deadline) {
-        showToast(`작업 구간은 ${p.startDate} ~ ${p.deadline} 사이 날짜만 가능해요.`);
+        showToast(tf('err.segmentsMustBeInRange', { start: p.startDate, deadline: p.deadline }));
         render();
         return;
       }
-      if (!isBaseWorkableDate(p, val)) { showToast('작업 구간은 작업 가능한 날로만 지정할 수 있어요.'); render(); return; }
+      if (!isBaseWorkableDate(p, val)) { showToast(t('err.segmentsMustBeWorkable')); render(); return; }
       const prevDeadline = idx > 0 ? sorted[idx-1].deadline : p.startDate;
       const nextDeadline = idx < sorted.length - 1 ? sorted[idx+1].deadline : p.deadline;
       const badPrevOrder = idx > 0 ? val <= prevDeadline : val < prevDeadline;
-      if (badPrevOrder || val >= nextDeadline) { showToast('작업 구간 날짜 순서가 앞뒤 구간과 맞지 않아요.'); render(); return; }
+      if (badPrevOrder || val >= nextDeadline) { showToast(t('err.segmentOrderMismatchAdjacent')); render(); return; }
       const segBackup = cloneSegmentsForEdit(p);
       s.deadline = val;
       const segError = validateNormalizedSegments(p, { refreshPlanStarts: true, baseStart: 'currentPlan' });
@@ -3974,7 +4521,7 @@ function bindDetailEvents(){
       const unassigned = deleteSegment(p, el.dataset.delseg);
       resetTodayTarget(p.id);
       render();
-      if (unassigned) showToast(`연결된 할 일 ${unassigned}개는 미지정으로 옮겼어요.`);
+      if (unassigned) showToast(tf('toast.unassignedTodos', { n: unassigned }));
     };
   });
 }
@@ -3987,7 +4534,7 @@ function bindBackupEvents(){
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `마감을부탁해_백업_${todayStr()}.json`;
+    a.download = `${t('backup.filenamePrefix')}${todayStr()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -3999,8 +4546,8 @@ function bindBackupEvents(){
   if (undoBtn) undoBtn.onclick = () => {
     let raw = null;
     try { raw = localStorage.getItem(BEFORE_RESTORE_KEY); } catch (_) {}
-    if (!raw) { showToast('복구할 이전 데이터가 없어요.'); return; }
-    customConfirm('불러오기 직전 데이터로 되돌릴까요? 현재 데이터와 서로 교체됩니다.', () => {
+    if (!raw) { showToast(t('toast.noPrevDataToRestore')); return; }
+    customConfirm(t('confirm.undoRestore'), () => {
       try {
         const previous = JSON.parse(raw);
         const prepared = prepareLoadedData(previous, { rebaseDailyState: true });
@@ -4010,11 +4557,11 @@ function bindBackupEvents(){
         activatePreparedData(prepared);
         view.screen = 'dash'; view.projectId = null;
         render();
-        showToast('이전 데이터로 복구했어요.');
+        showToast(t('toast.restoredPrevData'));
       } catch (_) {
-        showToast('이전 데이터를 복구할 수 없어요. 현재 데이터는 유지됩니다.');
+        showToast(t('toast.restorePrevDataFailed'));
       }
-    }, { confirmLabel:'복구', confirmClass:'accent small' });
+    }, { confirmLabel:t('detail.restoreLabel'), confirmClass:'accent small' });
   };
 
   document.getElementById('restoreFile').onchange = (e) => {
@@ -4029,10 +4576,10 @@ function bindBackupEvents(){
         if (!prepared) throw new Error('invalid');
         const previewStats = prepared.stats;
         const details = [
-          `백업 ${previewStats.inputCount}개 중 ${previewStats.keptCount}개를 불러옵니다.`,
-          previewStats.invalidProjects ? `깨진 프로젝트 ${previewStats.invalidProjects}개는 제외됩니다.` : '',
-          previewStats.clearedSegments ? `깨진 작업 구간 ${previewStats.clearedSegments}개는 삭제됩니다.` : '',
-          '현재 데이터는 불러오기 직전 상태로 별도 보관됩니다.'
+          tf('restore.previewLoad', { input: previewStats.inputCount, kept: previewStats.keptCount }),
+          previewStats.invalidProjects ? tf('restore.previewInvalid', { n: previewStats.invalidProjects }) : '',
+          previewStats.clearedSegments ? tf('restore.previewCleared', { n: previewStats.clearedSegments }) : '',
+          t('restore.previewCurrentKept')
         ].filter(Boolean).join(' ');
         customConfirm(details, () => {
           try {
@@ -4042,18 +4589,18 @@ function bindBackupEvents(){
             view.screen = 'dash'; view.projectId = null;
             render();
             const notes = [];
-            if (prepared.stats.invalidProjects > 0) notes.push(`프로젝트 ${prepared.stats.invalidProjects}개 제외`);
-            if (prepared.stats.clearedSegments > 0) notes.push(`작업 구간 ${prepared.stats.clearedSegments}개 삭제`);
-            showToast(notes.length ? `불러오기 완료 — ${notes.join(', ')}` : '불러오기를 완료했어요.');
+            if (prepared.stats.invalidProjects > 0) notes.push(tf('restore.doneExcluded', { n: prepared.stats.invalidProjects }));
+            if (prepared.stats.clearedSegments > 0) notes.push(tf('restore.doneCleared', { n: prepared.stats.clearedSegments }));
+            showToast(notes.length ? tf('toast.restoreCompleteWithNotes', { notes: notes.join(', ') }) : t('toast.restoreCompletePlain'));
           } catch (_) {
-            showToast('백업을 적용하지 못했어요. 현재 데이터는 유지됩니다.');
+            showToast(t('toast.applyBackupFailed'));
           }
-        }, { confirmLabel:'불러오기', confirmClass:'accent small' });
+        }, { confirmLabel:t('sync.loadBtn'), confirmClass:'accent small' });
       } catch (err) {
-        alert('백업 파일을 읽을 수 없어요. 올바른 백업 json인지 확인해주세요.');
+        alert(t('alert.invalidBackupFile'));
       }
     };
-    reader.onerror = () => { alert('파일을 읽는 중 오류가 났어요. 다시 시도해주세요.'); };
+    reader.onerror = () => { alert(t('alert.fileReadError')); };
     reader.onloadend = () => { e.target.value = ''; };
     reader.readAsText(file);
   };
@@ -4087,6 +4634,9 @@ if (!lastPersistedJson) {
   lastChangedAt = 0;
   lastPersistedJson = JSON.stringify(buildPersistedData());
 }
+applyStaticLang();
+const langToggleBtn = document.getElementById('btnLangToggle');
+if (langToggleBtn) langToggleBtn.onclick = () => setLang(currentLang === 'ko' ? 'en' : 'ko');
 render();
 scheduleMidnightRollover();
 </script>
