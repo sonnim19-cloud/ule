@@ -491,7 +491,7 @@
 const LANG_KEY = 'magamManagerLang';
 // ===== 라이선스(구글 동기화 잠금 해제) =====
 const LICENSE_KEY_STORAGE = 'magamManagerLicenseKey';
-const GUMROAD_PRODUCT_PERMALINK = 'DeadlineBuddy';
+const GUMROAD_PRODUCT_ID = 'mCTDMreOGwLppsUVpW5hHA==';
 let licenseVerifying = false;
 function isLicenseUnlocked(){
   try { return !!localStorage.getItem(LICENSE_KEY_STORAGE); } catch (_) { return false; }
@@ -3705,7 +3705,7 @@ async function verifyGumroadLicense(licenseKey){
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
-        product_permalink: GUMROAD_PRODUCT_PERMALINK,
+        product_id: GUMROAD_PRODUCT_ID,
         license_key: licenseKey
       })
     });
