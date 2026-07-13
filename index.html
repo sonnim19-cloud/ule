@@ -90,6 +90,9 @@
   .confirm-overlay { position:fixed; inset:0; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; z-index:100; }
   .confirm-box { background:var(--panel); border-radius:4px; padding:20px 22px; max-width:320px; box-shadow:0 8px 24px rgba(0,0,0,.18); }
   .confirm-box p { font-size:14px; margin:0 0 16px; line-height:1.5; text-align:center; white-space:pre-line; }
+  .confirm-box .license-prompt { margin:0 0 14px; max-width:250px; color:var(--text); font-size:13px; font-weight:400; letter-spacing:0; line-height:1.6; text-align:left; white-space:pre-line; }
+  .license-key-input { width:100%; margin:0 0 14px; box-sizing:border-box; }
+  .confirm-box .license-status { min-height:18px; margin:-6px 0 12px; color:var(--muted); font-size:12px; font-weight:400; letter-spacing:0; line-height:1.5; text-align:left; }
   .confirm-actions { display:flex; justify-content:flex-end; gap:8px; }
 
   .section-title-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
@@ -718,18 +721,19 @@ const LANG = {
     'viewer.dragHelp': '프로젝트 선을 드래그하면 일정 전체가 이동해요.',
     'confirm.cancelLabel': '취소',
     'detail.copySuffix': ' 사본',
-    'license.promptMessage': 'Google Drive 동기화는 구매 버전 기능이에요.\n검로드 구매 시 받은 라이선스 키를 입력해주세요.',
+    'license.promptMessage': '구매 후 기기 간 동기화를 사용할 수 있습니다.\n발급된 라이선스 키를 입력해주세요.',
     'license.placeholder': '라이선스 키 입력',
-    'license.verifyBtn': '확인',
+    'license.verifyBtn': '인증',
+    'license.closeBtn': '닫기',
     'license.emptyError': '라이선스 키를 입력해주세요.',
     'license.verifying': '확인하는 중...',
-    'license.unlockSuccess': '인증 완료!\n구글 동기화를 사용할 수 있어요.',
-    'license.invalidKey': '유효하지 않은 라이선스 키예요. 다시 확인해주세요.',
-    'license.networkError': '인증 서버에 연결할 수 없어요. 인터넷 연결을 확인하고 다시 시도해주세요.',
-    'license.tooltipLocked': '눌러서 라이선스 키를 입력하면 구글 동기화를 사용할 수 있어요.',
-    'banner.corruptFilenamePrefix': '마감을부탁해_불러오기실패원본_',
-    'banner.confirmPartial': '복구된 상태로 계속할까요? 제외된 항목 없이 지금 보이는 데이터가 자동저장돼요. 원본 다운로드는 먼저 받아두는 걸 추천해요.',
-    'banner.confirmEmpty': '빈 상태로 계속할까요? 지금부터는 이 상태가 자동저장돼요. 원본 다운로드는 먼저 받아두는 걸 추천해요.',
+    'license.unlockSuccess': '인증 완료!\n구글 동기화를 사용 할 수 있습니다..',
+    'license.invalidKey': '유효하지 않은 라이선스 키입니다. 다시 확인해주세요.',
+    'license.networkError': '인증 서버에 연결할 수 없습니다. 연결을 확인하고 재시도해주세요.',
+    'license.tooltipLocked': '제품키를 입력하면 구글 동기화를 사용할 수 있습니다.',
+    'banner.corruptFilenamePrefix': 'DeadlineBuddy_Recovery_',
+    'banner.confirmPartial': '복구된 상태로 계속할까요? 지금 보이는 데이터가 자동저장돼요. 원본을 백업 받는 걸 추천해요.',
+    'banner.confirmEmpty': '빈 상태로 계속할까요? 지금부터 이 상태가 자동저장돼요. 원본 백업을 받는 걸 추천해요.',
     // 프로젝트 상세
     'detail.noAmount': '작업량 미지정',
     'detail.workDone': '작업 완료',
@@ -965,9 +969,10 @@ const LANG = {
     'viewer.dragHelp': 'Drag a project line to move its entire schedule.',
     'confirm.cancelLabel': 'Cancel',
     'detail.copySuffix': ' (copy)',
-    'license.promptMessage': 'Google Drive sync is included in the purchased version.\nPlease enter the license key from your Gumroad purchase.',
+    'license.promptMessage': 'Cross-device sync is available after purchase verification.\nEnter the license key provided by Gumroad.',
     'license.placeholder': 'Enter license key',
     'license.verifyBtn': 'Verify',
+    'license.closeBtn': 'Close',
     'license.emptyError': 'Please enter a license key.',
     'license.verifying': 'Verifying...',
     'license.unlockSuccess': 'Unlocked!\nGoogle sync is now available.',
@@ -3736,11 +3741,11 @@ function showLicenseKeyModal(){
   overlay.className = 'confirm-overlay';
   overlay.innerHTML = `
     <div class="confirm-box">
-      <p style="white-space:pre-line;text-align:left">${escapeHtml(t('license.promptMessage'))}</p>
-      <input type="text" id="licenseKeyInput" placeholder="${escapeHtml(t('license.placeholder'))}" style="width:100%;margin:4px 0 14px;box-sizing:border-box" autocomplete="off" autocapitalize="off" spellcheck="false" />
-      <p id="licenseKeyStatus" class="muted" style="font-size:12px;margin:-8px 0 12px;min-height:16px"></p>
+      <p class="license-prompt">${escapeHtml(t('license.promptMessage'))}</p>
+      <input class="license-key-input" type="text" id="licenseKeyInput" placeholder="${escapeHtml(t('license.placeholder'))}" autocomplete="off" autocapitalize="off" spellcheck="false" />
+      <p id="licenseKeyStatus" class="license-status"></p>
       <div class="confirm-actions">
-        <button class="ghost small" id="licenseCancelBtn">${escapeHtml(t('confirm.cancelLabel'))}</button>
+        <button class="ghost small" id="licenseCancelBtn">${escapeHtml(t('license.closeBtn'))}</button>
         <button class="accent small" id="licenseSubmitBtn">${escapeHtml(t('license.verifyBtn'))}</button>
       </div>
     </div>`;
