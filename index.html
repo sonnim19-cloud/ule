@@ -1,0 +1,3901 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>마감을 부탁해</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAC4jAAAuIwF4pT92AAACNklEQVRYhe1WP4jTUBz+6pNOgUjB4NRAB+noctCAOY7KLZ07OB4d3NtBCoGcHghObjo4SCeX6+jdYDAcOtwNdeh2SwsXEGylxdAsubb8HGoe+ddcqnYy35KXvLzf7/t+7/u9BMiQIcP/jtw2gmqqSN7YtGycX63Pc/tfJwQAvdMFEyQsnTHM6n7i2ggBf7AXX+xcmmfPu5/BCiUAwPSjDiZIYIUSDuu7iepjocggms9oMeqTpoqkqSLRfBZ5thj1ieYzmnx9T+7AIHdg8HdoPiN3YJAig27KF2GnyKAz00C+WMFyOoTd60Ao1+D8/AHhzl0ACIw9tQCwnA6xdMZggoTD+m6kWjf5gcOvMKxs3Xgx6vNK+NX7Y8VVJNaEpmVDd8ZghRKYIEXmWaHE1QLgVw97v42nyCC90+UVikMsgfMr5I4O6qR3unAuTyGUa7GJ/HAuT/Hq5TsAwIc3TQjlWmB7rq2L9ASAVRVaPOgqcKvd4EnC99VH93n7sUIpkHA5HeLooP5nHeF1hTswKOyNT892Ivvv94Z3n9QRt5IIeIyvrQswQUKr3eAlzRcreLDzEMDKE/liJbDW75/vveONhEegqWJAXZzKcHf458MnpR+pjmLTsvGkd4x7CPZ92N3h7gBW6k3LXhs7tSkUGeS5exPsVfcTzbeRKxUZVC2KaLUbiUSYIOHb2Ws8fvp2c+enJaKpIk1OmuQODFqM+ny/JydN0lQx1XcA+Mv/gXVJtqI6Q4YM28IvZ6/Jez8KBewAAAAASUVORK5CYII=">
+<style>
+  :root{
+    --bg:#f4f5f7; --panel:#fff; --border:#e3e6ea; --text:#1f2328; --muted:#6b7280;
+    --relaxed:#0f6e56; --relaxed-bg:#e1f5ee;
+    --neutral:#556270; --neutral-bg:#eceff1;
+    --danger:#a32d2d; --danger-bg:#fcebeb;
+    --dday:#3a3f8f; --dday-bg:#eaeafb;
+    --notstarted:#556270; --notstarted-bg:#eceff1;
+    --accent:#2f6fdb; --accent-bg:#eaf1fc;
+    --midline:#a8621a; --midline-bg:#faeeda;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:"Segoe UI","Malgun Gothic",-apple-system,sans-serif; background:var(--bg); color:var(--text); }
+  header { padding:16px 24px; background:var(--panel); border-bottom:1px solid var(--border); display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:16px; }
+  header h1 { font-size:16px; margin:0; font-weight:600; justify-self:start; }
+  header .version { font-size:11px; color:var(--muted); font-weight:400; margin-left:4px; }
+  nav { display:flex; gap:2px; justify-self:center; background:var(--border); border-radius:10px; padding:3px; }
+  nav button { background:transparent; border:none; padding:6px 16px; border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted); font-weight:600; }
+  nav button.active { background:var(--panel); color:var(--text); box-shadow:0 1px 3px rgba(0,0,0,.12); }
+  main { max-width:720px; margin:0 auto; padding:20px 16px 60px; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:3px; padding:16px 18px; margin-bottom:14px; }
+  .card h2 { font-size:15px; margin:0 0 10px; }
+  .row { display:flex; justify-content:space-between; align-items:baseline; }
+  .muted { color:var(--muted); font-size:13px; }
+  .badge { font-size:12px; padding:3px 9px; border-radius:6px; font-weight:600; display:inline-block; }
+  .badge.relaxed { background:var(--relaxed-bg); color:var(--relaxed); }
+  .badge.done { background:var(--relaxed-bg); color:var(--relaxed); }
+  .badge.neutral { background:var(--neutral-bg); color:var(--neutral); }
+  .badge.danger { background:var(--danger-bg); color:var(--danger); }
+  .badge.over { background:#ffd9d9; color:#b30000; font-weight:800; letter-spacing:.02em; }
+  .badge.deadline { background:#ffdcdc; color:#d90000; font-weight:800; letter-spacing:.02em; animation:pulse-urgent 1.6s ease-in-out infinite; }
+  @keyframes pulse-urgent { 0%,100%{ box-shadow:0 0 0 0 rgba(217,0,0,.35); } 50%{ box-shadow:0 0 0 4px rgba(217,0,0,.12); } }
+  .badge.dday { background:var(--dday-bg); color:var(--dday); }
+  .badge.notstarted { background:var(--notstarted-bg); color:var(--notstarted); }
+  button.primary { background:#1f2328; color:#fff; border:none; padding:9px 16px; border-radius:2px; cursor:pointer; font-size:13px; }
+  button.accent { background:var(--accent); color:#fff; border:none; padding:9px 16px; border-radius:2px; cursor:pointer; font-size:13px; }
+  button.ghost { background:transparent; border:1px solid var(--border); padding:7px 12px; border-radius:2px; cursor:pointer; font-size:13px; color:var(--text); }
+  button.danger-btn { background:transparent; border:1px solid var(--danger); color:var(--danger); padding:5px 10px; border-radius:2px; cursor:pointer; font-size:12px; }
+  button.small { padding:5px 10px; font-size:12px; }
+  button.icon-btn { background:transparent; border:none; cursor:pointer; font-size:16px; padding:4px; color:var(--muted); }
+  input, select { font:inherit; font-size:13px; border:1px solid var(--border); border-radius:2px; padding:7px 9px; background:#fff; }
+  input:focus, select:focus { outline:none; border-color:var(--accent); }
+  /* select 화살표를 number input 스핀 화살표와 톤이 맞도록 커스텀 */
+  select { appearance:none; -webkit-appearance:none; -moz-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0L5 6L10 0Z' fill='%236b7280'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 8px center; padding-right:22px; }
+  input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { opacity:.6; }
+  .num-right { text-align:right; }
+  /* iOS 사파리는 글씨 16px 미만 입력칸을 탭하면 화면을 자동 확대한다.
+     터치 기기(아이패드·아이폰)에서만 입력칸 글씨를 16px로 올려 그 확대를 막는다. 마우스 쓰는 데스크톱 디자인은 그대로 유지. */
+  @media (pointer: coarse){
+    input, select, textarea { font-size:16px !important; }
+  }
+
+  /* 새 프로젝트 폼 */
+  .field-box { display:flex; align-items:center; border:1px solid var(--border); border-radius:2px; padding:0 10px; background:#fff; min-width:0; }
+  .field-box:focus-within { border-color:var(--accent); }
+  .field-box label { font-size:12px; color:var(--muted); width:38px; flex:0 0 auto; }
+  .field-box input, .field-box select { border:none; background-color:transparent; padding:7px 0; font-size:13px; flex:1; min-width:0; }
+  .field-box input:focus, .field-box select:focus { border-color:transparent; }
+  .field-box select { flex:0 0 auto; width:52px; }
+  .form-line1 { display:flex; gap:8px; margin-bottom:0; }
+  .form-line1 .name-box { flex:1.6; }
+  .form-line1 .total-box { flex:1; }
+  .total-box input[type=number] { appearance:textfield; -moz-appearance:textfield; }
+  .total-box input[type=number]::-webkit-inner-spin-button, .total-box input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+  .form-divider { border-top:1px solid var(--border); margin:2px 0; }
+  .form-line2 { display:flex; align-items:center; gap:6px; margin-bottom:2px; }
+  .form-line2 .date-box { flex:1; }
+  .form-line2 i.arrow { font-size:13px; color:var(--muted); }
+  .chip-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:6px 0 4px; }
+  .chip { font-size:12px; padding:5px 10px; border-radius:14px; border:1px solid var(--border); cursor:pointer; background:#fff; color:var(--muted); }
+  .chip.on { background:var(--accent-bg); color:var(--accent); border-color:var(--accent); font-weight:600; }
+  .form-actions { display:flex; justify-content:flex-end; margin-top:11px; }
+
+  /* 토스트 (네이티브 alert() 중 확인 클릭 필요없는 단순 경고 대체) */
+  .toast-overlay { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:200; pointer-events:none; }
+  .toast-box { background:rgba(31,35,40,.92); color:#fff; font-size:13px; padding:12px 20px; border-radius:6px; box-shadow:0 8px 24px rgba(0,0,0,.2); opacity:0; transform:translateY(6px); transition:opacity .18s, transform .18s; text-align:center; max-width:280px; line-height:1.5; }
+  .toast-box.show { opacity:1; transform:translateY(0); }
+
+  /* 커스텀 확인창 (네이티브 confirm() 대체) */
+  .confirm-overlay { position:fixed; inset:0; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; z-index:100; }
+  .confirm-box { background:var(--panel); border-radius:4px; padding:20px 22px; max-width:320px; box-shadow:0 8px 24px rgba(0,0,0,.18); }
+  .confirm-box p { font-size:14px; margin:0 0 16px; line-height:1.5; text-align:center; white-space:pre-line; }
+  .confirm-actions { display:flex; justify-content:flex-end; gap:8px; }
+
+  .section-title-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+  .section-title-row h2 { margin:0; }
+
+  .deadline-viewer-overlay { position:fixed; inset:0; z-index:160; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(22,27,34,.42); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+  .deadline-viewer-box { position:relative; width:min(820px,100%); max-height:calc(100dvh - 40px); overflow:auto; background:linear-gradient(180deg,#fbfcfe 0,#f4f6f9 100%); border:1px solid rgba(255,255,255,.72); border-radius:18px; box-shadow:0 24px 70px rgba(22,27,34,.24), 0 0 0 1px rgba(31,35,40,.08); animation:deadline-viewer-enter .18s ease-out; }
+  @keyframes deadline-viewer-enter { from { opacity:0; transform:translateY(8px) scale(.99); } to { opacity:1; transform:none; } }
+  .deadline-viewer-close { position:absolute; top:15px; right:16px; z-index:5; display:flex; align-items:center; justify-content:center; width:34px; height:34px; padding:0; border:1px solid rgba(31,35,40,.08); border-radius:10px; background:rgba(255,255,255,.82); color:var(--muted); cursor:pointer; font-size:20px; line-height:1; box-shadow:0 4px 14px rgba(31,35,40,.08); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+  .deadline-viewer-close:hover, .deadline-viewer-close:focus-visible { border-color:#9bbce8; color:var(--accent); background:#fff; outline:none; transform:translateY(-1px); }
+  .deadline-viewer-content { padding:18px 18px 20px; }
+
+  .deadline-viewer-nav { display:grid; grid-template-columns:minmax(0,1fr) 36px 36px; align-items:center; gap:7px; min-height:38px; margin:0 48px 16px 2px; }
+  .deadline-viewer-nav strong { grid-column:1; grid-row:1; text-align:left; font-size:22px; font-weight:750; letter-spacing:-.035em; color:var(--text); }
+  .deadline-viewer-nav button { display:flex; align-items:center; justify-content:center; width:36px; height:36px; padding:0; border:1px solid rgba(31,35,40,.09); background:#fff; color:var(--muted); cursor:pointer; font-size:20px; line-height:1; box-shadow:0 3px 10px rgba(31,35,40,.06); transition:transform .15s,border-color .15s,color .15s,box-shadow .15s; }
+  .deadline-viewer-nav [data-deadline-prev] { grid-column:2; grid-row:1; border-radius:10px 5px 5px 10px; }
+  .deadline-viewer-nav [data-deadline-next] { grid-column:3; grid-row:1; border-radius:5px 10px 10px 5px; }
+  .deadline-viewer-nav button:hover, .deadline-viewer-nav button:focus-visible { border-color:#9bbce8; color:var(--accent); box-shadow:0 5px 14px rgba(47,111,219,.10); outline:none; transform:translateY(-1px); }
+
+  .deadline-calendar-month { background:transparent; }
+  .deadline-calendar-dow-row,
+  .deadline-week-date-row { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); }
+  .deadline-calendar-dow-row { margin-bottom:8px; padding:4px; border:1px solid rgba(31,35,40,.07); border-radius:12px; background:rgba(236,239,244,.82); }
+  .deadline-calendar-dow { padding:6px 0; text-align:center; color:#7b8491; font-size:10px; font-weight:800; letter-spacing:.06em; }
+  .deadline-calendar-dow.weekend { color:var(--danger); }
+
+  .deadline-calendar-week { margin-top:8px; overflow:hidden; border:1px solid rgba(31,35,40,.08); border-radius:13px; background:#fff; box-shadow:0 5px 18px rgba(31,35,40,.055); }
+  .deadline-calendar-dow-row + .deadline-calendar-week { margin-top:0; }
+  .deadline-week-date-row { height:32px; background:linear-gradient(180deg,#fff 0,#fafbfc 100%); border-bottom:1px solid #edf0f3; }
+  .deadline-calendar-date-cell { position:relative; min-width:0; padding:5px 0 4px; border:none; border-right:1px solid #edf0f3; background:transparent; cursor:pointer; text-align:center; }
+  .deadline-calendar-date-cell:last-child { border-right:none; }
+  .deadline-calendar-date-cell:hover { background:#f7f9fc; }
+  .deadline-calendar-date-cell.outside { background:#fafbfc; }
+  .deadline-calendar-date { display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:22px; padding:0 4px; border-radius:7px; font-size:11px; font-weight:750; line-height:1; color:var(--text); transition:background .14s,color .14s,transform .14s; }
+  .deadline-calendar-date-cell.outside .deadline-calendar-date { color:#b3bac4; }
+  .deadline-calendar-date-cell.weekend .deadline-calendar-date { color:var(--danger); }
+  .deadline-calendar-date-cell.outside.weekend .deadline-calendar-date { color:#d6a0a0; }
+  /* 오늘 강조는 날짜 숫자가 아니라 아래 일정 영역만 칠한다. */
+  .deadline-calendar-date-cell.today { background:transparent; }
+  .deadline-calendar-date-cell.today .deadline-calendar-date { color:inherit; }
+  .deadline-calendar-date-cell.selected .deadline-calendar-date { background:#1f2328; color:#fff; transform:translateY(-1px); }
+  .deadline-calendar-date-cell.selected.weekend .deadline-calendar-date { color:#fff; }
+
+  .deadline-week-schedule { position:relative; height:var(--schedule-height,56px); min-height:56px; background:#fff; overflow:hidden; }
+  .deadline-week-columns { position:absolute; inset:0; z-index:0; display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); pointer-events:none; }
+  .deadline-week-column { position:relative; border-right:1px dashed #e7ebf0; }
+  .deadline-week-column:last-child { border-right:none; }
+  .deadline-week-column.today { background:linear-gradient(180deg,rgba(47,111,219,.055),rgba(47,111,219,.14)); box-shadow:inset 0 0 0 1px rgba(47,111,219,.10); }
+  .deadline-project-mid-dot { position:absolute; z-index:3; left:calc((100% / 7) * (var(--column) + .5) - 4px); top:calc(var(--lane) * 24px + 18px); width:8px; height:8px; border-radius:50%; background:var(--marker-color); pointer-events:none; }
+
+  .deadline-project-bar { position:absolute; z-index:1; left:var(--line-left); width:var(--line-width); top:calc(var(--lane) * 24px + 6px); height:20px; padding:0; border:none; background:transparent; cursor:pointer; overflow:visible; }
+  .deadline-project-line { position:absolute; left:0; right:0; top:14px; height:3px; border-radius:999px; background:var(--bar-color); opacity:.88; box-shadow:0 2px 6px var(--bar-shadow,rgba(31,35,40,.12)); transition:height .14s,opacity .14s,filter .14s; }
+  .deadline-project-bar:hover .deadline-project-line,
+  .deadline-project-bar:focus-visible .deadline-project-line { height:4px; opacity:1; filter:saturate(1.1); outline:none; }
+  .deadline-project-label { position:absolute; top:0; left:0; max-width:calc(100% - 2px); padding:1px 6px 2px; border:1px solid var(--bar-border,rgba(31,35,40,.08)); border-radius:7px; background:var(--bar-soft,#fff); color:var(--bar-color); font-size:9px; font-weight:800; line-height:12px; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; box-shadow:0 2px 7px rgba(31,35,40,.05); }
+
+  .deadline-final-only { position:absolute; z-index:1; left:calc((100% / 7) * var(--column) + 5px); width:calc(100% / 7 - 10px); top:calc(var(--lane) * 24px + 6px); height:20px; padding:3px 6px; border:1px solid var(--bar-border,rgba(31,35,40,.08)); border-radius:8px; background:var(--bar-soft,#fff); color:var(--bar-color); cursor:pointer; font-size:9px; font-weight:800; line-height:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left; box-shadow:0 3px 9px rgba(31,35,40,.06); }
+  .deadline-final-only:hover, .deadline-final-only:focus-visible { transform:translateY(-1px); filter:saturate(1.08); outline:none; }
+
+  .deadline-viewer-detail { margin-top:12px; padding:12px; border:1px solid rgba(31,35,40,.08); border-radius:12px; background:rgba(255,255,255,.88); box-shadow:0 5px 18px rgba(31,35,40,.05); }
+  .deadline-viewer-detail h4 { margin:0 0 8px; font-size:11px; font-weight:800; letter-spacing:.02em; color:#7b8491; }
+  .deadline-viewer-item { display:flex; align-items:center; gap:8px; width:100%; padding:8px 9px; margin-top:6px; border:1px solid #e7ebf0; border-left:4px solid var(--item-color,var(--border)); border-radius:9px; background:#fff; text-align:left; cursor:pointer; box-shadow:0 2px 8px rgba(31,35,40,.035); }
+  .deadline-viewer-item:hover { border-color:#9bbce8; transform:translateY(-1px); }
+  .deadline-viewer-item-type { flex:0 0 auto; font-size:10px; font-weight:800; padding:3px 6px; border-radius:6px; }
+  .deadline-viewer-item-type.final { background:var(--danger-bg); color:var(--danger); }
+  .deadline-viewer-item-type.mid { background:var(--midline-bg); color:var(--midline); }
+  .deadline-viewer-item-name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; color:var(--text); }
+
+  @media (max-width:500px){
+    .deadline-viewer-overlay { align-items:stretch; padding:7px; backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); }
+    .deadline-viewer-box { max-height:calc(100dvh - 14px); border-radius:15px; }
+    .deadline-viewer-content { padding:15px 9px 14px; }
+    .deadline-viewer-close { top:11px; right:11px; width:32px; height:32px; border-radius:9px; }
+    .deadline-viewer-nav { grid-template-columns:minmax(0,1fr) 34px 34px; gap:5px; margin:0 42px 13px 3px; }
+    .deadline-viewer-nav strong { font-size:19px; }
+    .deadline-viewer-nav button { width:34px; height:34px; }
+    .deadline-calendar-dow-row { margin-bottom:7px; padding:3px; border-radius:10px; }
+    .deadline-calendar-dow { padding:5px 0; font-size:9px; }
+    .deadline-calendar-week { margin-top:7px; border-radius:11px; }
+    .deadline-week-date-row { height:30px; }
+    .deadline-calendar-date-cell { padding-top:4px; }
+    .deadline-calendar-date { min-width:20px; height:20px; border-radius:6px; font-size:10px; }
+    .deadline-week-schedule { min-height:54px; }
+    .deadline-project-bar { top:calc(var(--lane) * 22px + 6px); height:19px; }
+    .deadline-project-line { top:13px; height:3px; }
+    .deadline-project-mid-dot { left:calc((100% / 7) * (var(--column) + .5) - 3.5px); top:calc(var(--lane) * 22px + 17px); width:7px; height:7px; }
+    .deadline-project-label { max-width:100%; padding:1px 4px 2px; border-radius:6px; font-size:8px; line-height:11px; }
+    .deadline-final-only { top:calc(var(--lane) * 22px + 6px); height:19px; padding:3px 4px; border-radius:7px; font-size:8px; line-height:11px; }
+    .deadline-viewer-detail { margin-top:9px; padding:10px; border-radius:10px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .deadline-viewer-box { animation:none; }
+    .deadline-viewer-close,
+    .deadline-viewer-nav button,
+    .deadline-project-line,
+    .deadline-calendar-date,
+    .deadline-final-only,
+    .deadline-viewer-item { transition:none; }
+  }
+
+  .subcard { border-top:1px solid var(--border); margin-top:12px; padding-top:12px; }
+  .two-col { display:grid; grid-template-columns:minmax(0,4.5fr) minmax(0,5.5fr); gap:14px; }
+  .two-col > .card { min-width:0; }
+  @media (max-width:600px){ .two-col { grid-template-columns:1fr; } }
+  .cal-card { display:flex; flex-direction:column; justify-content:center; }
+
+  .proj-card { cursor:grab; position:relative; }
+  .proj-card:active { cursor:grabbing; }
+  .proj-card:hover { border-color:#c7cbd1; }
+  .proj-card.dragging { opacity:.45; }
+  .proj-card.drag-before::before,
+  .proj-card.drag-after::after { content:""; position:absolute; left:0; right:0; height:3px; border-radius:3px; background:var(--accent); z-index:8; pointer-events:none; }
+  .proj-card.drag-before::before { top:-9px; }
+  .proj-card.drag-after::after { bottom:-9px; }
+  .proj-card-layout { display:block; position:relative; }
+  .proj-card-body { min-width:0; }
+  .reorder-hint { display:flex; align-items:center; gap:10px; width:100%; margin:0 0 14px; padding:10px 12px; border:1px solid #d9e4f3; border-radius:3px; background:#f6f9fd; color:#53657d; font-size:12px; line-height:1.45; }
+  .reorder-hint-label { flex:0 0 auto; padding:2px 7px; border-radius:3px; background:var(--accent-bg); color:var(--accent); font-size:10px; font-weight:700; white-space:nowrap; }
+  .reorder-hint-text { min-width:0; }
+  @media (max-width:420px){
+    .reorder-hint { gap:8px; padding:9px 10px; }
+  }
+  body.touch-reorder-active { user-select:none; -webkit-user-select:none; overscroll-behavior:none; }
+  .touch-reorder-source { opacity:.55 !important; cursor:grabbing !important; }
+  .proj-menu { position:absolute; top:100%; right:0; margin-top:4px; background:var(--panel); border:1px solid var(--border); border-radius:4px; box-shadow:0 4px 12px rgba(0,0,0,.15); z-index:10; overflow:hidden; min-width:84px; }
+  .proj-menu button { display:block; width:100%; text-align:left; padding:8px 12px; font-size:13px; background:none; border:none; cursor:pointer; color:var(--text); }
+  .proj-menu button:hover { background:var(--bg); }
+  .proj-menu button.proj-menu-danger { color:var(--danger); }
+  .info-stats { display:flex; gap:18px; flex-wrap:wrap; margin-top:10px; }
+  .info-stat { display:flex; flex-direction:column; gap:2px; }
+  .info-stat .lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; }
+  .info-stat .val { font-size:14px; font-weight:600; }
+  .seg-row { border:1px solid var(--border); border-radius:2px; margin-bottom:7px; font-size:13px; padding:9px 10px; }
+  .seg-row-top { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .seg-name-slot { display:inline-block; width:90px; flex:0 0 90px; }
+  .seg-name { cursor:pointer; display:inline-block; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom; }
+  .seg-collapse-arrow { background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:13px; line-height:1; padding:0 2px 0 0; vertical-align:1px; }
+  .seg-collapse-arrow:hover { color:var(--accent); }
+  .seg-name-input { font-size:13px; padding:3px 6px; width:100%; }
+  .seg-deadline-pill { border:none; border-radius:6px; background:var(--midline-bg); color:var(--midline); padding:3px 9px; font-weight:600; font-size:12px; width:112px; }
+  .seg-row-top .danger-btn { border:none; border-radius:6px; padding:3px 9px; font-size:12px; font-weight:600; background:var(--danger-bg); }
+  .seg-row-top .right-group { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; margin-left:auto; }
+  .seg-row.active { border-color:#378add; background:#f4f8fe; }
+  .seg-row.done { opacity:.55; }
+  .seg-meta { color:var(--muted); font-size:12px; }
+  .checkbox-row { display:flex; gap:8px; font-size:11px; margin-bottom:12px; flex-wrap:nowrap; justify-content:center; }
+  .checkbox-row label { display:flex; align-items:center; gap:3px; white-space:nowrap; }
+  .back-btn { background:transparent; border:none; cursor:pointer; font-size:13px; color:var(--muted); padding:0; margin-bottom:10px; }
+  hr { border:none; border-top:1px solid var(--border); margin:14px 0; }
+  .empty { text-align:center; color:var(--muted); font-size:13px; padding:30px 0; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; text-align:center; font-size:11px; }
+  .cal-cell { padding:5px 0; border-radius:2px; cursor:pointer; user-select:none; }
+  .cal-cell.dow { color:var(--muted); cursor:default; font-weight:600; }
+  .cal-cell.pad { visibility:hidden; }
+  .cal-cell.rest { background:#eceff1; color:#556270; font-weight:600; }
+  .cal-cell.start-mark { background:var(--accent-bg); color:var(--accent); font-weight:700; }
+  .cal-cell.middeadline-mark { background:var(--midline-bg); color:var(--midline); font-weight:700; }
+  .cal-cell.deadline-mark { background:var(--danger-bg); color:var(--danger); font-weight:700; }
+  .cal-cell.today-mark { border:1px solid var(--accent); font-weight:700; }
+  .cal-nav { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:12px; }
+  .cal-nav button { background:transparent; border:none; cursor:pointer; font-size:14px; padding:2px 8px; }
+  .cal-legend { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; font-size:11px; color:var(--muted); margin-top:8px; }
+  .cal-legend span.dot { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:3px; vertical-align:-1px; }
+  .cal-hint { font-size:11px; color:var(--muted); margin-top:8px; line-height:1.5; }
+  .top-actions { display:flex; gap:8px; justify-self:end; align-items:center; flex-wrap:nowrap; }
+  .top-actions .top-action-spacer { width:1px; height:22px; margin:0 2px; background:var(--border); flex:0 0 auto; }
+  .main-calendar-toggle.active { border-color:var(--accent); background:var(--accent-bg); color:var(--accent); font-weight:700; }
+  .top-actions .btn-emoji { display:none; }
+  .detail-actions { display:flex; gap:5px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
+  @media (max-width:520px){
+    header { grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"title actions" "nav nav"; padding:12px 14px; gap:10px; }
+    header h1 { grid-area:title; white-space:nowrap; min-width:0; }
+    nav { grid-area:nav; justify-self:stretch; }
+    nav button { flex:1; padding:7px 10px; }
+    .top-actions { grid-area:actions; }
+    .top-actions .btn-full { display:none; }
+    .top-actions .btn-emoji { display:inline; }
+    .top-actions { gap:5px; }
+    .top-actions .top-action-spacer { margin:0; height:20px; }
+    main { padding:14px 10px 48px; }
+    .form-line1 { flex-direction:column; gap:6px; }
+    .form-line1 .name-box, .form-line1 .total-box { width:100%; flex:auto; }
+    .form-line2 { display:grid; grid-template-columns:1fr 1fr; gap:6px; align-items:stretch; }
+    .form-line2 i.arrow { display:none; }
+    .form-line2 .chip-row { grid-column:1 / -1; justify-content:flex-start; }
+    .detail-actions { max-width:62%; }
+  }
+  @media (max-width:420px){
+    .form-line2 { grid-template-columns:1fr; }
+    .form-line2 .chip-row { grid-column:1; }
+    .checkbox-row { flex-wrap:wrap; }
+    .detail-head { align-items:flex-start !important; flex-direction:column; }
+    .detail-actions { max-width:none; width:100%; justify-content:flex-start; }
+    .row { gap:8px; }
+  }
+
+
+  /* 작업량 입력: 단일 값 또는 /로 나눈 작업 구간 수량 */
+  .workload-field-wrap { flex:1; min-width:0; }
+  .workload-hint { margin:0 2px 4px; color:var(--muted); font-size:10px; line-height:1.35; text-align:right; }
+  .workload-box { width:100%; padding:0 0 0 10px; overflow:hidden; }
+  .workload-box > label { width:48px; flex:0 0 48px; }
+  .workload-input { flex:1; min-width:0; border:none !important; background:transparent !important; padding:7px 0 !important; }
+  .workload-input:focus { border-color:transparent !important; }
+  .workload-box select { flex:0 0 auto; width:50px; align-self:stretch; border:none; border-left:1px solid var(--border); border-radius:0; padding-left:7px; }
+  @media (max-width:520px){
+    .workload-hint { text-align:left; }
+    .workload-box select { min-height:38px; }
+  }
+
+  /* 대시보드/프로젝트 목록 안에 펼쳐지는 메인 달력 */
+  .main-calendar-card { padding:14px; margin-bottom:14px; overflow:hidden; }
+  .main-calendar-card .deadline-viewer-content { padding:0; }
+  .main-calendar-help-row { display:flex; align-items:center; justify-content:space-between; gap:8px 14px; flex-wrap:wrap; margin:-6px 2px 8px; color:var(--muted); font-size:11px; line-height:1.4; }
+  .main-calendar-help-drag { margin-left:auto; text-align:right; }
+  .deadline-calendar-more { position:absolute; z-index:4; right:6px; bottom:5px; height:19px; padding:1px 7px; border:1px solid #d8dee8; border-radius:7px; background:rgba(255,255,255,.94); color:var(--accent); cursor:pointer; font-size:9px; font-weight:800; box-shadow:0 2px 7px rgba(31,35,40,.08); }
+  .deadline-calendar-more:hover { border-color:var(--accent); }
+  .deadline-project-bar.calendar-dragging, .deadline-final-only.calendar-dragging { opacity:.45; cursor:grabbing; }
+  .deadline-project-bar.calendar-longpress-ready, .deadline-final-only.calendar-longpress-ready { outline:2px solid rgba(47,111,219,.28); outline-offset:2px; }
+  .deadline-calendar-date-cell.calendar-drop-target .deadline-calendar-date { background:var(--accent); color:#fff; }
+  .deadline-week-column.calendar-drop-target { background:rgba(47,111,219,.16); box-shadow:inset 0 0 0 1px rgba(47,111,219,.22); }
+  body.calendar-project-drag-active { user-select:none; -webkit-user-select:none; cursor:grabbing; overscroll-behavior:none; }
+  .deadline-project-bar, .deadline-final-only { touch-action:pan-y; }
+  @media (max-width:500px){
+    .main-calendar-card { padding:10px 7px; }
+    .main-calendar-help-row { align-items:flex-start; margin:-4px 3px 7px; font-size:10px; }
+    .main-calendar-help-drag { width:100%; margin-left:0; text-align:left; }
+    .midline-names.hide-mobile-many { display:none; }
+  }
+
+  /* 체크리스트 */
+  .checklist-item { display:flex; align-items:center; gap:7px; font-size:13px; padding:4px 0; min-width:0; }
+  .checklist-item input[type=checkbox] { width:15px; height:15px; flex:0 0 auto; }
+  .cl-name-wrap { display:flex; align-items:center; gap:1px; flex:1 1 auto; min-width:0; }
+  .checklist-item .cl-name { flex:0 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .checklist-item .cl-name.checked { text-decoration:line-through; color:var(--muted); }
+  .checklist-item .cl-qty { color:var(--muted); font-size:12px; flex:0 0 auto; }
+  .checklist-add { display:flex; gap:6px; margin-top:6px; align-items:center; min-width:0; flex-wrap:wrap; }
+  .checklist-add input, .checklist-add select { font-size:12.5px; }
+  .checklist-add input[name=cl_name] { flex:1 1 110px; min-width:0; }
+  .checklist-add input[name=cl_qty] { width:60px; }
+  .checklist-add select { width:76px; flex:0 0 auto; }
+  .checklist-add select[name=cl_segment] { width:104px; max-width:32%; min-width:86px; }
+  /* 실제 select는 투명하게 덮고, 보이는 라벨은 별도 요소로 그려 정렬/색을 브라우저마다 동일하게 유지한다. */
+  .cl-segment-picker {
+    position:relative; display:inline-flex; align-items:center; justify-content:center;
+    width:auto; min-width:0; max-width:92px; height:20px; flex:0 0 auto;
+    padding:2px 6px; border:none; border-radius:5px;
+    background:#f2f2f2; color:#888; box-shadow:none;
+    font-size:10.5px; font-weight:600; line-height:1.25; cursor:pointer;
+    overflow:hidden;
+  }
+  .cl-segment-label {
+    display:block; width:auto; min-width:0; text-align:center;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    pointer-events:none;
+  }
+  .cl-segment-select {
+    position:absolute; inset:0; width:100%; height:100%; margin:0; padding:0;
+    border:0; opacity:0; cursor:pointer;
+  }
+  .cl-segment-picker:focus-within { outline:1px solid #c8c8c8; outline-offset:1px; }
+  .segment-checklist { margin:8px 0 0; padding:8px 9px; border-top:1px solid #e7ebf0; background:rgba(250,251,252,.72); }
+  .segment-checklist-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:3px; }
+  .segment-checklist-title { font-size:11px; color:var(--muted); font-weight:700; }
+  .segment-checklist-empty { margin:7px 0 2px; font-size:11px; color:var(--muted); }
+  .segment-checklist .checklist-item { padding:3px 0; }
+  .segment-checklist .cl-segment-picker { background:#f2f2f2; color:#888; }
+  .segment-checklist .checklist-add { padding-top:3px; }
+  @media (max-width:500px){
+    .checklist-item { gap:5px; }
+    .cl-segment-picker { width:auto; min-width:0; max-width:82px; padding-left:5px; padding-right:5px; }
+    .checklist-add select[name=cl_segment] { max-width:38%; }
+  }
+  .cl-del-x { flex:0 0 auto; background:none; border:none; color:var(--danger); cursor:pointer; font-size:14px; line-height:1; padding:0 3px; }
+  .cl-add-btn { background:#e4f5df; color:#2f6b1f; border:none; width:24px; height:24px; border-radius:4px; cursor:pointer; font-size:15px; line-height:1; flex:0 0 auto; }
+  .cl-head-arrow { font-size:16px; cursor:pointer; color:var(--muted); margin-left:auto; }
+  .has-tooltip { position:relative; }
+  .has-tooltip:hover .tooltip-bubble { display:block; }
+  .tooltip-bubble { display:none; position:absolute; left:0; top:100%; margin-top:4px; background:#1f2328; color:#fff; font-size:11px; padding:6px 9px; border-radius:4px; white-space:nowrap; z-index:20; }
+
+  /* 작업량 10 이하: 직접 완료 입력 방식을 숫자 입력/버튼형으로 전환 */
+  .done-input-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px; flex-wrap:wrap; min-width:0; }
+  .done-input-label { color:var(--muted); font-size:13px; min-width:0; flex:1 1 auto; }
+  .done-input-control { display:flex; align-items:center; justify-content:flex-end; gap:6px; flex:0 1 auto; flex-wrap:wrap; min-width:0; max-width:100%; }
+  .done-input-control input[type=number] { max-width:100%; }
+  .done-mode-toggle { background:transparent; border:1px solid var(--border); padding:5px 8px; border-radius:4px; cursor:pointer; font-size:11px; color:var(--muted); white-space:nowrap; }
+  .done-mode-toggle:hover { border-color:var(--accent); color:var(--accent); }
+  .quick-done-wrap { margin-top:8px; }
+  .quick-done-grid { display:flex; justify-content:flex-end; gap:5px; width:100%; }
+  /* 버튼 개수와 관계없이 10개가 한 줄에 들어갈 때의 크기를 유지한다. 적은 개수는 오른쪽부터 배치. */
+  .quick-done-btn { flex:0 0 calc((100% - 45px) / 10); min-width:0; height:30px; padding:0; border:1px solid var(--border); border-radius:4px; background:#fff; color:var(--muted); cursor:pointer; font-size:12px; font-weight:600; }
+  .quick-done-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .quick-done-btn.on { background:var(--accent-bg); border-color:#9bbce8; color:var(--accent); }
+  .quick-done-btn.current { border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); }
+  .quick-done-help { margin:5px 0 0; font-size:11px; color:var(--muted); text-align:right; }
+  @media (max-width:420px){
+    .done-input-head { align-items:flex-start; }
+    .done-input-control { flex-wrap:wrap; }
+  }
+  .midline-help { margin:8px 0 10px; padding:9px 10px; border-radius:4px; background:var(--accent-bg); color:#415c84; font-size:12px; line-height:1.5; }
+  .midline-header-actions { display:flex; align-items:center; gap:2px; margin-left:auto; }
+  .midline-header-actions .icon-btn { width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; padding:0; }
+  .midline-fold-arrow { font-size:14px; color:var(--muted); }
+  .midline-fold-arrow:hover, .midline-fold-arrow:focus-visible { color:var(--accent); outline:none; }
+
+  /* 대시보드 */
+  .goal-bar { position:relative; height:36px; border-radius:10px; overflow:hidden; background:#eef1fb; margin-bottom:14px; }
+  .goal-bar-fill { position:absolute; inset:0; background:linear-gradient(180deg, rgba(120,150,240,.55), rgba(120,150,240,.35)); border-radius:10px; transition:width .3s; }
+  .goal-bar-shine { position:absolute; top:0; left:0; right:0; height:40%; background:linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0)); border-radius:10px 10px 0 0; }
+  .goal-bar-row { position:relative; z-index:1; height:100%; display:flex; align-items:center; justify-content:space-between; padding:0 14px; gap:10px; }
+  .goal-bar-row .streak-text { font-size:12px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .goal-bar-row .pct-pill { font-size:11px; font-weight:700; padding:4px 10px; border-radius:6px; white-space:nowrap; color:#fff; background:rgba(47,111,219,.75); flex:0 0 auto; }
+  .dash-grid { display:grid; gap:14px; grid-template-columns:repeat(4,minmax(0,1fr)); grid-auto-rows:250px; align-items:start; }
+  @media (max-width:640px){
+    .dash-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .dash-grid .vcard-empty { order:-1; }
+  }
+  @media (max-width:500px){ .dash-grid { grid-template-columns:repeat(1,minmax(0,1fr)); grid-auto-rows:56px; } }
+  .vcard { background:var(--panel); border-radius:16px; padding:0 14px 18px; width:100%; min-width:0; height:250px; min-height:250px; max-height:250px; position:relative; text-align:center; cursor:grab; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; overflow:hidden;
+    box-shadow:0 0 0 1px var(--card-shadow-1), 0 8px 20px -6px var(--card-shadow-2); }
+  .vcard.dragging { opacity:.4; }
+  .vcard.drag-over { outline:2px dashed var(--accent); outline-offset:2px; }
+  .vcard.drag-before::before,
+  .vcard.drag-after::after { content:""; position:absolute; top:10px; bottom:10px; width:3px; border-radius:3px; background:var(--accent); z-index:8; pointer-events:none; }
+  .vcard.drag-before::before { left:4px; }
+  .vcard.drag-after::after { right:4px; }
+  .vcard-empty { border:1px dashed var(--border); border-radius:16px; display:flex; align-items:center; justify-content:center; width:100%; min-width:0; height:250px; min-height:250px; max-height:250px; overflow:hidden; cursor:pointer; color:var(--muted); font-size:24px; }
+  .vcard-empty:hover { border-color:var(--accent); color:var(--accent); }
+  .vcard-ribbon { position:absolute; top:0; left:0; right:0; background:var(--card-color); color:#fff; font-size:11.5px; font-weight:700; padding:8px 12px; border-radius:16px 16px 0 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .vcard-ring-wrap { position:relative; width:92px; height:92px; margin:56px auto 0; }
+  .vcard-ring-label { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .vcard-ring-label .pct { font-size:18px; font-weight:700; }
+  .vcard-name { display:block; width:100%; min-width:0; font-size:14px; font-weight:700; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .vcard-stats { display:flex; justify-content:center; gap:14px; width:100%; min-width:0; overflow:hidden; }
+  .vcard-stat { min-width:0; }
+  .vcard-stat .lbl { font-size:11px; color:var(--muted); }
+  .vcard-stat .val { display:block; max-width:100%; font-size:13px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  .vcard-standard { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; width:100%; min-width:0; overflow:hidden; }
+  .vcard-compact { display:none; width:100%; }
+  @media (max-width:500px){
+    .vcard { height:56px; min-height:56px; max-height:56px; padding:0; box-shadow:none; align-items:stretch; }
+    .vcard-standard { display:none; }
+    .vcard-compact { display:block; position:relative; overflow:hidden; border-radius:16px; }
+    .vcard-compact-fill { position:absolute; top:0; left:0; bottom:0; }
+    .vcard-compact-row { position:relative; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px; text-align:left; }
+    .vcard-compact-name { font-size:13px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .vcard-compact-stats { font-size:11px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .vcard-compact-badge { font-size:12px; font-weight:700; flex:0 0 auto; }
+    .vcard-empty { height:56px; min-height:56px; max-height:56px; padding:14px; border-radius:16px; font-size:20px; }
+    .vcard.drag-before::before,
+    .vcard.drag-after::after { left:10px; right:10px; width:auto; height:3px; top:auto; bottom:auto; }
+    .vcard.drag-before::before { top:4px; }
+    .vcard.drag-after::after { bottom:4px; }
+  }
+
+  /* 작업 구간 슬라이더 */
+  .midline-bar-wrap { padding:3px 0; }
+  .midline-bar { display:flex; height:17px; border-radius:2px; overflow:visible; position:relative; cursor:copy; touch-action:none; }
+  .midline-seg { display:flex; align-items:center; justify-content:center; font-size:11px; position:relative; overflow:hidden; white-space:nowrap; }
+  /* 보이는 손잡이는 6px로 유지하고 실제 터치 판정 영역만 24px로 넓힘 */
+  .midline-handle { position:absolute; top:-3px; bottom:-3px; width:24px; margin-left:-12px; background:transparent; border:none; cursor:ew-resize; z-index:2; touch-action:none; }
+  .midline-handle::after { content:""; position:absolute; top:0; bottom:0; left:9px; width:6px; background:var(--panel); border:1px solid var(--accent); border-radius:3px; }
+  .midline-names { display:flex; gap:6px; margin-bottom:6px; }
+  .midline-names input { flex:1; min-width:0; font-size:12px; padding:5px 7px; }
+</style>
+</head>
+<body>
+
+<header style="position:relative">
+  <h1>마감을 부탁해<span class="version">v2.3.8</span></h1>
+  <nav>
+    <button id="tabDash" class="active">대시보드</button>
+    <button id="tabList">프로젝트</button>
+  </nav>
+  <div class="top-actions">
+    <button class="ghost small main-calendar-toggle" id="btnMainCalendar" aria-label="메인달력" aria-expanded="false"><span class="btn-full">메인달력</span><span class="btn-emoji">🗓️</span></button>
+    <span class="top-action-spacer" aria-hidden="true"></span>
+    <button class="ghost small" id="btnBackup" aria-label="백업"><span class="btn-full">백업</span><span class="btn-emoji">💾</span></button>
+    <button class="ghost small" id="btnRestore" aria-label="불러오기"><span class="btn-full">불러오기</span><span class="btn-emoji">📁</span></button>
+    <button class="ghost small" id="btnUndoRestore" aria-label="불러오기 전 데이터 복구" style="display:none"><span class="btn-full">이전 데이터</span><span class="btn-emoji">↩</span></button>
+    <input type="file" id="restoreFile" accept="application/json" style="display:none" />
+  </div>
+</header>
+
+<main id="main"></main>
+
+<script>
+const RELAXED_RATIO = 0.5; // 현재 필요한 하루량이 현재 일정 기준 하루량의 50% 이하일 때 '여유'
+const DANGER_RATIO = 1.0; // 기준 하루량을 넘기면 '위험'
+
+// ===== 상태 · 자동 저장 =====
+let projects = [];
+let uidCounter = 1;
+function isUidInUse(id){
+  return projects.some(p => p && (
+    p.id === id
+    || (Array.isArray(p.segments) && p.segments.some(s => s && s.id === id))
+    || (Array.isArray(p.checklist) && p.checklist.some(i => i && i.id === id))
+  ));
+}
+function uid(){
+  if (!Number.isSafeInteger(uidCounter) || uidCounter < 1 || uidCounter >= Number.MAX_SAFE_INTEGER) uidCounter = 1;
+  let candidate = 'id' + (uidCounter++);
+  while (isUidInUse(candidate)) {
+    if (uidCounter >= Number.MAX_SAFE_INTEGER) uidCounter = 1;
+    candidate = 'id' + (uidCounter++);
+  }
+  return candidate;
+}
+
+let view = { screen: 'dash', projectId: null };
+let mainCalendarOpen = false;
+let mainCalendarMonthOffset = 0;
+let mainCalendarSelectedDate = null;
+const MAIN_CALENDAR_MAX_LINES = 3;
+const mainCalendarExpandedWeeks = new Set();
+let calendarDragSuppressClickUntil = 0;
+let calMonthOffset = 0; // for mini calendar nav, resets when leaving detail
+let loadFailed = false; // 저장 데이터 로드 실패 상태 — true인 동안은 saveLocal()이 원본을 덮어쓰지 않도록 막음
+let loadFailReason = ''; // 'newer' | 'corrupt' | 'partial'
+
+const STORAGE_KEY = 'magamManagerData';
+const BEFORE_RESTORE_KEY = STORAGE_KEY + '_before_restore';
+const SCHEMA_VERSION = 2;
+let lastLoadStats = { inputCount:0, keptCount:0, invalidProjects:0, clearedSegments:0 };
+let lastPersistedJson = null; // 화면만 바뀐 경우 localStorage에 같은 데이터를 반복 기록하지 않기 위한 비교값
+// 데이터가 바뀔 때마다 브라우저 로컬 저장소에 자동 저장. 새로고침/종료해도 유지됨
+function buildPersistedData(){
+  return { schemaVersion: SCHEMA_VERSION, projects, uidCounter, dailyState };
+}
+function saveLocal(){
+  if (loadFailed) return false; // 로드 실패 상태에서는 사용자가 확인하기 전까지 원본을 덮어쓰지 않음
+  const json = JSON.stringify(buildPersistedData());
+  if (json === lastPersistedJson) return true;
+  try {
+    localStorage.setItem(STORAGE_KEY, json);
+    lastPersistedJson = json;
+    return true;
+  } catch (e) {
+    // 용량초과 등으로 저장 실패해도 앱은 계속 동작하되, 사용자에게 알림 — 모르고 있다가 새로고침 시 데이터 유실될 수 있음
+    showToast('저장 실패 — 기기 저장공간을 확인해주세요. (백업 권장)');
+    return false;
+  }
+}
+// 앱 시작 시 복원. 저장 데이터가 깨졌거나 이 앱보다 새 버전이면, saveLocal()이 원본을 덮어쓰지 않게 loadFailed를 세우고
+// 손상본은 별도 키로 보존한다. 사용자가 화면의 안내 배너에서 직접 확인해야 다시 자동저장이 재개된다.
+function loadLocal(){
+  let raw;
+  try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { return; }
+  if (!raw) return;
+  let parsed = null;
+  try { parsed = JSON.parse(raw); } catch (_) { parsed = null; }
+  try {
+    if (parsed && Number(parsed.schemaVersion) > SCHEMA_VERSION) throw new Error('newer schema');
+    if (!applyLoadedData(parsed)) throw new Error('bad structure');
+    if (lastLoadStats.invalidProjects > 0 || lastLoadStats.clearedSegments > 0) {
+      // 일부만 복구된 데이터를 바로 자동저장하면 원본에서 제외된 항목이 영구 삭제된다.
+      // 원본을 별도 보존하고 사용자가 복구 결과를 확인하기 전까지 저장을 멈춘다.
+      loadFailReason = 'partial';
+      loadFailed = true;
+      try { localStorage.setItem(STORAGE_KEY + '_corrupt', raw); } catch (_) {}
+      return;
+    }
+    lastPersistedJson = raw;
+  } catch (e) {
+    loadFailReason = (parsed && Number(parsed.schemaVersion) > SCHEMA_VERSION) ? 'newer' : 'corrupt';
+    loadFailed = true;
+    try { localStorage.setItem(STORAGE_KEY + '_corrupt', raw); } catch (_) {}
+  }
+}
+// 저장/백업 데이터를 검증·정규화해 앱 상태에 반영. 구조가 깨졌으면 false 반환(반영 안 함)
+function applyLoadedData(data, opts = {}){
+  if (data && Number(data.schemaVersion) > SCHEMA_VERSION) return false;
+  const clean = sanitizeProjects(data && data.projects);
+  if (clean === null) return false;
+  projects = clean;
+  const loadedUidCounter = Number(data && data.uidCounter);
+  uidCounter = Number.isSafeInteger(loadedUidCounter) && loadedUidCounter >= 1 && loadedUidCounter < Number.MAX_SAFE_INTEGER
+    ? loadedUidCounter
+    : (projects.length + 1);
+  // 복원된 id와 새 uid가 겹치지 않게 카운터 보정 — 겹치면 find()가 엉뚱한 항목을 잡아 데이터가 조용히 오염됨
+  let maxId = 0;
+  const scan = o => {
+    const n = safeIdNumber(o && o.id);
+    if (n !== null) maxId = Math.max(maxId, n);
+  };
+  projects.forEach(p => { scan(p); p.segments.forEach(scan); p.checklist.forEach(scan); });
+  if (uidCounter <= maxId) uidCounter = maxId + 1;
+
+  dailyState = (data.dailyState && typeof data.dailyState === 'object')
+    ? data.dailyState : { date: todayStr(), streak: 0, startDoneMap: {}, startTargetMap: {}, bankedGoalMapToday: {}, hadWorkableToday: false };
+  normalizeDailyStateAfterLoad({ rebase: !!opts.rebaseDailyState });
+  return true;
+}
+
+function cloneJsonValue(value){
+  return JSON.parse(JSON.stringify(value));
+}
+// 백업을 실제 화면 상태에 적용하기 전에 임시 상태에서 검증·정규화한다.
+// 검증 중 uidCounter나 프로젝트 배열이 바뀌어도 현재 사용 중인 화면 상태에는 남지 않는다.
+function prepareLoadedData(data, opts = {}){
+  const current = { projects, uidCounter, dailyState, lastLoadStats };
+  try {
+    const candidate = cloneJsonValue(data);
+    if (!applyLoadedData(candidate, opts)) return null;
+    const normalized = cloneJsonValue(buildPersistedData());
+    return { data: normalized, raw: JSON.stringify(normalized), stats: { ...lastLoadStats } };
+  } finally {
+    projects = current.projects;
+    uidCounter = current.uidCounter;
+    dailyState = current.dailyState;
+    lastLoadStats = current.lastLoadStats;
+  }
+}
+function activatePreparedData(prepared){
+  projects = prepared.data.projects;
+  uidCounter = prepared.data.uidCounter;
+  dailyState = prepared.data.dailyState;
+  lastLoadStats = { ...prepared.stats };
+  loadFailed = false;
+  loadFailReason = '';
+}
+function restoreStorageEntry(key, value){
+  if (value === null) localStorage.removeItem(key);
+  else localStorage.setItem(key, value);
+}
+// 현재 데이터와 복원 데이터를 저장소에서 먼저 안전하게 교체한다.
+// 저장 실패 시 화면 상태를 바꾸지 않고, 이미 바뀐 저장 키도 가능한 범위에서 원복한다.
+function commitRestoreStorage(candidateRaw, beforeRaw){
+  const oldMainRaw = localStorage.getItem(STORAGE_KEY);
+  const oldBeforeRaw = localStorage.getItem(BEFORE_RESTORE_KEY);
+  try {
+    localStorage.setItem(BEFORE_RESTORE_KEY, beforeRaw);
+    localStorage.setItem(STORAGE_KEY, candidateRaw);
+  } catch (err) {
+    try { restoreStorageEntry(STORAGE_KEY, oldMainRaw); } catch (_) {}
+    try { restoreStorageEntry(BEFORE_RESTORE_KEY, oldBeforeRaw); } catch (_) {}
+    lastPersistedJson = oldMainRaw;
+    throw err;
+  }
+  lastPersistedJson = candidateRaw;
+}
+// 불러온 프로젝트 배열 검증·정규화. 배열이 아니거나 필수 필드(id/name/deadline) 없으면 null 반환
+const ALLOWED_UNITS = ['컷', '장', '개', ''];
+const SAFE_ID_RE = /^id(\d+)$/;
+function safeIdNumber(id){
+  if (typeof id !== 'string') return null;
+  const match = SAFE_ID_RE.exec(id);
+  if (!match) return null;
+  const n = Number(match[1]);
+  return Number.isSafeInteger(n) && n >= 1 && n < Number.MAX_SAFE_INTEGER ? n : null;
+}
+function ensureSafeUniqueId(o, seenIds){
+  if (safeIdNumber(o.id) === null || seenIds.has(o.id)) {
+    let candidate = uid();
+    while (seenIds.has(candidate)) candidate = uid();
+    o.id = candidate;
+  }
+  seenIds.add(o.id);
+}
+
+function sanitizeProjects(arr){
+  if (!Array.isArray(arr)) {
+    lastLoadStats = { inputCount:0, keptCount:0, invalidProjects:0, clearedSegments:0 };
+    return null;
+  }
+  const clean = [];
+  const stats = { inputCount: arr.length, keptCount: 0, invalidProjects: 0, clearedSegments: 0 };
+  const seenIds = new Set();
+  for (const p of arr) {
+    if (!p || typeof p !== 'object') { stats.invalidProjects++; continue; }
+    if (!p.id || !p.name || !p.deadline) { stats.invalidProjects++; continue; }
+    // id는 항상 화면에 data-* 속성 등으로 그대로 삽입되므로, 백업 파일을 통해 임의 문자열이 들어오지 못하게
+    // "idN" 형식인지/중복은 아닌지 검사하고 아니면 새로 발급한다. 정상적으로 이 앱이 저장한 백업은 항상 이 형식이라 영향 없음.
+    ensureSafeUniqueId(p, seenIds);
+    // 단위도 렌더링 시 이스케이프 없이 그대로 삽입되므로 정해진 값만 허용한다.
+    if (typeof p.unit !== 'string' || !ALLOWED_UNITS.includes(p.unit)) p.unit = '';
+    // 누락 가능 필드 기본값 보정
+    if (!Array.isArray(p.segments)) p.segments = [];
+    if (!Array.isArray(p.checklist)) p.checklist = [];
+    if (!Array.isArray(p.restDays)) p.restDays = [];
+    delete p.initialDailyAvg; // v1.7까지 저장되던 미사용 기준값 제거
+    p.segments.forEach(s => {
+      if (s && typeof s === 'object') { delete s.initialDailyAvg; ensureSafeUniqueId(s, seenIds); }
+    });
+    p.checklist.forEach(i => { if (i && typeof i === 'object') ensureSafeUniqueId(i, seenIds); });
+    // 작업 구간 날짜도 프로젝트 날짜와 동일하게 엄격히 검사한다.
+    // 백업 파일에 임의 문자열이 들어오면 date input 속성과 날짜 계산을 오염시킬 수 있으므로,
+    // 하나라도 잘못된 날짜가 있으면 프로젝트 본체는 살리고 작업 구간만 제거한다.
+    if (p.segments.some(s => !s || typeof s !== 'object' || !isValidDateString(s.deadline) || !isValidDateString(s.planStartDate))) {
+      stats.clearedSegments += p.segments.length;
+      p.segments = [];
+    }
+    if (!p.startDate) p.startDate = todayStr();
+    if (!isValidDateString(p.startDate) || !isValidDateString(p.deadline)) { stats.invalidProjects++; continue; }
+    if (typeof p.includeToday !== 'boolean') p.includeToday = true;
+    if (typeof p.includeDeadline !== 'boolean') p.includeDeadline = true;
+    if (typeof p.includeWeekend !== 'boolean') p.includeWeekend = true;
+    if (p.total !== null && p.total !== undefined && p.total !== '') {
+      p.total = toSafePositiveInt(p.total);
+    } else {
+      p.total = null;
+    }
+    if (typeof p.done !== 'number') p.done = toSafeNonNegativeInt(p.done);
+    // 구버전 데이터 마이그레이션: manualDone 없으면 기존 완료량을 직접 입력분으로 간주
+    if (typeof p.manualDone !== 'number') p.manualDone = p.done;
+    p.manualDone = toSafeNonNegativeInt(p.manualDone);
+    p.restDays = p.restDays.filter(d => isValidDateString(d) && d !== p.deadline);
+    normalizeChecklistForProject(p);
+    if (p.total !== null && p.total !== undefined) {
+      p.manualDone = Math.min(p.manualDone, p.total);
+    }
+
+    // 프로젝트 날짜 자체가 깨진 백업은 프로젝트를 제외한다. 작업 구간만 깨진 경우는 아래에서 작업 구간만 삭제한다.
+    const planErr = validatePlanDatesForWork(p, { hasTotal: !isDdayProject(p) });
+    if (planErr) { stats.invalidProjects++; continue; }
+
+    const segmentCountBeforeNormalize = p.segments.length;
+    const normalized = normalizeSegmentStructure(p);
+    if (normalized && p.segments.length < segmentCountBeforeNormalize) {
+      stats.clearedSegments += segmentCountBeforeNormalize - p.segments.length;
+    }
+    const segErr = normalized ? validateSegmentStructure(p) : 'bad segments';
+    if (segErr) {
+      // 구버전/수동편집 백업에서 작업 구간만 깨졌다면 프로젝트 본체는 살리고 작업 구간만 버린다.
+      stats.clearedSegments += p.segments.length;
+      p.segments = [];
+    }
+    reconcileChecklistAssignments(p);
+    if (!isDdayProject(p)) recomputeDone(p);
+    clean.push(p);
+    stats.keptCount++;
+  }
+  lastLoadStats = stats;
+  return clean;
+}
+// 오늘 목표 게이지바용 상태. startDoneMap = 그날 시작 시점의 프로젝트별 완료량 스냅샷(오늘 진행량 = 지금 done - 스냅샷)
+// startTargetMap = 그날 시작 시점에 고정한 프로젝트별 "오늘 목표량" — 일하는 도중 남은 양이 줄어도 목표(분모)는 하루 동안 안 바뀌게 고정
+let dailyState = { date: todayStr(), streak: 0, startDoneMap: {}, startTargetMap: {}, bankedGoalMapToday: {}, hadWorkableToday: false };
+
+// 로컬 날짜(YYYY-MM-DD) 문자열화. toISOString()은 UTC라 한국시간(UTC+9)에서 하루 밀리는 버그가 생김 — 절대 쓰지 말 것
+// ===== 날짜 · 숫자 유틸 =====
+function fmtLocalDate(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function todayStr(){ return fmtLocalDate(new Date()); }
+// 사용자 입력값(이름 등)을 HTML에 꽂을 때 특수문자 깨짐 방지용
+function escapeHtml(s){
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+// 문자열을 연/월/일로 직접 분리해서 로컬 자정 Date로 만듦.
+// new Date('YYYY-MM-DD')는 UTC로 해석되기 때문에 UTC보다 시간이 느린 지역(미국 등)에서 하루가 밀리는 문제가 있어 이 방식을 씀.
+function toDateOnly(s){
+  const [y, m, d] = String(s).split('-').map(Number);
+  return new Date(y, (m || 1) - 1, d || 1, 0, 0, 0, 0);
+}
+function daysBetween(a,b){ return Math.round((toDateOnly(b) - toDateOnly(a)) / 86400000); }
+function isValidDateString(s){
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(s || ''))) return false;
+  const d = toDateOnly(s);
+  return !Number.isNaN(d.getTime()) && fmtLocalDate(d) === s;
+}
+
+function isPositiveIntegerValue(v){
+  const n = Number(v);
+  return Number.isFinite(n) && Number.isSafeInteger(n) && n >= 1;
+}
+function isNonNegativeIntegerValue(v){
+  const n = Number(v);
+  return Number.isFinite(n) && Number.isSafeInteger(n) && n >= 0;
+}
+function toSafeNonNegativeInt(v){
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
+}
+function toSafePositiveInt(v){
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.max(1, Math.floor(n)) : 1;
+}
+
+function isRestDay(dateStr, restDays){
+  return (restDays || []).includes(dateStr);
+}
+function isWeekendDate(dateStr){
+  const d = toDateOnly(dateStr);
+  const day = d.getDay();
+  return day === 0 || day === 6;
+}
+// 주말/수동 쉬는날 기준으로 실제 작업 가능한 날짜인지. 시작일/마감일 포함 옵션은 여기서 보지 않음
+function isBaseWorkableDate(project, dateStr){
+  if (!project || !dateStr) return false;
+  if (isWeekendDate(dateStr) && !project.includeWeekend) return false;
+  if (isRestDay(dateStr, project.restDays)) return false;
+  return true;
+}
+
+// 프로젝트별 특정 날짜가 작업량 분배 계산에 들어가는 날짜인지 판정.
+// includeToday/includeDeadline은 각각 시작일/마감일을 작업일수에 넣을지 결정한다.
+function isWorkableDate(project, dateStr){
+  if (!project || isDdayProject(project)) return false;
+  if (dateStr < project.startDate || dateStr > project.deadline) return false;
+  if (dateStr === project.startDate && !project.includeToday) return false;
+  if (dateStr === project.deadline && !project.includeDeadline) return false;
+  return isBaseWorkableDate(project, dateStr);
+}
+function isWorkableToday(project){
+  return isWorkableDate(project, todayStr());
+}
+function projectWorkableDates(project, startDate, endDate){
+  const dates = [];
+  if (!project || !startDate || !endDate || startDate > endDate) return dates;
+  const start = toDateOnly(startDate);
+  const end = toDateOnly(endDate);
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
+    const dStr = fmtLocalDate(d);
+    if (isWorkableDate(project, dStr)) dates.push(dStr);
+  }
+  return dates;
+}
+function projectWorkableDays(project, startDate, endDate){
+  if (!project || !startDate || !endDate || startDate > endDate) return 0;
+  let count = 0;
+  const start = toDateOnly(startDate);
+  const end = toDateOnly(endDate);
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
+    if (isWorkableDate(project, fmtLocalDate(d))) count++;
+  }
+  return count;
+}
+function currentScheduleDailyAvg(project){
+  if (!project || isDdayProject(project) || !(project.total > 0)) return null;
+  const days = Math.max(projectWorkableDays(project, project.startDate, project.deadline), 1);
+  return project.total / days;
+}
+function validatePlanDatesForWork(project, opts = {}){
+  const hasTotal = opts.hasTotal !== undefined ? opts.hasTotal : !isDdayProject(project);
+  if (!project.startDate || !project.deadline) return '시작일과 마감일이 필요해요.';
+  if (project.startDate > project.deadline) return '시작일이 마감일보다 늦을 수 없어요.';
+  if (isRestDay(project.deadline, project.restDays)) return '마감일은 쉬는날로 지정할 수 없어요.';
+  if (hasTotal && project.includeToday && !isBaseWorkableDate(project, project.startDate)) return '시작일 포함 상태에서는 시작일이 작업 가능한 날이어야 해요.';
+  if (hasTotal && project.includeDeadline && !isBaseWorkableDate(project, project.deadline)) return '마감일 포함 상태에서는 마감일이 작업 가능한 날이어야 해요.';
+  if (hasTotal && projectWorkableDays(project, project.startDate, project.deadline) < 1) return '작업량을 나눌 작업일이 1일 이상 필요해요.';
+  return '';
+}
+function normalizeChecklistForProject(project){
+  if (!project || !Array.isArray(project.checklist)) return;
+  project.checklist = project.checklist
+    .filter(i => i && typeof i === 'object' && i.name)
+    .map(i => {
+      const item = { ...i };
+      if (item.type !== 'qty') { item.type = 'memo'; item.qty = null; }
+      else { item.qty = toSafePositiveInt(item.qty); }
+      item.checked = !!item.checked;
+      item.segmentId = typeof item.segmentId === 'string' && SAFE_ID_RE.test(item.segmentId) ? item.segmentId : null;
+      return item;
+    });
+  if (isDdayProject(project)) {
+    project.checklist.forEach(i => {
+      if (i.type === 'qty') { i.type = 'memo'; i.qty = null; }
+      i.segmentId = null;
+    });
+    project.manualDone = 0;
+    project.done = 0;
+  }
+}
+function reconcileChecklistAssignments(project){
+  if (!project || !Array.isArray(project.checklist)) return 0;
+  const validIds = new Set((project.segments || []).map(s => s.id));
+  let cleared = 0;
+  project.checklist.forEach(item => {
+    if (item.segmentId && !validIds.has(item.segmentId)) {
+      item.segmentId = null;
+      cleared++;
+    }
+  });
+  return cleared;
+}
+
+// 시작일이 미래면 그날부터, 이미 지났으면(=오늘이거나 과거) 오늘부터 — 항상 "지금" 기준으로 다시 계산됨
+function effectiveStart(project){
+  const t = todayStr();
+  return project.startDate > t ? project.startDate : t;
+}
+function notStartedYet(project){
+  return todayStr() < project.startDate;
+}
+
+// ===== 데이터 조작 · 프로젝트 / 작업 구간 / 체크리스트 =====
+function makeProject(data){
+  const hasTotal = data.total !== '' && data.total !== null && data.total !== undefined;
+  const startDate = data.startDate || todayStr();
+  const total = hasTotal ? toSafePositiveInt(data.total) : null;
+  const project = {
+    id: uid(),
+    name: data.name,
+    startDate,
+    deadline: data.deadline,
+    total,
+    unit: data.unit,
+    done: 0,
+    manualDone: 0,
+    includeToday: data.includeToday,
+    includeDeadline: data.includeDeadline,
+    includeWeekend: data.includeWeekend,
+    restDays: [],
+    segments: [],
+    checklist: []
+  };
+  return project;
+}
+
+function isDdayProject(project){ return project.total === null || project.total === undefined; }
+
+// 프로젝트 복제: 완료량/체크 상태는 0으로 초기화하고, 체크리스트의 작업 구간 연결도 복제된 구간으로 다시 연결한다.
+function duplicateProject(project){
+  const segmentIdMap = new Map();
+  const copiedSegments = (project.segments || []).map(seg => {
+    const newId = uid();
+    segmentIdMap.set(seg.id, newId);
+    return { ...seg, id: newId, done: 0 };
+  });
+  const copy = {
+    ...project,
+    id: uid(),
+    name: project.name + ' 사본',
+    restDays: [...(project.restDays || [])],
+    manualDone: 0,
+    done: 0,
+    segments: copiedSegments,
+    checklist: (project.checklist || []).map(i => ({
+      ...i,
+      id: uid(),
+      checked: false,
+      segmentId: segmentIdMap.get(i.segmentId) || null
+    }))
+  };
+  recomputeDone(copy);
+  return copy;
+}
+
+
+// 구간 기준선: 계획시작일 ~ 구간마감일 (v0.6 확정 — 5-1 참고)
+function makeSegment(data){
+  return {
+    id: uid(),
+    name: data.name,
+    amount: toSafePositiveInt(data.amount),
+    deadline: data.deadline,
+    planStartDate: data.planStartDate,
+    done: 0
+  };
+}
+
+// 체크리스트 항목은 프로젝트 전체 목록에 보관하고, 필요하면 특정 작업 구간에 연결한다.
+function addChecklistItem(project, data){
+  const segmentId = data.segmentId && (project.segments || []).some(s => s.id === data.segmentId)
+    ? data.segmentId : null;
+  project.checklist.push({
+    id: uid(),
+    name: data.name,
+    type: data.type,
+    qty: data.type === 'qty' ? toSafePositiveInt(data.qty) : null,
+    checked: false,
+    segmentId
+  });
+}
+
+// 수량형 체크리스트에서 체크된 항목들의 원래 수량 합
+function rawChecklistQtySum(project){
+  return (project.checklist || []).filter(i => i.type === 'qty' && i.checked).reduce((s,i) => s + (i.qty || 0), 0);
+}
+// 완료량 계산에 실제 반영되는 체크리스트 수량. 직접 입력분과 합쳐 전체 작업량을 넘는 부분은 조용히 제외한다.
+function checklistQtySum(project){
+  const sum = rawChecklistQtySum(project);
+  if (project.total === null || project.total === undefined) return sum;
+  const base = Math.min(toSafeNonNegativeInt(project.manualDone), Math.max(project.total, 0));
+  return Math.min(sum, Math.max(project.total - base, 0));
+}
+// 총 완료량 = 직접 입력분 + 체크리스트 반영분. 입력값은 유지하고 계산에 반영되는 합계만 전체 작업량 안으로 제한한다.
+function recomputeDone(project){
+  let base = toSafeNonNegativeInt(project.manualDone);
+  if (project.total !== null && project.total !== undefined) base = Math.min(base, Math.max(project.total, 0));
+  project.manualDone = base;
+  const checked = checklistQtySum(project);
+  project.done = base + checked;
+  applySpillover(project); // 작업 구간이 있으면 남은 작업량 배분도 같이 갱신
+}
+function toggleChecklistItem(project, itemId){
+  const item = project.checklist.find(i => i.id === itemId);
+  if (!item) return false;
+  item.checked = !item.checked;
+  recomputeDone(project);
+  return true;
+}
+
+// 작업 구간은 남은 작업 가능일 수만큼만 만들 수 있으며 최대 6개로 제한
+function maxMidlineCount(project){
+  if (!project || isDdayProject(project)) return 0;
+  const start = effectiveStart(project);
+  return Math.max(projectWorkableDays(project, start, project.deadline), 0);
+}
+function midlineMaxAllowed(project){
+  if (!project || isDdayProject(project)) return 0;
+  return Math.min(6, maxMidlineCount(project), Math.floor(Number(project.total) || 0));
+}
+
+function addDaysStr(dateStr, amount){
+  const d = toDateOnly(dateStr);
+  d.setDate(d.getDate() + amount);
+  return fmtLocalDate(d);
+}
+function sortSegments(project){
+  if (!project || !Array.isArray(project.segments)) return [];
+  project.segments.sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
+  return project.segments;
+}
+function firstProjectWorkableOnOrAfter(project, dateStr){
+  const dates = projectWorkableDates(project, dateStr, project.deadline);
+  return dates[0] || dateStr;
+}
+function refreshSegmentPlanStarts(project, opts = {}){
+  const sorted = sortSegments(project);
+  if (!sorted.length) return;
+  sorted[sorted.length - 1].deadline = project.deadline;
+  const mode = opts.baseStart || 'currentPlan';
+  let firstStart;
+  if (opts.firstStart) firstStart = opts.firstStart;
+  else if (mode === 'projectStart') firstStart = project.startDate;
+  else if (mode === 'effectiveStart') firstStart = effectiveStart(project);
+  else firstStart = sorted[0].planStartDate || project.startDate;
+  sorted.forEach((seg, i) => {
+    const from = i === 0 ? firstStart : addDaysStr(sorted[i-1].deadline, 1);
+    seg.planStartDate = firstProjectWorkableOnOrAfter(project, from);
+  });
+}
+function ensureSegmentPlanStarts(project){
+  const sorted = sortSegments(project);
+  if (!sorted.length) return;
+  sorted[sorted.length - 1].deadline = project.deadline;
+  sorted.forEach((seg, i) => {
+    const minFrom = i === 0 ? project.startDate : addDaysStr(sorted[i-1].deadline, 1);
+    const invalid = !seg.planStartDate
+      || seg.planStartDate < project.startDate
+      || seg.planStartDate > seg.deadline
+      || (i > 0 && seg.planStartDate <= sorted[i-1].deadline);
+    if (invalid) seg.planStartDate = firstProjectWorkableOnOrAfter(project, minFrom);
+  });
+}
+function segmentAmountSum(project){
+  return (project.segments || []).reduce((sum, seg) => sum + (Number(seg.amount) || 0), 0);
+}
+function normalizeSegmentAmounts(project){
+  const sorted = sortSegments(project);
+  if (!sorted.length || isDdayProject(project)) return true;
+  if (sorted.length > Math.floor(Number(project.total) || 0)) return false;
+  let assigned = 0;
+  sorted.forEach((seg, i) => {
+    const remainingSegments = sorted.length - i;
+    const remainingAmount = Math.max(project.total - assigned, 0);
+    if (i === sorted.length - 1) {
+      seg.amount = remainingAmount;
+    } else {
+      seg.amount = Math.max(1, Math.min(Number(seg.amount) || 1, remainingAmount - (remainingSegments - 1)));
+    }
+    assigned += seg.amount;
+  });
+  return sorted.every(seg => seg.amount >= 1) && segmentAmountSum(project) === project.total;
+}
+function validateSegmentStructure(project){
+  if (!project || isDdayProject(project) || !project.segments || !project.segments.length) return '';
+  const sorted = sortSegments(project);
+  if (sorted.length > Math.floor(Number(project.total) || 0)) return '전체 작업량이 작업 구간 수보다 적어요. 작업 구간을 줄인 뒤 저장해주세요.';
+  for (let i=0; i<sorted.length; i++) {
+    const seg = sorted[i];
+    const isLast = i === sorted.length - 1;
+    if (!(Number(seg.amount) >= 1)) return '작업 구간 작업량은 1 이상이어야 해요.';
+    if (!seg.deadline) return '작업 구간 날짜가 비어 있어요.';
+    if (!seg.planStartDate) return '작업 구간 시작일이 비어 있어요.';
+    if (!isValidDateString(seg.deadline) || !isValidDateString(seg.planStartDate)) return '작업 구간 날짜 형식이 올바르지 않아요.';
+    if (seg.planStartDate < project.startDate || seg.planStartDate > seg.deadline) return '작업 구간 시작일과 마감일 순서가 맞지 않아요.';
+    if (i > 0 && seg.deadline <= sorted[i-1].deadline) return '작업 구간 날짜 순서가 맞지 않아요.';
+    if (!isLast) {
+      if (seg.deadline < project.startDate || seg.deadline >= project.deadline) return '작업 구간은 시작일과 마감일 사이에 있어야 해요.';
+      if (!isBaseWorkableDate(project, seg.deadline)) return '작업 구간은 작업 가능한 날로만 지정할 수 있어요.';
+    }
+    if (projectWorkableDays(project, seg.planStartDate, seg.deadline) < 1) return '작업 구간에 작업 가능한 날이 없어요. 쉬는날이나 날짜를 조정해주세요.';
+  }
+  return '';
+}
+function cloneSegmentsForEdit(project){
+  return (project && Array.isArray(project.segments)) ? project.segments.map(s => ({...s})) : [];
+}
+function validateNormalizedSegments(project, opts = {}){
+  const backup = cloneSegmentsForEdit(project);
+  const ok = normalizeSegmentStructure(project, opts);
+  const err = ok ? validateSegmentStructure(project) : '작업 구간을 정리할 수 없어요. 날짜나 작업량을 확인해주세요.';
+  if (err) {
+    project.segments = backup;
+    applySpillover(project);
+  }
+  return err;
+}
+
+function normalizeSegmentStructure(project, opts = {}){
+  if (!project || !Array.isArray(project.segments)) return true;
+  if (isDdayProject(project)) {
+    project.segments = [];
+    reconcileChecklistAssignments(project);
+    return true;
+  }
+  if (project.segments.length <= 1) {
+    project.segments = [];
+    reconcileChecklistAssignments(project);
+    applySpillover(project);
+    return true;
+  }
+  sortSegments(project);
+  project.segments[project.segments.length - 1].deadline = project.deadline;
+  if (!normalizeSegmentAmounts(project)) return false;
+  if (opts.refreshPlanStarts) refreshSegmentPlanStarts(project, { baseStart: opts.baseStart || 'currentPlan', firstStart: opts.firstStart });
+  else ensureSegmentPlanStarts(project);
+  reconcileChecklistAssignments(project);
+  applySpillover(project);
+  return true;
+}
+function scaleSegmentAmounts(project, oldTotal){
+  const sorted = sortSegments(project);
+  if (!sorted.length || !(project.total > 0)) return true;
+  if (sorted.length > project.total) return false;
+  let assigned = 0;
+  sorted.forEach((seg, i) => {
+    const remainingSegments = sorted.length - i;
+    const remainingAmount = Math.max(project.total - assigned, 0);
+    if (i === sorted.length - 1) {
+      seg.amount = remainingAmount;
+    } else {
+      const scaled = oldTotal > 0 ? Math.round((Number(seg.amount) || 1) * (project.total / oldTotal)) : Number(seg.amount) || 1;
+      seg.amount = Math.max(1, Math.min(scaled, remainingAmount - (remainingSegments - 1)));
+    }
+    assigned += seg.amount;
+  });
+  return normalizeSegmentStructure(project);
+}
+
+function allocatePositiveDays(totalDays, weights){
+  const count = weights.length;
+  if (!count || totalDays < count) return null;
+  const clean = weights.map(v => Math.max(1, toSafePositiveInt(v)));
+  const totalWeight = clean.reduce((a,b)=>a+b,0);
+  const remaining = totalDays - count;
+  const rawExtras = clean.map(w => remaining * w / totalWeight);
+  const days = rawExtras.map(v => 1 + Math.floor(v));
+  let left = totalDays - days.reduce((a,b)=>a+b,0);
+  const order = rawExtras.map((v,i)=>({i, frac:v-Math.floor(v)}))
+    .sort((a,b)=> b.frac-a.frac || a.i-b.i);
+  for (let i=0; i<left; i++) days[order[i % order.length].i]++;
+  return days;
+}
+
+// 정확한 작업량을 원본으로 사용하고 날짜만 작업 가능일 비율에 맞춰 배치한다.
+function assignSegmentDatesByAmounts(project, segments, startDate = project.startDate){
+  if (!segments || segments.length < 2) return false;
+  const workable = projectWorkableDates(project, startDate, project.deadline);
+  if (workable.length < segments.length) return false;
+  const dayAlloc = allocatePositiveDays(workable.length, segments.map(seg => seg.amount));
+  if (!dayAlloc) return false;
+  let dayCursor = 0;
+  segments.forEach((seg, i) => {
+    seg.planStartDate = workable[dayCursor];
+    dayCursor += dayAlloc[i];
+    seg.deadline = i === segments.length - 1 ? project.deadline : workable[dayCursor - 1];
+  });
+  return true;
+}
+
+function bulkCreateSegments(project, rows, opts = {}){
+  const oldById = new Map((project.segments || []).map(seg => [seg.id, seg]));
+  const nextSegments = rows.map((row, i) => {
+    const old = row.id ? oldById.get(row.id) : null;
+    return {
+      id: row.id || uid(),
+      name: row.name || `작업 구간 ${i+1}`,
+      amount: toSafePositiveInt(row.amount),
+      deadline: project.deadline,
+      planStartDate: project.startDate,
+      done: old ? toSafeNonNegativeInt(old.done) : 0
+    };
+  });
+  if (nextSegments.reduce((sum, seg) => sum + seg.amount, 0) !== project.total) return false;
+  if (!assignSegmentDatesByAmounts(project, nextSegments, opts.startDate || project.startDate)) return false;
+  project.segments = nextSegments;
+  reconcileChecklistAssignments(project);
+  applySpillover(project);
+  return true;
+}
+
+function reallocateExistingSegmentDates(project){
+  const sorted = sortSegments(project);
+  if (!sorted.length) return true;
+  return assignSegmentDatesByAmounts(project, sorted);
+}
+
+// 프로젝트 기간·작업일 설정이 바뀌면 고정된 구간 작업량은 유지하고,
+// 각 구간 날짜만 새 작업 가능일에 맞춰 다시 배치한다.
+function reallocateSegmentsForPlanChange(project){
+  if (!project || !project.segments || !project.segments.length) return '';
+  if (!reallocateExistingSegmentDates(project)) return '새 일정에는 작업 구간을 나눌 작업일이 부족해요.';
+  const err = validateSegmentStructure(project);
+  if (err) return err;
+  applySpillover(project);
+  return '';
+}
+
+function restoreProjectSnapshot(project, snapshot){
+  Object.keys(project).forEach(key => delete project[key]);
+  Object.assign(project, cloneJsonValue(snapshot));
+  applySpillover(project);
+}
+
+// 달력에서 이동할 때 시작/마감은 같은 일수만큼 이동하고, 수동 쉬는 날은 실제 날짜로 유지한다.
+// 작업 구간 날짜는 정확한 작업량 비율과 새 작업 가능일을 기준으로 다시 배치한다.
+function shiftProjectSchedule(project, deltaDays){
+  if (!project || !Number.isInteger(deltaDays) || deltaDays === 0) return '';
+  const snapshot = cloneJsonValue(project);
+  project.startDate = addDaysStr(project.startDate, deltaDays);
+  project.deadline = addDaysStr(project.deadline, deltaDays);
+  const planError = validatePlanDatesForWork(project, { hasTotal: !isDdayProject(project) });
+  if (planError) { restoreProjectSnapshot(project, snapshot); return planError; }
+  if (project.segments && project.segments.length) {
+    if (!reallocateExistingSegmentDates(project)) {
+      restoreProjectSnapshot(project, snapshot);
+      return '이 위치에는 작업 구간을 나눌 작업일이 부족해요.';
+    }
+    const segError = validateSegmentStructure(project);
+    if (segError) { restoreProjectSnapshot(project, snapshot); return segError; }
+  }
+  recomputeDone(project);
+  resetTodayTarget(project.id);
+  return '';
+}
+
+function applySpillover(project){
+  if (!project.segments.length) return;
+  const sorted = project.segments.slice().sort((a,b)=> new Date(a.deadline)-new Date(b.deadline));
+  let remaining = project.done;
+  sorted.forEach(s => {
+    const fill = Math.min(remaining, s.amount);
+    s.done = fill;
+    remaining -= fill;
+  });
+}
+
+function deleteSegment(project, segId){
+  const previousAssignments = new Map((project.checklist || []).map(i => [i.id, i.segmentId]));
+  const sorted = sortSegments(project);
+  const idx = sorted.findIndex(s => s.id === segId);
+  if (idx === -1) return 0;
+  const [removed] = sorted.splice(idx, 1);
+  if (sorted.length) {
+    const mergeTarget = sorted[Math.min(idx, sorted.length - 1)]; // 다음 구간 우선, 마지막 삭제면 이전 구간
+    mergeTarget.amount = (Number(mergeTarget.amount) || 0) + (Number(removed.amount) || 0);
+    if (idx === 0 && removed.planStartDate) mergeTarget.planStartDate = removed.planStartDate;
+  }
+  project.segments = sorted;
+  if (project.segments.length <= 1) {
+    project.segments = [];
+    reconcileChecklistAssignments(project);
+    applySpillover(project);
+  } else {
+    normalizeSegmentStructure(project, { refreshPlanStarts: true, baseStart: 'currentPlan' });
+  }
+  return (project.checklist || []).filter(i => previousAssignments.get(i.id) && !i.segmentId).length;
+}
+
+// 활성 구간: 마감이 가장 가까운 미완료 구간. 없으면 null(=프로젝트 전체가 활성)
+function getActiveSegment(project){
+  const incomplete = project.segments.filter(s => s.done < s.amount);
+  if (incomplete.length === 0) return null;
+  return incomplete.sort((a,b) => new Date(a.deadline) - new Date(b.deadline))[0];
+}
+
+// ===== 계산 · 위험도 / 오늘 목표 / 연속일수 =====
+function riskFromRatio(perDay, baseline, days){
+  if (days < 0) return 'over';
+  if (days <= 0) return 'danger';
+  if (perDay <= baseline * RELAXED_RATIO) return 'relaxed';
+  if (perDay <= baseline * DANGER_RATIO) return 'neutral';
+  return 'danger';
+}
+
+// 프로젝트 전체 위험도 (대시보드/목록/헤더 배지에 항상 이걸 씀 — 구간과 무관)
+function calcProjectRisk(project){
+  if (isDdayProject(project)) {
+    const days = daysBetween(todayStr(), project.deadline);
+    const badgeVariant = days < 0 ? 'over' : days === 0 ? 'deadline' : 'dday';
+    const ddayLabel = days < 0 ? '마감초과' : days === 0 ? '마감일' : 'D-'+days;
+    return { risk: 'dday', days, ddayLabel, badgeVariant };
+  }
+  const pct = project.total > 0 ? Math.round((project.done / project.total) * 100) : 0;
+  if (project.total > 0 && project.done >= project.total) {
+    return { risk: 'done', days: 0, perDay: 0, overdue: false, isDeadlineDay: false, remaining: 0, pct };
+  }
+  if (notStartedYet(project)) {
+    const startsIn = daysBetween(todayStr(), project.startDate);
+    return { risk: 'notstarted', startsIn, notStartedLabel: '시작 D-'+startsIn };
+  }
+  const remaining = project.total - project.done;
+  const today = todayStr();
+  const overdue = today > project.deadline;
+  const isDeadlineDay = today === project.deadline;
+  const days = projectWorkableDays(project, today, project.deadline);
+  const perDay = (overdue || isDeadlineDay) ? remaining : remaining / Math.max(days,1);
+  const baseline = currentScheduleDailyAvg(project) || 1;
+  const risk = overdue ? 'over' : isDeadlineDay ? 'deadline' : riskFromRatio(perDay, baseline, days);
+  return { risk, days, perDay: Math.max(perDay,0), overdue, isDeadlineDay, remaining, pct };
+}
+
+// 구간 개별 위험도 + 지연 태그 (상세화면 구간 목록에만 표시)
+function calcSegmentRisk(project, seg){
+  const remaining = seg.amount - seg.done;
+  if (remaining <= 0) return { risk:'done', days:0, perDay:0, overdue:false, isDeadlineDay:false, isActive:false };
+  const today = todayStr();
+  const overdue = today > seg.deadline;
+  const isDeadlineDay = today === seg.deadline;
+  const days = projectWorkableDays(project, today, seg.deadline);
+  const perDay = (overdue || isDeadlineDay) ? remaining : remaining / Math.max(days,1);
+  const baselineDays = Math.max(projectWorkableDays(project, seg.planStartDate, seg.deadline), 1);
+  const baseline = seg.amount / baselineDays;
+  const risk = overdue ? 'over' : isDeadlineDay ? 'deadline' : riskFromRatio(perDay, baseline, days);
+  const active = getActiveSegment(project);
+  const isActive = active && active.id === seg.id;
+  return { risk, days, perDay: Math.max(perDay,0), overdue, isDeadlineDay, isActive };
+}
+
+// B: 남은날 기준 평균치 — 활성 구간 기준, 올림 처리.
+// 오늘 목표를 이미 채웠다면 오늘을 다시 남은 작업일에 포함하지 않고 다음 작업일부터 계산한다.
+function calcLiveDailyAvg(project){
+  const seg = getActiveSegment(project);
+  const target = seg || { amount: project.total, done: project.done, deadline: project.deadline };
+  const remaining = target.amount - target.done;
+  const today = todayStr();
+  const overdue = today > target.deadline;
+  const isDeadlineDay = today === target.deadline;
+  const fixedTodayTarget = dailyState && dailyState.startTargetMap
+    ? Number(dailyState.startTargetMap[project.id])
+    : NaN;
+  const todayProgress = getTodayProgress(project);
+  const targetMetToday = Number.isFinite(fixedTodayTarget)
+    && fixedTodayTarget > 0
+    && todayProgress >= fixedTodayTarget;
+  const averageStart = targetMetToday && !overdue && !isDeadlineDay
+    ? addDaysStr(today, 1)
+    : today;
+  const days = projectWorkableDays(project, averageStart, target.deadline);
+  const perDay = (overdue || isDeadlineDay) ? remaining : remaining / Math.max(days,1);
+  return { seg, perDay: Math.ceil(Math.max(perDay,0)), overdue, isDeadlineDay };
+}
+
+// A: 오늘 목표량 — 하루 시작 시점에 한 번 고정, dailyState.startTargetMap에 저장(캐시)
+// 계획(작업량/마감일/시작일/포함옵션)이 바뀌면 resetTodayTarget()으로 캐시를 지워 다시 고정함
+function getTodayTarget(project){
+  if (isDdayProject(project) || notStartedYet(project) || !isWorkableToday(project)) return null;
+  if (!(project.id in dailyState.startTargetMap)) {
+    dailyState.startTargetMap[project.id] = calcLiveDailyAvg(project).perDay;
+  }
+  return dailyState.startTargetMap[project.id];
+}
+// 오늘 실제로 진행한 양 — 하루 시작 시점 완료량(startDoneMap) 대비 지금 완료량 차이
+function getTodayProgress(project){
+  const snap = dailyState.startDoneMap[project.id] ?? 0;
+  return Math.max(project.done - snap, 0);
+}
+
+// 대시보드/상세에 표시할 "오늘 해야 할 양"
+// todayTarget/todayRemaining = A(고정, 직접완료 입력과 1:1로 줄어듦) · perDay = B(남은날 기준 평균, 매번 재계산)
+function calcTodayDisplay(project){
+  if (isDdayProject(project)) return null;
+  if (notStartedYet(project)) return null;
+  const live = calcLiveDailyAvg(project);
+  const workableToday = isWorkableToday(project);
+  const todayTarget = getTodayTarget(project);
+  const todayProgress = getTodayProgress(project);
+  const todayRemaining = todayTarget !== null ? Math.max(todayTarget - todayProgress, 0) : null;
+  return { seg: live.seg, perDay: live.perDay, overdue: live.overdue, isDeadlineDay: live.isDeadlineDay, workableToday, todayTarget, todayProgress, todayRemaining };
+}
+
+
+const riskLabel = { done:'완료', relaxed:'여유', neutral:'진행중', danger:'위험', over:'마감초과', deadline:'마감일', dday:'D-DAY' };
+
+// 오늘 목표 게이지바: 새 목표를 잡을 때는 현재 미완료·작업 가능 프로젝트만 대상으로 삼는다.
+// 단, 이미 오늘 목표가 잡힌 프로젝트는 오늘 완료되거나 일정이 바뀌어도 자정까지 추적 대상에 남긴다.
+function activeGoalProjects(dateStr){
+  return projects.filter(p => !isDdayProject(p) && isWorkableDate(p, dateStr) && p.done < p.total);
+}
+function hasWorkableProjects(dateStr){
+  return projects.some(p => isWorkableDate(p, dateStr) && p.done < p.total);
+}
+function hasOwn(obj, key){
+  return !!obj && Object.prototype.hasOwnProperty.call(obj, key);
+}
+// 삭제·작업량 제거처럼 프로젝트의 현재 완료량을 더는 읽을 수 없게 되기 전에
+// 오늘 목표와 진행량을 별도 보관한다. 프로젝트별로 저장해 중복 합산을 막는다.
+function bankProjectTodayContribution(p){
+  if (!p || !dailyState || dailyState.date !== todayStr()) return;
+  const target = dailyState.startTargetMap && dailyState.startTargetMap[p.id];
+  if (target === undefined) return;
+  const progress = getTodayProgress(p);
+  if (!dailyState.bankedGoalMapToday || typeof dailyState.bankedGoalMapToday !== 'object') dailyState.bankedGoalMapToday = {};
+  const prev = dailyState.bankedGoalMapToday[p.id];
+  dailyState.bankedGoalMapToday[p.id] = {
+    target: Math.max(Number(target) || 0, Number(prev && prev.target) || 0),
+    progress: Math.max(progress, Number(prev && prev.progress) || 0)
+  };
+  dailyState.hadWorkableToday = true;
+  delete dailyState.startTargetMap[p.id];
+  if (dailyState.startDoneMap) delete dailyState.startDoneMap[p.id];
+}
+// 계획이 바뀌었을 때 오늘 목표를 다시 계산한다.
+// 이미 오늘 진행한 프로젝트가 완료됐거나 오늘 작업 대상에서 빠졌다면 기존 목표는 유지해 기록이 사라지지 않게 한다.
+function resetTodayTarget(projectId){
+  if (!dailyState || !dailyState.startTargetMap || !hasOwn(dailyState.startTargetMap, projectId)) return;
+  const p = projects.find(x => x.id === projectId);
+  const progress = p ? getTodayProgress(p) : 0;
+  const stillEligible = !!p && !isDdayProject(p) && isWorkableDate(p, todayStr()) && p.done < p.total;
+  if (progress > 0 && !stillEligible) return;
+  delete dailyState.startTargetMap[projectId];
+}
+// 프로젝트를 지우기 전에는 bankProjectTodayContribution()으로 오늘 기여도를 보존한다.
+function snapshotDoneMap(){
+  const map = {};
+  projects.forEach(p => map[p.id] = p.done);
+  return map;
+}
+// 현재 dailyState가 추적 중인 프로젝트들의 오늘 진행량 합.
+// 완료되거나 일정이 바뀐 프로젝트도 startTargetMap에 남아 있으므로 포함된다.
+function rawProgressSince(snapshotMap){
+  let sum = 0;
+  const targetMap = dailyState && dailyState.startTargetMap && typeof dailyState.startTargetMap === 'object'
+    ? dailyState.startTargetMap : {};
+  Object.keys(targetMap).forEach(id => {
+    const p = projects.find(x => x.id === id);
+    if (p) sum += Math.max(p.done - (snapshotMap[id] ?? 0), 0);
+  });
+  const banked = dailyState && dailyState.bankedGoalMapToday && typeof dailyState.bankedGoalMapToday === 'object'
+    ? dailyState.bankedGoalMapToday : {};
+  Object.values(banked).forEach(v => { sum += Math.max(Number(v && v.progress) || 0, 0); });
+  return sum;
+}
+// 오늘 시점 활성 프로젝트들의 "오늘 목표량"을 한 번 계산해 고정용으로 저장
+function snapshotTargetMap(){
+  const map = {};
+  activeGoalProjects(todayStr()).forEach(p => {
+    map[p.id] = calcLiveDailyAvg(p).perDay;
+  });
+  return map;
+}
+function normalizeDailyStateAfterLoad(opts = {}){
+  const t = todayStr();
+  if (!dailyState || typeof dailyState !== 'object') dailyState = { date: t, streak: 0, startDoneMap: {}, startTargetMap: {}, bankedGoalMapToday: {}, hadWorkableToday: false };
+  delete dailyState.bankedProgressToday; // 구버전 단일 합계는 프로젝트별 보존 지도에 대체됨
+  if (typeof dailyState.streak !== 'number' || !Number.isFinite(dailyState.streak)) dailyState.streak = 0;
+  if (!dailyState.bankedGoalMapToday || typeof dailyState.bankedGoalMapToday !== 'object' || Array.isArray(dailyState.bankedGoalMapToday)) dailyState.bankedGoalMapToday = {};
+  Object.keys(dailyState.bankedGoalMapToday).forEach(id => {
+    const v = dailyState.bankedGoalMapToday[id];
+    if (!v || typeof v !== 'object') { delete dailyState.bankedGoalMapToday[id]; return; }
+    v.target = Math.max(Number(v.target) || 0, 0);
+    v.progress = Math.max(Number(v.progress) || 0, 0);
+  });
+  if (typeof dailyState.hadWorkableToday !== 'boolean') dailyState.hadWorkableToday = false;
+  const validDate = typeof dailyState.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dailyState.date);
+  if (!validDate) dailyState.date = t;
+
+  // 백업 불러오기는 그 순간의 완료량을 오늘 시작점으로 다시 잡는다.
+  // 그렇지 않으면 백업에 이미 있던 완료량을 '오늘 한 작업'으로 오해해서 게이지가 오염된다.
+  if (opts.rebase) {
+    // 백업 날짜가 오늘이 아니면(=그 사이 공백이 있었는지 알 수 없으면) 스트릭도 같이 초기화한다.
+    if (dailyState.date !== t) dailyState.streak = 0;
+    dailyState.date = t;
+    dailyState.startDoneMap = snapshotDoneMap();
+    dailyState.startTargetMap = snapshotTargetMap();
+    dailyState.bankedGoalMapToday = {};
+    dailyState.hadWorkableToday = false;
+    return;
+  }
+
+  if (!dailyState.startDoneMap || typeof dailyState.startDoneMap !== 'object') dailyState.startDoneMap = snapshotDoneMap();
+  projects.forEach(p => {
+    if (!(p.id in dailyState.startDoneMap)) dailyState.startDoneMap[p.id] = p.done;
+  });
+  Object.keys(dailyState.startDoneMap).forEach(id => {
+    if (!projects.some(p => p.id === id) && !hasOwn(dailyState.bankedGoalMapToday, id)) delete dailyState.startDoneMap[id];
+  });
+
+  if (!dailyState.startTargetMap || typeof dailyState.startTargetMap !== 'object') dailyState.startTargetMap = {};
+  Object.keys(dailyState.startTargetMap).forEach(id => {
+    if (!projects.some(p => p.id === id)) delete dailyState.startTargetMap[id];
+  });
+}
+function hasWorkableProjectsBetweenExclusive(startDate, endDate){
+  let d = toDateOnly(startDate);
+  const end = toDateOnly(endDate);
+  d.setDate(d.getDate()+1);
+  for (; d < end; d.setDate(d.getDate()+1)) {
+    if (hasWorkableProjects(fmtLocalDate(d))) return true;
+  }
+  return false;
+}
+function rolloverDailyStateIfNeeded(){
+  const t = todayStr();
+  if (dailyState.date === t) return false;
+  const gapDays = daysBetween(dailyState.date, t);
+  // 전날 실제로 고정된 목표가 있었는지를 저장된 지도에서 판정한다.
+  // 완료·삭제·일정 변경 후의 현재 프로젝트 상태로 과거를 다시 계산하지 않는다.
+  const hadTrackedTargets = Object.keys(dailyState.startTargetMap || {}).length > 0
+    || Object.keys(dailyState.bankedGoalMapToday || {}).length > 0;
+  const hadWorkableProjects = hadTrackedTargets || dailyState.hadWorkableToday;
+  const progressedLastStoredDay = rawProgressSince(dailyState.startDoneMap) > 0;
+
+  if (gapDays === 1) {
+    dailyState.streak = hadWorkableProjects ? (progressedLastStoredDay ? dailyState.streak + 1 : 0) : dailyState.streak;
+  } else if (gapDays > 1) {
+    const skippedWorkableDay = hasWorkableProjectsBetweenExclusive(dailyState.date, t);
+    if (skippedWorkableDay) {
+      dailyState.streak = 0;
+    } else {
+      dailyState.streak = hadWorkableProjects ? (progressedLastStoredDay ? dailyState.streak + 1 : 0) : dailyState.streak;
+    }
+  } else {
+    dailyState.streak = 0;
+  }
+
+  dailyState.date = t;
+  dailyState.startDoneMap = snapshotDoneMap();
+  dailyState.startTargetMap = snapshotTargetMap();
+  dailyState.bankedGoalMapToday = {};
+  dailyState.hadWorkableToday = false;
+  return true;
+}
+function computeTodayGoal(){
+  const t = todayStr();
+  // 오늘 새로 활성화된 프로젝트는 여기서 목표를 고정한다.
+  activeGoalProjects(t).forEach(p => { getTodayTarget(p); });
+
+  const contributions = new Map();
+  Object.entries(dailyState.bankedGoalMapToday || {}).forEach(([id, v]) => {
+    contributions.set(id, {
+      target: Math.max(Number(v && v.target) || 0, 0),
+      progress: Math.max(Number(v && v.progress) || 0, 0)
+    });
+  });
+  Object.entries(dailyState.startTargetMap || {}).forEach(([id, target]) => {
+    const p = projects.find(x => x.id === id);
+    if (!p) return;
+    const prev = contributions.get(id) || { target: 0, progress: 0 };
+    prev.target += Math.max(Number(target) || 0, 0);
+    prev.progress += getTodayProgress(p);
+    contributions.set(id, prev);
+  });
+
+  if (contributions.size > 0) dailyState.hadWorkableToday = true;
+  // 오늘 목표 달성률 = 프로젝트별 오늘 목표량으로 가중평균.
+  // 목표량(분모) 합 대비 진행량 합이라, 목표가 큰 프로젝트가 그만큼 더 크게 반영된다.
+  // 프로젝트별로 진행량을 자기 목표까지만 세어(초과분 버림) 한 프로젝트의 초과가 다른 프로젝트의 부족을 못 덮게 한다.
+  let targetSum = 0, cappedProgressSum = 0, progressSum = 0;
+  contributions.forEach(v => {
+    const t = Math.max(Number(v.target) || 0, 0);
+    const pr = Math.max(Number(v.progress) || 0, 0);
+    targetSum += t;
+    cappedProgressSum += Math.min(pr, t);
+    progressSum += pr;
+  });
+  const pct = targetSum > 0 ? Math.round(cappedProgressSum / targetSum * 100) : 0;
+  const streak = dailyState.streak + (progressSum > 0 ? 1 : 0);
+  return { pct, streak };
+}
+function todayGoalMessage(pct){
+  if (pct >= 100) return '오늘 목표 달성!';
+  if (pct >= 70) return '조금만 더!';
+  if (pct >= 40) return '절반 넘었어요!';
+  if (pct > 0) return '좋은 시작이에요!';
+  return '오늘도 시작해볼까요?';
+}
+function renderTodayGoalBar(){
+  const goal = computeTodayGoal();
+  return `
+    <div class="goal-bar">
+      <div class="goal-bar-fill" style="width:${goal.pct}%"></div>
+      <div class="goal-bar-shine" style="width:${goal.pct}%"></div>
+      <div class="goal-bar-row">
+        <span class="streak-text">연속 작업 ${goal.streak}일째 — ${todayGoalMessage(goal.pct)}</span>
+        <span class="pct-pill">오늘 전체 목표 ${goal.pct}%</span>
+      </div>
+    </div>`;
+}
+
+function renderLoadFailedBanner(){
+  const isPartial = loadFailReason === 'partial';
+  const title = isPartial ? '일부 데이터를 복구했어요' : '이전 데이터를 불러오지 못했어요';
+  const msg = loadFailReason === 'newer'
+    ? '저장된 데이터가 이 앱보다 새 버전 형식이라 안전하게 불러오지 못했어요.'
+    : isPartial
+      ? `저장 데이터 중 깨진 프로젝트 ${lastLoadStats.invalidProjects}개와 작업 구간 ${lastLoadStats.clearedSegments}개를 제외하고 나머지를 복구했어요.`
+      : '저장된 데이터를 읽는 중 문제가 생겨서 안전하게 불러오지 못했어요.';
+  const continueLabel = isPartial ? '복구된 상태로 계속하기' : '빈 상태로 계속하기';
+  return `
+    <div class="card" style="border-color:var(--danger);background:var(--danger-bg)">
+      <p style="margin:0 0 8px;font-size:14px;color:var(--danger);font-weight:600">${title}</p>
+      <p class="muted" style="margin:0 0 12px">${msg} 원본은 그대로 남아있고, 확인하기 전까지는 자동저장을 멈춰뒀어요.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="ghost small" id="btnDownloadCorrupt">원본 파일 다운로드</button>
+        <button class="accent small" id="btnAckLoadFail">${continueLabel}</button>
+      </div>
+    </div>`;
+}
+
+// ===== 화면 그리기 =====
+function render(){
+  if (skipNextNewProjectDraftCapture) skipNextNewProjectDraftCapture = false;
+  else captureNewProjectDraft();
+  captureProjectEditDraft();
+  rolloverDailyStateIfNeeded();
+  const main = document.getElementById('main');
+  document.getElementById('tabDash').classList.toggle('active', view.screen==='dash');
+  document.getElementById('tabList').classList.toggle('active', view.screen!=='dash');
+  const mainCalendarBtn = document.getElementById('btnMainCalendar');
+  if (mainCalendarBtn) {
+    const available = view.screen === 'dash' || view.screen === 'list';
+    mainCalendarBtn.style.display = available ? '' : 'none';
+    mainCalendarBtn.classList.toggle('active', available && mainCalendarOpen);
+    mainCalendarBtn.setAttribute('aria-expanded', String(available && mainCalendarOpen));
+  }
+  const banner = loadFailed ? renderLoadFailedBanner() : '';
+  if (view.screen === 'dash') main.innerHTML = banner + renderDashboard();
+  else if (view.screen === 'list') main.innerHTML = banner + renderList();
+  else if (view.screen === 'detail') main.innerHTML = banner + renderDetail(view.projectId);
+  bindEvents();
+  saveLocal(); // 직전 저장값과 실제 데이터가 달라졌을 때만 localStorage에 기록
+}
+
+// CSS 변수(var(--x))에 투명도 문자열을 그대로 붙이면 문법 오류라 배경이 안 먹음 — 리본/글로우 테두리는 항상 실제 hex로 계산
+const RISK_HEX = { done:'#0f6e56', relaxed:'#0f6e56', neutral:'#556270', danger:'#a32d2d', over:'#b30000', deadline:'#d90000', dday:'#3a3f8f', notstarted:'#556270' };
+const DEADLINE_VIEWER_PROJECT_COLORS = ['#3f6fb5','#28766b','#7561a8','#6d7b3f','#8a6849','#4f627f','#3d7d91','#6f5b7c'];
+function hexToRgba(hex, alpha){
+  const n = parseInt(hex.slice(1),16);
+  const r = (n>>16)&0xff, g = (n>>8)&0xff, b = n&0xff;
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function renderMainCalendarBlock(){
+  if (!mainCalendarOpen || (view.screen !== 'dash' && view.screen !== 'list')) return '';
+  return `<div class="card main-calendar-card">
+    <div id="mainCalendarRoot"><div class="deadline-viewer-content"></div></div>
+  </div>`;
+}
+
+function renderDashboard(){
+  const cards = projects.map(p => {
+    const pr = calcProjectRisk(p);
+    const disp = calcTodayDisplay(p);
+
+    let ringPct = 0, cardColor = '#6b7280', ribbonLabel = '', ringLabelHtml = '', todayVal = '-', remainVal = '-';
+    let nameLabel = escapeHtml(p.name);
+
+    if (pr.risk === 'dday') {
+      cardColor = RISK_HEX[pr.badgeVariant] || RISK_HEX.dday;
+      ribbonLabel = pr.ddayLabel;
+      remainVal = '미지정';
+    } else if (pr.risk === 'done') {
+      cardColor = RISK_HEX.done;
+      ribbonLabel = '완료';
+      todayVal = '완료';
+      remainVal = `0${p.unit}`;
+      ringPct = 100;
+      ringLabelHtml = `<span class="pct">100%</span>`;
+    } else if (pr.risk === 'notstarted') {
+      cardColor = RISK_HEX.notstarted;
+      ribbonLabel = pr.notStartedLabel;
+      remainVal = `${p.total}${p.unit}`;
+    } else {
+      const seg = disp.seg;
+      nameLabel = seg ? `${escapeHtml(p.name)} · ${escapeHtml(seg.name)}` : escapeHtml(p.name);
+      remainVal = seg ? `${seg.amount - seg.done}${p.unit}` : `${pr.remaining}${p.unit}`;
+      todayVal = (!disp.workableToday && !disp.overdue && !disp.isDeadlineDay) ? '쉼' : (disp.overdue ? '초과' : `${disp.todayRemaining ?? disp.perDay}${p.unit}`);
+      cardColor = RISK_HEX[pr.risk] || '#6b7280';
+      ringPct = pr.pct;
+      ribbonLabel = riskLabel[pr.risk];
+      ringLabelHtml = `<span class="pct">${pr.pct}%</span>`;
+    }
+
+    return `<div class="vcard" data-id="${p.id}" draggable="true" style="--card-color:${cardColor}; --card-shadow-1:${hexToRgba(cardColor,0.25)}; --card-shadow-2:${hexToRgba(cardColor,0.35)}">
+      <div class="vcard-standard">
+        <div class="vcard-ribbon">${escapeHtml(ribbonLabel)}</div>
+        <div class="vcard-ring-wrap">
+          ${ringSvg(ringPct, cardColor)}
+          <div class="vcard-ring-label">${ringLabelHtml}</div>
+        </div>
+        <div class="vcard-name">${nameLabel}</div>
+        <div class="vcard-stats">
+          <div class="vcard-stat"><div class="lbl">오늘</div><div class="val">${todayVal}</div></div>
+          <div class="vcard-stat"><div class="lbl">남음</div><div class="val">${remainVal}</div></div>
+        </div>
+      </div>
+      <div class="vcard-compact" style="background:${hexToRgba(cardColor,0.12)}">
+        <div class="vcard-compact-fill" style="width:${ringPct}%; background:${hexToRgba(cardColor,0.28)}"></div>
+        <div class="vcard-compact-row">
+          <div style="min-width:0;flex:1">
+            <div class="vcard-compact-name">${nameLabel}</div>
+            <div class="vcard-compact-stats">오늘 ${todayVal} · 남음 ${remainVal}</div>
+          </div>
+          <span class="vcard-compact-badge" style="color:${cardColor}">${escapeHtml(ribbonLabel)}</span>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  // 화면 폭과 관계없이 새 일정 추가용 + 카드는 하나만 표시
+  cards.push(`<div class="vcard-empty" id="goAddSlot" data-empty-slot="1">+</div>`);
+
+  return `${renderTodayGoalBar()}${renderMainCalendarBlock()}<div class="card">
+    <div class="dash-grid">${cards.join('')}</div>
+  </div>`;
+}
+
+function ringSvg(pct, color){
+  const r = 41, c = 46;
+  const circumference = 2 * Math.PI * r;
+  const offset = circumference * (1 - pct / 100);
+  return `<svg width="92" height="92" viewBox="0 0 92 92">
+    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--border)" stroke-width="10"/>
+    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${color}" stroke-width="10"
+      stroke-dasharray="${circumference.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"
+      stroke-linecap="round" transform="rotate(-90 ${c} ${c})"/>
+  </svg>`;
+}
+
+function renderList(){
+  const rows = projects.map(p => {
+    const pr = calcProjectRisk(p);
+    const doneStr = isDdayProject(p) ? '' : ` · 완료 ${p.done}${p.unit}`;
+    const totalStr = isDdayProject(p) ? '작업량 미지정 (D-DAY)' : `전체 ${p.total}${p.unit}${doneStr}`;
+    const badgeText = pr.risk === 'dday' ? pr.ddayLabel : pr.risk === 'notstarted' ? pr.notStartedLabel : riskLabel[pr.risk];
+    const badgeClass = pr.risk === 'dday' ? pr.badgeVariant : pr.risk;
+    return `<div class="card proj-card" data-id="${p.id}" draggable="true">
+      <div class="proj-card-layout">
+        <div class="proj-card-body">
+          <div class="row"><strong>${escapeHtml(p.name)}</strong>
+            <span style="display:flex;align-items:center;gap:8px;position:relative">
+              <span class="badge ${badgeClass}">${badgeText}</span>
+              <button class="icon-btn" data-proj-menu="${p.id}" aria-label="더보기" title="더보기" style="font-size:16px;padding:2px 4px">⋯</button>
+              ${openProjMenuId === p.id ? `
+              <div class="proj-menu" data-proj-menu-box="${p.id}">
+                <button data-dup-proj="${p.id}">복제</button>
+                <button class="proj-menu-danger" data-del-proj="${p.id}">삭제</button>
+              </div>` : ''}
+            </span>
+          </div>
+          <p class="muted">마감 ${p.deadline} · ${totalStr}</p>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  return `
+    ${renderMainCalendarBlock()}
+    <div class="card">
+      <div class="section-title-row">
+        <h2>새로운 일정</h2>
+      </div>
+      ${projectForm()}
+    </div>
+    ${(!reorderHintDismissed && projects.length > 1) ? '<div class="reorder-hint" id="reorderHint"><span class="reorder-hint-label">사용 안내</span><span class="reorder-hint-text">카드를 길게 눌러 순서를 바꿀 수 있어요.</span></div>' : ''}
+    ${rows || '<p class="empty">등록된 일정이 없어요.</p>'}
+  `;
+}
+
+let newProjectDraftState = null;
+let skipNextNewProjectDraftCapture = false;
+function captureNewProjectDraft(){
+  const nameEl = document.getElementById('f_name');
+  const workloadEl = document.getElementById('f_workload');
+  const unitEl = document.getElementById('f_unit');
+  const startEl = document.getElementById('f_start');
+  const deadlineEl = document.getElementById('f_deadline');
+  if (!nameEl || !workloadEl || !unitEl || !startEl || !deadlineEl) return;
+  newProjectDraftState = {
+    name: nameEl.value,
+    workloadText: workloadEl.value,
+    total: workloadEl.value,
+    unit: unitEl.value,
+    startDate: startEl.value,
+    deadline: deadlineEl.value
+  };
+}
+function clearNewProjectDraft(){
+  newProjectDraftState = null;
+  skipNextNewProjectDraftCapture = true;
+}
+function normalizeDraftWorkloadText(draft){
+  if (typeof draft.workloadText === 'string') return draft.workloadText;
+  if (Array.isArray(draft.workloadParts)) return draft.workloadParts.join('/');
+  return String(draft.total || '');
+}
+function parseWorkloadText(raw){
+  const text = String(raw ?? '').trim().replace(/／/g, '/');
+  if (!text) return { ok:true, amounts:[], total:null, normalized:'' };
+  const pieces = text.split('/').map(piece => piece.trim());
+  if (pieces.length > 6) return { ok:false, message:'작업 구간은 최대 6개까지 입력할 수 있어요.' };
+  if (pieces.some(piece => !piece)) return { ok:false, message:'작업량은 30/30/30처럼 숫자 사이를 /로 구분해주세요.' };
+  if (pieces.some(piece => !/^\d+$/.test(piece) || !isPositiveIntegerValue(piece))) {
+    return { ok:false, message:'작업량은 1 이상의 정수로 입력해주세요.' };
+  }
+  const amounts = pieces.map(Number);
+  const total = amounts.reduce((sum, value) => sum + value, 0);
+  if (!Number.isSafeInteger(total)) return { ok:false, message:'작업량이 너무 커요.' };
+  return { ok:true, amounts, total, normalized:amounts.join('/') };
+}
+function workloadFieldHtml(value, unit){
+  return `<div class="workload-field-wrap">
+    <div class="field-box total-box workload-box">
+      <label>작업량</label>
+      <input id="f_workload" class="workload-input" type="text" inputmode="text" autocapitalize="off" value="${escapeHtml(value)}" placeholder="예: 240 또는 80/80/80" aria-label="전체 작업량 또는 작업 구간별 작업량" />
+      <select id="f_unit"><option value="" ${!unit?'selected':''}></option><option ${unit==='컷'?'selected':''}>컷</option><option ${unit==='장'?'selected':''}>장</option><option ${unit==='개'?'selected':''}>개</option></select>
+    </div>
+  </div>`;
+}
+
+function projectForm(){
+  const draft = newProjectDraftState || {};
+  const startDate = draft.startDate || todayStr();
+  const deadline = draft.deadline || todayStr();
+  const unit = ALLOWED_UNITS.includes(draft.unit) ? draft.unit : '';
+  return `
+    <p class="workload-hint">작업을 여러 구간으로 나누고 싶다면 수량 사이에 /를 넣어주세요. 예: 콘티 30컷, 채색 30컷 → 30/30</p>
+    <div class="form-line1">
+      <div class="field-box name-box">
+        <label>이름</label>
+        <input id="f_name" value="${escapeHtml(draft.name || '')}" placeholder="이름을 입력해주세요" />
+      </div>
+      ${workloadFieldHtml(normalizeDraftWorkloadText(draft), unit)}
+    </div>
+    <div class="form-divider"></div>
+    <div class="form-line2">
+      <div class="field-box date-box">
+        <label>시작</label>
+        <input id="f_start" type="date" value="${escapeHtml(startDate)}" class="num-right" />
+      </div>
+      <i class="arrow">→</i>
+      <div class="field-box date-box">
+        <label>마감</label>
+        <input id="f_deadline" type="date" value="${escapeHtml(deadline)}" class="num-right" />
+      </div>
+      ${renderPeriodOptions()}
+    </div>
+    <div class="form-actions">
+      <button class="accent" id="addProjectBtn">일정 추가</button>
+    </div>
+  `;
+}
+
+function renderPeriodOptions(){
+  return `
+    <div class="chip-row has-tooltip" style="margin:0">
+      <span class="chip on" data-opt="f_today">시작일 포함</span>
+      <span class="chip on" data-opt="f_deadline_inc">마감일 포함</span>
+      <span class="chip on" data-opt="f_weekend">주말 포함</span>
+      <span class="tooltip-bubble">작업 일수 계산에 포함해요.</span>
+    </div>
+  `;
+}
+let periodOptState = { f_today: true, f_deadline_inc: true, f_weekend: true };
+let openProjMenuId = null; // 프로젝트 목록에서 '⋯' 메뉴가 열려있는 프로젝트 id (없으면 null)
+// 안내 디자인을 바꾼 버전에서는 기존 숨김 기록과 분리해 한 번 다시 보여준다.
+const REORDER_HINT_KEY = 'magamManagerReorderHintDone_v2';
+let reorderHintDismissed = false;
+try {
+  reorderHintDismissed = localStorage.getItem(REORDER_HINT_KEY) === '1';
+} catch (_) {}
+function dismissReorderHint(){
+  if (reorderHintDismissed) return;
+  reorderHintDismissed = true;
+  try { localStorage.setItem(REORDER_HINT_KEY, '1'); } catch (_) {}
+}
+let checklistOpenState = {}; // targetId -> bool, 체크리스트 펼침 상태(비저장, 세션 중에만)
+let segmentChecklistOpenState = {}; // segmentId -> bool, 작업 구간 아래 할 일 목록 접힘 상태(비저장, 기본 펼침)
+let checklistAddOpenState = {}; // targetId -> bool, 항목추가 미니폼 펼침 상태
+let doneInputModeState = {}; // projectId -> 'number' | 'buttons', 기본은 숫자 입력
+
+function renderChecklistHeader(target){
+  const isOpen = checklistOpenState[target.id] !== false; // 기본 열림 — 명시적으로 닫은 적 없으면 항상 열림
+  const items = target.checklist || [];
+  return `
+    <span style="display:flex;align-items:center;gap:6px;flex:1">
+      <button class="icon-btn" style="font-size:14px;padding:0 4px" data-cl-addopen="${target.id}" aria-label="항목 추가">+</button>
+      <span style="flex:1"></span>
+      <span class="muted" style="font-size:12px">${items.length}개</span>
+      <span class="cl-head-arrow" data-cl-toggle="${target.id}">${isOpen?'▾':'▸'}</span>
+    </span>`;
+}
+
+function checklistSegmentOptions(project, selectedId){
+  const segments = (project.segments || []).slice().sort((a,b) => new Date(a.deadline) - new Date(b.deadline));
+  return `<option value="" ${selectedId ? '' : 'selected'}>미지정</option>` + segments.map(seg =>
+    `<option value="${seg.id}" ${selectedId === seg.id ? 'selected' : ''}>${escapeHtml(seg.name)}</option>`
+  ).join('');
+}
+
+function renderChecklistItem(project, item, unit, showAssignment = true){
+  const assignedSegment = (project.segments || []).find(seg => seg.id === item.segmentId) || null;
+  const assignment = showAssignment && (project.segments || []).length ? `
+    <span class="cl-segment-picker ${assignedSegment ? 'assigned' : 'unassigned'}" title="눌러서 작업 구간 변경">
+      <span class="cl-segment-label">${escapeHtml(assignedSegment ? assignedSegment.name : '미지정')}</span>
+      <select class="cl-segment-select" data-cl-assign="${project.id}:${item.id}" aria-label="작업 구간 할당">
+        ${checklistSegmentOptions(project, assignedSegment ? assignedSegment.id : null)}
+      </select>
+    </span>` : '';
+  return `
+    <div class="checklist-item">
+      <input type="checkbox" ${item.checked?'checked':''} data-cl-item="${project.id}:${item.id}" />
+      <span class="cl-name-wrap">
+        <span class="cl-name ${item.checked?'checked':''}" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>
+        <button class="cl-del-x" data-cl-del="${project.id}:${item.id}" aria-label="체크리스트 삭제">×</button>
+      </span>
+      ${item.type === 'qty' ? `<span class="cl-qty">${item.qty}${escapeHtml(unit)}</span>` : ''}
+      ${assignment}
+    </div>`;
+}
+
+function renderChecklistAddForm(project, segmentId = null){
+  const assignmentSelect = !segmentId && (project.segments || []).length ? `
+    <select name="cl_segment" aria-label="작업 구간 할당">${checklistSegmentOptions(project, null)}</select>` : '';
+  return `
+    <div class="checklist-add" ${segmentId ? `data-cl-segment="${segmentId}"` : ''}>
+      <select name="cl_type" data-cl-target="${project.id}"><option value="memo">메모형</option>${isDdayProject(project) ? '' : '<option value="qty">수량형</option>'}</select>
+      ${assignmentSelect}
+      <input name="cl_qty" type="number" min="1" step="1" placeholder="완료에 더해져요" style="display:none" data-cl-target="${project.id}" />
+      <input name="cl_name" placeholder="항목 이름" data-cl-target="${project.id}" />
+      <button class="cl-add-btn" data-cl-confirm="${project.id}" aria-label="체크리스트 추가">+</button>
+    </div>`;
+}
+
+function renderChecklistBody(project, unit){
+  const isOpen = checklistOpenState[project.id] !== false;
+  if (!isOpen) return '';
+  const items = project.checklist || [];
+  const itemsHtml = items.length ? (`<div style="margin-top:8px">` + items.map(i => renderChecklistItem(project, i, unit, true)).join('') + `</div>`)
+    : `<div style="margin-top:8px;min-height:70px;display:flex;align-items:center;justify-content:center"><p class="muted" style="font-size:12px;margin:0">항목 없음</p></div>`;
+  const addOpen = items.length > 0 || !!checklistAddOpenState[project.id];
+  return `${itemsHtml}${addOpen ? renderChecklistAddForm(project) : ''}`;
+}
+
+function renderSegmentChecklist(project, segment){
+  const isOpen = segmentChecklistOpenState[segment.id] !== false;
+  if (!isOpen) return '';
+  const items = (project.checklist || []).filter(i => i.segmentId === segment.id);
+  const addOpen = !!checklistAddOpenState[segment.id];
+  return `
+    <div class="segment-checklist">
+      <div class="segment-checklist-head">
+        <span class="segment-checklist-title">할 일 ${items.length}개</span>
+        <button class="icon-btn" style="font-size:14px;padding:0 4px" data-cl-addopen="${segment.id}" aria-label="${escapeHtml(segment.name)}에 할 일 추가">${addOpen ? '−' : '+'}</button>
+      </div>
+      ${items.length ? items.map(i => renderChecklistItem(project, i, project.unit, true)).join('') : `<p class="segment-checklist-empty">연결된 할 일이 없어요.</p>`}
+      ${addOpen ? renderChecklistAddForm(project, segment.id) : ''}
+    </div>`;
+}
+
+let calEditingField = null; // null | 'start' | 'deadline' — 시작일/마감일 배지를 눌러서 "이동 모드"로 들어간 상태
+
+function renderMiniCalendar(project){
+  const base = new Date();
+  base.setDate(1);
+  base.setMonth(base.getMonth() + calMonthOffset);
+  const year = base.getFullYear();
+  const month = base.getMonth();
+  const firstDow = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const todayS = todayStr();
+  const midDeadlines = (project.segments || []).map(s => s.deadline);
+  let cells = '';
+  ['일','월','화','수','목','금','토'].forEach(d => cells += `<div class="cal-cell dow">${d}</div>`);
+  for (let i=0;i<firstDow;i++) cells += `<div class="cal-cell pad">.</div>`;
+  for (let day=1; day<=daysInMonth; day++){
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dow = new Date(year, month, day).getDay();
+    const isWeekendDay = dow === 0 || dow === 6;
+    const rest = isRestDay(dateStr, project.restDays) || (isWeekendDay && !project.includeWeekend);
+    const isToday = dateStr === todayS;
+    const isDeadlineCell = dateStr === project.deadline;
+    const isStartCell = dateStr === project.startDate;
+    let markClass = '';
+    if (isDeadlineCell) markClass = 'deadline-mark';
+    else if (isStartCell) markClass = 'start-mark';
+    else if (midDeadlines.includes(dateStr)) markClass = 'middeadline-mark';
+    else if (rest) markClass = 'rest';
+    const locked = markClass === 'middeadline-mark';
+    const armedHl = calEditingField ? ' style="outline:2px dashed var(--accent);outline-offset:-2px"' : '';
+    cells += `<div class="cal-cell ${markClass} ${isToday?'today-mark':''}" data-date="${dateStr}" ${locked?'data-locked="1"':''}${armedHl}>${day}</div>`;
+  }
+  const legend = `
+    <div class="cal-legend">
+      <span><span class="dot" style="background:var(--accent-bg);border:1px solid var(--accent)"></span>시작일</span>
+      <span><span class="dot" style="background:var(--midline-bg)"></span>작업 구간</span>
+      <span><span class="dot" style="background:var(--danger-bg)"></span>마감일</span>
+      <span><span class="dot" style="background:#eceff1"></span>쉬는날</span>
+    </div>`;
+  const hint = calEditingField
+    ? `<p class="cal-hint" style="color:var(--accent)">변경할 ${calEditingField === 'start' ? '시작일' : '마감일'} 날짜를 눌러주세요.</p>`
+    : `<p class="cal-hint">클릭하면 쉬는날로 지정돼요.<br>시작일·마감일을 누르면 날짜 이동이 가능해요.</p>`;
+  const periodChecks = `
+    <div class="checkbox-row" style="margin-top:8px;margin-bottom:0">
+      <label><input type="checkbox" id="d_today" ${project.includeToday?'checked':''} /> 시작일 포함</label>
+      <label><input type="checkbox" id="d_deadline_inc" ${project.includeDeadline?'checked':''} /> 마감일 포함</label>
+      <label><input type="checkbox" id="d_weekend" ${project.includeWeekend?'checked':''} /> 주말 포함</label>
+    </div>`;
+  return `
+    <div class="cal-nav">
+      <button id="calPrev">‹</button>
+      <span>${year}년 ${month+1}월</span>
+      <button id="calNext">›</button>
+    </div>
+    <div class="cal-grid">${cells}</div>
+    ${legend}
+    ${hint}
+    ${periodChecks}
+  `;
+}
+
+let projectEditOpenState = {}; // projectId -> bool
+let projectEditDraftState = {}; // projectId -> 저장 전 편집폼 임시값(렌더가 다시 돌아도 입력값 유지)
+let bulkFormOpenState = {}; // projectId -> bool, 작업 구간 생성/재지정 슬라이더 폼 펼침 상태
+let editingSegNameId = null; // 더블클릭으로 이름 수정 중인 작업 구간 id
+let editPeriodState = { today: true, deadline_inc: true, weekend: true };
+
+function captureProjectEditDraft(){
+  if (view.screen !== 'detail' || !view.projectId || !projectEditOpenState[view.projectId]) return;
+  const nameEl = document.getElementById('e_name');
+  const totalEl = document.getElementById('e_total');
+  const unitEl = document.getElementById('e_unit');
+  const startEl = document.getElementById('e_start');
+  const deadlineEl = document.getElementById('e_deadline');
+  if (!nameEl || !totalEl || !unitEl || !startEl || !deadlineEl) return;
+  projectEditDraftState[view.projectId] = {
+    name: nameEl.value,
+    total: totalEl.value,
+    unit: unitEl.value,
+    startDate: startEl.value,
+    deadline: deadlineEl.value,
+    today: !!editPeriodState.today,
+    deadline_inc: !!editPeriodState.deadline_inc,
+    weekend: !!editPeriodState.weekend
+  };
+}
+
+function clearProjectEditDraft(projectId){
+  delete projectEditDraftState[projectId];
+}
+
+function closeProjectEdit(projectId){
+  if (!projectId) return;
+  projectEditOpenState[projectId] = false;
+  clearProjectEditDraft(projectId);
+}
+
+function renderProjectEditForm(p){
+  const draft = projectEditDraftState[p.id];
+  editPeriodState = draft
+    ? { today: !!draft.today, deadline_inc: !!draft.deadline_inc, weekend: !!draft.weekend }
+    : { today: p.includeToday, deadline_inc: p.includeDeadline, weekend: p.includeWeekend };
+  const editName = draft ? draft.name : p.name;
+  const editTotal = draft ? draft.total : (p.total !== null && p.total !== undefined ? p.total : '');
+  const editUnit = draft ? draft.unit : p.unit;
+  const editStart = draft ? (draft.startDate || p.startDate) : p.startDate;
+  const editDeadline = draft ? (draft.deadline || p.deadline) : p.deadline;
+  return `
+    <div class="form-line1" style="margin-top:10px">
+      <div class="field-box name-box">
+        <label>이름</label>
+        <input id="e_name" value="${escapeHtml(editName)}" />
+      </div>
+      <div class="field-box total-box">
+        <label>작업량</label>
+        <input id="e_total" type="number" min="1" step="1" class="num-right" value="${escapeHtml(editTotal)}" placeholder="80" />
+        <select id="e_unit">
+          <option value="" ${!editUnit?'selected':''}></option>
+          <option ${editUnit==='컷'?'selected':''}>컷</option><option ${editUnit==='장'?'selected':''}>장</option><option ${editUnit==='개'?'selected':''}>개</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-line2">
+      <div class="field-box date-box">
+        <label>시작</label>
+        <input id="e_start" type="date" value="${editStart}" class="num-right" />
+      </div>
+      <i class="arrow">→</i>
+      <div class="field-box date-box">
+        <label>마감</label>
+        <input id="e_deadline" type="date" value="${editDeadline}" class="num-right" />
+      </div>
+    </div>
+    <div class="chip-row has-tooltip">
+      <span class="chip ${editPeriodState.today?'on':''}" data-eopt="today">시작일 포함</span>
+      <span class="chip ${editPeriodState.deadline_inc?'on':''}" data-eopt="deadline_inc">마감일 포함</span>
+      <span class="chip ${editPeriodState.weekend?'on':''}" data-eopt="weekend">주말 포함</span>
+      <span class="tooltip-bubble">작업 일수 계산에 포함해요.</span>
+    </div>
+    <div class="form-actions">
+      <button class="accent" id="saveProjectEditBtn">저장</button>
+    </div>
+  `;
+}
+
+function renderDetail(id){
+  const p = projects.find(x => x.id === id);
+  if (!p) return '<p>프로젝트를 찾을 수 없어요.</p>';
+  const pr = calcProjectRisk(p);
+  const disp = calcTodayDisplay(p);
+  const dday = isDdayProject(p);
+
+  let todayLine = '';
+  if (dday) {
+    todayLine = `<p class="row" style="font-size:14px"><b>작업량 미지정</b><strong>${pr.ddayLabel}</strong></p>`;
+  } else if (pr.risk === 'done') {
+    todayLine = `<p class="row" style="font-size:14px"><b>작업 완료</b><strong>완료</strong></p>`;
+  } else if (pr.risk === 'notstarted') {
+    todayLine = `<p style="font-size:14px">${p.startDate}부터 시작 예정</p>`;
+  } else {
+    const label = disp.seg ? escapeHtml(disp.seg.name) + ' 기준 ' : '';
+    const restToday = (!disp.workableToday && !disp.overdue && !disp.isDeadlineDay);
+    const mainVal = restToday ? '쉼' : (disp.overdue ? '마감 지남' : `${disp.todayRemaining ?? disp.perDay}${p.unit}`);
+    const avgLine = restToday
+      ? `다음 작업일 기준 평균 ${disp.perDay}${p.unit}`
+      : (disp.overdue || disp.isDeadlineDay ? '' : `남은날 기준 평균 ${disp.perDay}${p.unit}`);
+    todayLine = `
+      <p class="row" style="font-size:14px"><b>${label}오늘 해야 할 양</b><strong>${mainVal}</strong></p>
+      ${avgLine ? `<p class="muted" style="font-size:12px;text-align:right;margin:2px 0 0">${avgLine}</p>` : ''}
+    `;
+  }
+
+  const qtySum = checklistQtySum(p);
+  const manual = Number(p.manualDone) || 0;
+  const canUseButtonMode = !dday && p.total <= 10;
+  const doneInputMode = canUseButtonMode && doneInputModeState[p.id] === 'buttons' ? 'buttons' : 'number';
+  const quickDoneButtons = (canUseButtonMode && doneInputMode === 'buttons') ? `
+    <div class="quick-done-wrap">
+      <div class="quick-done-grid">
+        ${Array.from({length:p.total}, (_, i) => {
+          const n = i + 1;
+          const on = n <= manual;
+          const current = n === manual;
+          return `<button type="button" class="quick-done-btn ${on?'on':''} ${current?'current':''}" data-quick-done="${n}" aria-pressed="${current?'true':'false'}" title="직접 완료 ${n}${escapeHtml(p.unit)}로 설정">${n}</button>`;
+        }).join('')}
+      </div>
+      <p class="quick-done-help">완료된 일감 숫자를 클릭해주세요.</p>
+    </div>` : '';
+  const doneInput = dday ? '' : `
+    <div class="done-input-head">
+      <span class="done-input-label">완료한 일감</span>
+      <div class="done-input-control">
+        ${doneInputMode === 'number' ? `<input type="number" min="0" step="1" max="${p.total}" value="${manual}" id="totalDoneInput" class="num-right" style="width:56px;flex:0 0 auto" />` : ''}
+        ${canUseButtonMode ? `<button type="button" class="done-mode-toggle" id="doneModeToggle">${doneInputMode === 'buttons' ? '숫자로 입력' : '버튼으로 보기'}</button>` : ''}
+      </div>
+    </div>
+    ${quickDoneButtons}
+    ${qtySum > 0 ? `<p class="muted" style="font-size:12px;text-align:right;margin:4px 0 0">체크리스트 ${qtySum}${p.unit} + 직접 ${manual}${p.unit} = 완료 ${p.done}${p.unit}</p>` : ''}`;
+
+  const badgeText = pr.risk === 'dday' ? pr.ddayLabel : pr.risk === 'notstarted' ? pr.notStartedLabel : riskLabel[pr.risk];
+  const badgeClass = pr.risk === 'dday' ? pr.badgeVariant : pr.risk;
+
+  let midlineSection = '';
+  if (dday) {
+    midlineSection = `
+      <div class="subcard">
+        <div class="row" style="align-items:center">
+          <span class="has-tooltip">
+            <strong style="font-size:13px">작업 구간 (0개)</strong>
+            <span class="tooltip-bubble">작업량을 여러 작업 구간으로 나눌 수 있어요.</span>
+          </span>
+        </div>
+        <p class="muted" style="font-size:12px">작업량이 없어서 작업 구간을 만들 수 없어요.</p>
+      </div>`;
+  } else {
+    const canMakeMidline = midlineMaxAllowed(p) >= 2;
+    const sliderOpen = !!bulkFormOpenState[p.id];
+    if (sliderOpen && midlineFormProjectId !== p.id) initMidlineFormState(p);
+    const sortedSegments = p.segments.slice().sort((a,b)=> new Date(a.deadline)-new Date(b.deadline));
+    const lastSegId = sortedSegments.length ? sortedSegments[sortedSegments.length-1].id : null;
+    const segRows = sortedSegments.map(s => {
+      const sr = calcSegmentRisk(p, s);
+      const isDone = s.done >= s.amount;
+      const isLastSeg = s.id === lastSegId;
+      const todayPart = (sr.isActive && !sr.overdue) ? ` · 오늘 ${sr.isDeadlineDay?'마감일':Math.ceil(sr.perDay)+p.unit}` : '';
+      const segChecklistOpen = segmentChecklistOpenState[s.id] !== false;
+      const nameHtml = editingSegNameId === s.id
+        ? `<input class="seg-name-input" value="${escapeHtml(s.name)}" data-segname="${s.id}" />`
+        : `<button class="seg-collapse-arrow" data-seg-cl-toggle="${s.id}" aria-label="${escapeHtml(s.name)} 할 일 ${segChecklistOpen ? '접기' : '펼치기'}">${segChecklistOpen ? '▾' : '▸'}</button><span class="seg-name" data-dblclick-segname="${s.id}">${isDone?'✓ ':''}${escapeHtml(s.name)}</span>`;
+      const isEditingName = editingSegNameId === s.id;
+      return `<div class="seg-row ${sr.isActive?'active':''} ${isDone?'done':''}">
+        <div class="seg-row-top">
+          <span class="seg-name-slot" style="${isEditingName ? 'flex:1;min-width:0;width:auto' : ''}">${nameHtml}</span>
+          <span class="right-group">
+            <span class="seg-meta">완료 ${s.done}/${s.amount}${p.unit}${todayPart}</span>
+            <span class="badge ${sr.risk}">${riskLabel[sr.risk]}</span>
+            <input type="date" value="${s.deadline}" data-seg="${s.id}" class="segDeadlineInput seg-deadline-pill num-right" ${isLastSeg ? 'disabled title="마지막 작업 구간의 마감은 프로젝트 마감일을 따라가요"' : ''} />
+            <button class="danger-btn" data-delseg="${s.id}">삭제</button>
+          </span>
+        </div>
+        ${renderSegmentChecklist(p, s)}
+      </div>`;
+    }).join('');
+
+    const emptyBlock = (!p.segments.length && !sliderOpen) ? `
+      <p class="muted">현재 작업 구간이 없어요.</p>
+      <button class="ghost small" id="midlineEmptyCreateBtn">생성</button>
+    ` : '';
+
+    const sliderBlock = sliderOpen ? `
+      <div id="bulkFormWrap">${renderBulkForm()}</div>
+      <button class="primary small" id="confirmBulkAdd" style="width:100%;margin-top:8px">생성</button>
+    ` : '';
+
+    midlineSection = `
+      <div class="subcard">
+        <div class="row" style="align-items:center">
+          <span class="has-tooltip">
+            <strong style="font-size:13px">작업 구간 (${p.segments.length}개)</strong>
+            <span class="tooltip-bubble">작업량을 여러 작업 구간으로 나눌 수 있어요.</span>
+          </span>
+          ${p.segments.length ? `<span class="midline-header-actions">
+            <button class="icon-btn" id="midlineDeleteAllBtn" style="font-size:16px;color:var(--danger)" aria-label="작업 구간 전체 삭제" title="작업 구간 전체 삭제">−</button>
+            ${canMakeMidline ? `<button class="icon-btn midline-fold-arrow" id="midlineToggleBtn" aria-label="${sliderOpen?'작업 구간 편집 접기':'작업 구간 편집 펼치기'}" title="${sliderOpen?'작업 구간 편집 접기':'작업 구간 편집 펼치기'}">${sliderOpen?'▾':'▸'}</button>` : ''}
+          </span>` : ''}
+        </div>
+        <div class="midline-help">프로젝트 마감일까지의 작업량과 기간을 단계별 비율로 나눌 수 있어요.<br>예: 콘티 30% · 밑색 70%</div>
+        ${p.segments.length ? `<p class="muted" style="font-size:12px;margin:4px 0 8px">이름을 더블클릭하면 수정할 수 있어요.</p>${segRows}` : ''}
+        ${!canMakeMidline ? `<p class="muted" style="font-size:12px">남은 작업 가능일 또는 작업량이 부족해서 작업 구간을 만들 수 없어요.</p>` : `${emptyBlock}${sliderBlock}`}
+      </div>`;
+  }
+
+  const calendarCard = `<div class="card cal-card">${renderMiniCalendar(p)}</div>`;
+  const checklistCard = `
+    <div class="card">
+      <div class="row" style="align-items:center">
+        <h2 style="margin:0">체크리스트</h2>
+        ${renderChecklistHeader(p)}
+      </div>
+      ${renderChecklistBody(p, p.unit)}
+    </div>`;
+  const calAndChecklist = `<div class="two-col">${calendarCard}${checklistCard}</div>`;
+
+  return `
+    <button class="back-btn" id="backToList">&larr; 목록으로</button>
+    <div class="card">
+      <div class="row detail-head" style="align-items:center">
+        <h2 style="margin:0">${escapeHtml(p.name)}</h2>
+        <div class="detail-actions">
+          <span class="badge ${badgeClass}">${badgeText}</span>
+          <button class="icon-btn" id="editProjectBtn" aria-label="프로젝트 수정" title="수정" style="font-size:14px">✎</button>
+          <button class="icon-btn" id="deleteProjectBtn" aria-label="프로젝트 삭제" title="삭제" style="font-size:14px;color:var(--danger)">✕</button>
+        </div>
+      </div>
+      <div class="info-stats">
+        <div class="info-stat"><span class="lbl">마감</span><span class="val">${p.deadline}</span></div>
+        <div class="info-stat"><span class="lbl">전체</span><span class="val">${dday ? '미지정' : p.total+p.unit}</span></div>
+        <div class="info-stat"><span class="lbl">완료</span><span class="val">${dday ? '-' : p.done+p.unit}</span></div>
+        <div class="info-stat"><span class="lbl">남음</span><span class="val">${dday ? '-' : (p.total-p.done)+p.unit}</span></div>
+      </div>
+      <div id="projectEditWrap">${projectEditOpenState[p.id] ? renderProjectEditForm(p) : ''}</div>
+      <div class="subcard">
+        ${todayLine}
+        ${doneInput}
+      </div>
+      ${midlineSection}
+    </div>
+    ${calAndChecklist}
+  `;
+}
+
+// 작업 구간 슬라이더 상태: 실제 작업량을 원본으로 유지하고 퍼센트는 표시용으로만 계산한다.
+let midlineNames = ['', ''];
+let midlineAmounts = [1, 1];
+let midlineIds = [null, null];
+let midlineFormProjectId = null;
+let midlineDragIdx = null;
+
+const AUTO_SEGMENT_NAME_RE = /^(?:작업\s*구간|구간)\s*\d+$/;
+function defaultSegmentName(index){ return `작업 구간 ${index + 1}`; }
+function normalizeMidlineDefaultNames(){
+  midlineNames = midlineNames.map((name, index) => {
+    const trimmed = String(name ?? '').trim();
+    return (!trimmed || AUTO_SEGMENT_NAME_RE.test(trimmed)) ? defaultSegmentName(index) : name;
+  });
+}
+
+function splitTotalEvenly(total, count){
+  const base = Math.floor(total / count);
+  let rest = total % count;
+  return Array.from({length:count}, () => base + (rest-- > 0 ? 1 : 0));
+}
+function initMidlineFormState(p){
+  midlineFormProjectId = p.id;
+  if (p.segments && p.segments.length >= 2 && p.total > 0) {
+    const sorted = sortSegments(p);
+    midlineNames = sorted.map(s => s.name || '');
+    midlineAmounts = sorted.map(s => toSafePositiveInt(s.amount));
+    midlineIds = sorted.map(s => s.id);
+    normalizeMidlineDefaultNames();
+  } else {
+    midlineNames = ['', ''];
+    midlineAmounts = splitTotalEvenly(p.total, 2);
+    midlineIds = [null, null];
+  }
+}
+function midlineBoundariesFromAmounts(){
+  const total = midlineAmounts.reduce((a,b)=>a+b,0) || 1;
+  let cumulative = 0;
+  return midlineAmounts.slice(0,-1).map(amount => {
+    cumulative += amount;
+    return cumulative / total * 100;
+  });
+}
+function midlinePercents(){
+  const total = midlineAmounts.reduce((a,b)=>a+b,0) || 1;
+  const raw = midlineAmounts.map(amount => amount / total * 100);
+  const result = raw.map(value => Math.floor(value));
+  let remaining = 100 - result.reduce((sum, value) => sum + value, 0);
+  raw.map((value, index) => ({ index, fraction: value - Math.floor(value) }))
+    .sort((a, b) => b.fraction - a.fraction || a.index - b.index)
+    .slice(0, remaining)
+    .forEach(item => { result[item.index] += 1; });
+  return result;
+}
+
+const MIDLINE_PASTELS = ['#ffd9d9','#ffe6bf','#fff6b8','#d9f2d3','#c8ecdf','#c6e3f7','#d8d1f4','#f6d0e8'];
+
+function renderBulkForm(){
+  const manyMobileClass = midlineNames.length >= 4 ? ' hide-mobile-many' : '';
+  const namesHtml = midlineNames.map((n,i) => `<input value="${escapeHtml(n)}" data-mi="${i}" class="midlineNameInput" placeholder="작업 구간 ${i+1}" />`).join('');
+  const boundaries = midlineBoundariesFromAmounts();
+  const bounds = [0, ...boundaries, 100];
+  const percents = midlinePercents();
+  let segHtml = '';
+  midlineNames.forEach((n,i) => {
+    const color = MIDLINE_PASTELS[i % MIDLINE_PASTELS.length];
+    segHtml += `<div class="midline-seg" style="width:${bounds[i+1]-bounds[i]}%;background:${color};color:#4a4a4a" aria-label="작업 구간 ${i+1} ${percents[i]}%">${percents[i]}%</div>`;
+  });
+  const handlesHtml = boundaries.map((b,i) => `<div class="midline-handle" data-handle="${i}" style="left:${b}%"></div>`).join('');
+  return `
+    <div class="midline-bar-wrap">
+      <div class="midline-bar" id="midlineBar">${segHtml}${handlesHtml}</div>
+    </div>
+    <div class="midline-names${manyMobileClass}">${namesHtml}</div>
+    <p class="muted" style="margin:4px 0 0;font-size:11px">바를 누르면 작업 구간이 추가되고, 손잡이를 누르면 구간이 합쳐져요. 화면이 좁을 경우 기본 이름으로 생성돼요.</p>
+  `;
+}
+
+function updateMidlineBarDom(){
+  const bar = document.getElementById('midlineBar');
+  if (!bar) return false;
+  const segs = bar.querySelectorAll('.midline-seg');
+  const handles = bar.querySelectorAll('.midline-handle');
+  if (segs.length !== midlineNames.length || handles.length !== Math.max(midlineAmounts.length - 1, 0)) return false;
+  const boundaries = midlineBoundariesFromAmounts();
+  const bounds = [0, ...boundaries, 100];
+  const percents = midlinePercents();
+  segs.forEach((seg, i) => {
+    seg.style.width = `${bounds[i+1] - bounds[i]}%`;
+    seg.textContent = `${percents[i]}%`;
+    seg.setAttribute('aria-label', `작업 구간 ${i+1} ${percents[i]}%`);
+  });
+  handles.forEach((handle, i) => { handle.style.left = `${boundaries[i]}%`; });
+  return true;
+}
+
+let midlinePointerDownX = null;
+let midlineMoved = false;
+let midlineActivePointerId = null;
+let midlineIgnoreClickUntil = 0;
+
+function bindBulkEvents(){
+  document.querySelectorAll('.midlineNameInput').forEach(el => {
+    el.oninput = (e) => { midlineNames[Number(e.target.dataset.mi)] = e.target.value; };
+  });
+  const refreshBar = () => {
+    const wrap = document.getElementById('bulkFormWrap');
+    if (wrap) { wrap.innerHTML = renderBulkForm(); bindBulkEvents(); }
+  };
+
+  document.querySelectorAll('.midline-handle').forEach(handle => {
+    handle.onpointerdown = (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      e.preventDefault(); e.stopPropagation();
+      midlineDragIdx = Number(handle.dataset.handle);
+      midlinePointerDownX = e.clientX;
+      midlineMoved = false;
+      midlineActivePointerId = e.pointerId;
+      try { handle.setPointerCapture(e.pointerId); } catch (_) {}
+    };
+  });
+  document.onpointermove = (e) => {
+    if (midlineDragIdx === null) return;
+    if (midlineActivePointerId !== null && e.pointerId !== midlineActivePointerId) return;
+    e.preventDefault();
+    if (Math.abs(e.clientX - midlinePointerDownX) > 3) midlineMoved = true;
+    const bar = document.getElementById('midlineBar');
+    if (!bar) return;
+    const rect = bar.getBoundingClientRect();
+    const total = midlineAmounts.reduce((a,b)=>a+b,0);
+    const beforePair = midlineAmounts.slice(0, midlineDragIdx).reduce((a,b)=>a+b,0);
+    const pairTotal = midlineAmounts[midlineDragIdx] + midlineAmounts[midlineDragIdx+1];
+    let targetCumulative = Math.round(((e.clientX - rect.left) / rect.width) * total);
+    let leftAmount = targetCumulative - beforePair;
+    leftAmount = Math.max(1, Math.min(pairTotal - 1, leftAmount));
+    midlineAmounts[midlineDragIdx] = leftAmount;
+    midlineAmounts[midlineDragIdx+1] = pairTotal - leftAmount;
+    updateMidlineBarDom();
+  };
+  const finishMidlinePointer = (e, cancelled = false) => {
+    if (midlineDragIdx === null) return;
+    if (midlineActivePointerId !== null && e && e.pointerId !== midlineActivePointerId) return;
+    if (!cancelled && !midlineMoved && midlineNames.length > 2) {
+      midlineAmounts[midlineDragIdx] += midlineAmounts[midlineDragIdx+1];
+      midlineAmounts.splice(midlineDragIdx+1, 1);
+      midlineNames.splice(midlineDragIdx+1, 1);
+      midlineIds.splice(midlineDragIdx+1, 1);
+      normalizeMidlineDefaultNames();
+      refreshBar();
+    }
+    midlineIgnoreClickUntil = Date.now() + 350;
+    midlineDragIdx = null;
+    midlineActivePointerId = null;
+  };
+  document.onpointerup = (e) => finishMidlinePointer(e, false);
+  document.onpointercancel = (e) => finishMidlinePointer(e, true);
+
+  const bar = document.getElementById('midlineBar');
+  if (bar) bar.onclick = (e) => {
+    if (Date.now() < midlineIgnoreClickUntil || e.target.classList.contains('midline-handle')) return;
+    const p = projects.find(x=>x.id===view.projectId);
+    const max = midlineMaxAllowed(p);
+    if (midlineNames.length >= max) { showToast(`작업 구간은 최대 ${max}개까지 만들 수 있어요.`); return; }
+    const rect = bar.getBoundingClientRect();
+    const total = midlineAmounts.reduce((a,b)=>a+b,0);
+    let unitPos = Math.max(1, Math.min(total - 1, Math.round(((e.clientX - rect.left) / rect.width) * total)));
+    let cumulative = 0, splitIndex = -1;
+    for (let i=0; i<midlineAmounts.length; i++) {
+      if (unitPos > cumulative && unitPos < cumulative + midlineAmounts[i]) { splitIndex = i; break; }
+      cumulative += midlineAmounts[i];
+    }
+    if (splitIndex === -1) { showToast('이 위치의 작업량이 1이라 더 나눌 수 없어요.'); return; }
+    const before = midlineAmounts.slice(0, splitIndex).reduce((a,b)=>a+b,0);
+    const left = unitPos - before;
+    const right = midlineAmounts[splitIndex] - left;
+    if (left < 1 || right < 1) { showToast('각 작업 구간에는 작업량이 1 이상 필요해요.'); return; }
+    midlineAmounts[splitIndex] = left;
+    midlineAmounts.splice(splitIndex+1, 0, right);
+    midlineNames.splice(splitIndex+1, 0, '');
+    midlineIds.splice(splitIndex+1, 0, null);
+    normalizeMidlineDefaultNames();
+    refreshBar();
+  };
+}
+
+let deadlineViewerMonthOffset = 0;
+let deadlineViewerSelectedDate = null;
+
+function maxDateStr(a, b){ return a > b ? a : b; }
+function minDateStr(a, b){ return a < b ? a : b; }
+function deadlineViewerDateLabel(dateStr){
+  const d = toDateOnly(dateStr);
+  return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
+}
+function deadlineViewerProjectColor(projectId){
+  const id = String(projectId || '');
+  const numericId = /^id(\d+)$/.exec(id);
+  if (numericId) return DEADLINE_VIEWER_PROJECT_COLORS[(Number(numericId[1]) - 1) % DEADLINE_VIEWER_PROJECT_COLORS.length];
+  let hash = 0;
+  for (let i=0; i<id.length; i++) hash = ((hash * 31) + id.charCodeAt(i)) >>> 0;
+  return DEADLINE_VIEWER_PROJECT_COLORS[hash % DEADLINE_VIEWER_PROJECT_COLORS.length];
+}
+function deadlineEventTypeRank(type){ return type === 'mid' ? 0 : 1; }
+
+function collectDeadlineViewerData(rangeStart, rangeEnd){
+  const events = [];
+  const timelines = [];
+
+  projects.forEach((project, projectIndex) => {
+    const finalDate = isValidDateString(project.deadline) ? project.deadline : null;
+    if (!finalDate) return;
+
+    const color = deadlineViewerProjectColor(project.id);
+    const midMarkers = (project.segments || [])
+      .filter(segment => segment && isValidDateString(segment.deadline) && segment.deadline < finalDate)
+      .sort((a,b) => a.deadline.localeCompare(b.deadline))
+      .map((segment, segmentIndex) => ({
+        date: segment.deadline,
+        type: 'mid',
+        label: `${project.name} · ${segment.name || `작업 구간 ${segmentIndex + 1}`}`
+      }));
+
+    midMarkers.forEach(marker => {
+      events.push({
+        date: marker.date,
+        type: 'mid',
+        label: marker.label,
+        projectId: project.id,
+        projectName: project.name,
+        color,
+        order: projectIndex
+      });
+    });
+    events.push({
+      date: finalDate,
+      type: 'final',
+      label: project.name,
+      projectId: project.id,
+      projectName: project.name,
+      color,
+      order: projectIndex
+    });
+
+    const timelineStart = isValidDateString(project.startDate) ? project.startDate : finalDate;
+    const visibleStart = maxDateStr(timelineStart, rangeStart);
+    const visibleEnd = minDateStr(finalDate, rangeEnd);
+    if (visibleStart > visibleEnd) return;
+
+    timelines.push({
+      kind: timelineStart === finalDate ? 'finalOnly' : 'range',
+      projectId: project.id,
+      projectName: project.name,
+      color,
+      order: projectIndex,
+      endDate: finalDate,
+      midDates: midMarkers.map(marker => marker.date),
+      visibleStart,
+      visibleEnd,
+      firstVisibleWeek: Math.floor(daysBetween(rangeStart, visibleStart) / 7)
+    });
+  });
+
+  events.sort((a,b) => a.date.localeCompare(b.date) || a.order - b.order || deadlineEventTypeRank(a.type) - deadlineEventTypeRank(b.type));
+  const sortedTimelines = timelines.slice().sort((a,b) => a.visibleStart.localeCompare(b.visibleStart) || a.visibleEnd.localeCompare(b.visibleEnd) || a.order - b.order);
+  const laneEnds = [];
+  sortedTimelines.forEach(timeline => {
+    let lane = laneEnds.findIndex(endDate => endDate < timeline.visibleStart);
+    if (lane === -1) lane = laneEnds.length;
+    laneEnds[lane] = timeline.visibleEnd;
+    timeline.lane = lane;
+  });
+
+  return { events, timelines: sortedTimelines };
+}
+
+function renderDeadlineViewer(overlay, opts = {}){
+  if (!overlay || !overlay.isConnected) return;
+
+  const isMain = opts.mode === 'main';
+  const monthOffset = isMain ? mainCalendarMonthOffset : deadlineViewerMonthOffset;
+  let selectedDate = isMain ? mainCalendarSelectedDate : deadlineViewerSelectedDate;
+  const base = new Date();
+  base.setDate(1);
+  base.setMonth(base.getMonth() + monthOffset);
+  const year = base.getFullYear();
+  const month = base.getMonth();
+  const monthStart = fmtLocalDate(new Date(year, month, 1));
+  const monthEnd = fmtLocalDate(new Date(year, month + 1, 0));
+  const firstDow = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const totalCells = Math.ceil((firstDow + daysInMonth) / 7) * 7;
+  const gridStart = addDaysStr(monthStart, -firstDow);
+  const gridEnd = addDaysStr(gridStart, totalCells - 1);
+
+  const { events, timelines } = collectDeadlineViewerData(gridStart, gridEnd);
+  const byDate = new Map();
+  events.forEach(event => {
+    if (!byDate.has(event.date)) byDate.set(event.date, []);
+    byDate.get(event.date).push(event);
+  });
+
+  if (selectedDate && (selectedDate < gridStart || selectedDate > gridEnd)) {
+    selectedDate = null;
+    if (isMain) mainCalendarSelectedDate = null;
+    else deadlineViewerSelectedDate = null;
+  }
+
+  const dowHtml = ['일','월','화','수','목','금','토']
+    .map((day, index) => `<div class="deadline-calendar-dow ${index === 0 || index === 6 ? 'weekend' : ''}">${day}</div>`)
+    .join('');
+
+  let weeksHtml = '';
+  const weekCount = totalCells / 7;
+  const weekMeta = Array.from({length:weekCount}, (_, weekIndex) => {
+    const weekStart = addDaysStr(gridStart, weekIndex * 7);
+    const weekEnd = addDaysStr(weekStart, 6);
+    const allActiveTimelines = timelines
+      .filter(timeline => !(timeline.visibleEnd < weekStart || timeline.visibleStart > weekEnd))
+      .sort((a,b) => {
+        const aFinalInWeek = a.endDate >= weekStart && a.endDate <= weekEnd;
+        const bFinalInWeek = b.endDate >= weekStart && b.endDate <= weekEnd;
+        if (aFinalInWeek !== bFinalInWeek) return aFinalInWeek ? -1 : 1;
+        const aMidDates = (a.midDates || []).filter(date => date >= weekStart && date <= weekEnd);
+        const bMidDates = (b.midDates || []).filter(date => date >= weekStart && date <= weekEnd);
+        const aMidInWeek = aMidDates.length > 0;
+        const bMidInWeek = bMidDates.length > 0;
+        if (aMidInWeek !== bMidInWeek) return aMidInWeek ? -1 : 1;
+        if (aFinalInWeek && bFinalInWeek && a.endDate !== b.endDate) return a.endDate.localeCompare(b.endDate);
+        if (aMidInWeek && bMidInWeek) {
+          const midCompare = aMidDates[0].localeCompare(bMidDates[0]);
+          if (midCompare) return midCompare;
+        }
+        if (a.endDate !== b.endDate) return a.endDate.localeCompare(b.endDate);
+        return a.order - b.order;
+      });
+    const expanded = isMain && mainCalendarExpandedWeeks.has(weekStart) && allActiveTimelines.length > MAIN_CALENDAR_MAX_LINES;
+    const activeTimelines = (isMain && !expanded) ? allActiveTimelines.slice(0, MAIN_CALENDAR_MAX_LINES) : allActiveTimelines;
+    const hiddenTimelines = allActiveTimelines.slice(activeTimelines.length);
+    // 메인 달력은 접힌 상태에서 항상 3개 행 높이를 유지한다. 펼친 주만 필요한 만큼 늘어난다.
+    const visibleLaneCount = isMain ? (expanded ? Math.max(MAIN_CALENDAR_MAX_LINES, activeTimelines.length) : MAIN_CALENDAR_MAX_LINES) : Math.max(1, activeTimelines.length);
+    const footerHeight = isMain ? 23 : 0;
+    const scheduleHeight = Math.max(56, visibleLaneCount * 24 + 18 + footerHeight);
+    return { weekIndex, weekStart, weekEnd, allActiveTimelines, expanded, activeTimelines, hiddenTimelines, scheduleHeight };
+  });
+  for (const meta of weekMeta) {
+    const { weekIndex, weekStart, weekEnd, expanded, activeTimelines, hiddenTimelines, scheduleHeight } = meta;
+
+    let dateCellsHtml = '';
+    for (let dayOffset=0; dayOffset<7; dayOffset++) {
+      const dateStr = addDaysStr(weekStart, dayOffset);
+      const cellDate = toDateOnly(dateStr);
+      const day = cellDate.getDate();
+      const dow = cellDate.getDay();
+      const inMonth = dateStr >= monthStart && dateStr <= monthEnd;
+      const dayEvents = byDate.get(dateStr) || [];
+      const classes = [
+        'deadline-calendar-date-cell',
+        inMonth ? '' : 'outside',
+        (dow === 0 || dow === 6) ? 'weekend' : '',
+        dateStr === todayStr() ? 'today' : '',
+        dateStr === selectedDate ? 'selected' : ''
+      ].filter(Boolean).join(' ');
+      const ariaLabel = `${deadlineViewerDateLabel(dateStr)}${dayEvents.length ? `, 마감 ${dayEvents.length}개` : ''}`;
+      dateCellsHtml += `<button type="button" class="${classes}" data-deadline-date="${dateStr}" aria-label="${ariaLabel}">
+        <span class="deadline-calendar-date">${day}</span>
+      </button>`;
+    }
+
+    const scheduleItemsHtml = activeTimelines.map((timeline, displayLane) => {
+      if (timeline.kind === 'finalOnly') {
+        const finalCol = daysBetween(weekStart, timeline.endDate);
+        if (finalCol < 0 || finalCol > 6) return '';
+        const soft = hexToRgba(timeline.color, 0.11);
+        const border = hexToRgba(timeline.color, 0.24);
+        return `<button type="button" class="deadline-final-only" style="--column:${finalCol}; --lane:${displayLane}; --bar-color:${timeline.color}; --bar-soft:${soft}; --bar-border:${border}" data-deadline-project="${timeline.projectId}" title="${escapeHtml(timeline.projectName)}">${escapeHtml(timeline.projectName)}</button>`;
+      }
+
+      const segmentStart = maxDateStr(timeline.visibleStart, weekStart);
+      const segmentEnd = minDateStr(timeline.visibleEnd, weekEnd);
+      const startCol = daysBetween(weekStart, segmentStart);
+      const endCol = daysBetween(weekStart, segmentEnd);
+      // 주가 바뀌는 지점에서는 행 끝/시작까지 선을 억지로 연장하지 않는다.
+      // 각 주에서 실제로 보이는 첫 날짜와 마지막 날짜의 셀 중앙까지만 그린다.
+      let lineLeftPct = ((startCol + 0.5) / 7) * 100;
+      let lineRightPct = ((endCol + 0.5) / 7) * 100;
+      if (lineRightPct < lineLeftPct) [lineLeftPct, lineRightPct] = [lineRightPct, lineLeftPct];
+      let lineWidthPct = lineRightPct - lineLeftPct;
+      if (lineWidthPct < 0.1) {
+        lineLeftPct = Math.max(0, lineLeftPct - (0.28 / 7 * 100));
+        lineRightPct = Math.min(100, lineRightPct + (0.28 / 7 * 100));
+        lineWidthPct = lineRightPct - lineLeftPct;
+      }
+
+      const labelHtml = `<span class="deadline-project-label">${escapeHtml(timeline.projectName)}</span>`;
+      const barSoft = hexToRgba(timeline.color, 0.11);
+      const barBorder = hexToRgba(timeline.color, 0.24);
+      const barShadow = hexToRgba(timeline.color, 0.20);
+      const lineHtml = `<button type="button" class="deadline-project-bar" style="--line-left:${lineLeftPct.toFixed(4)}%; --line-width:${lineWidthPct.toFixed(4)}%; --lane:${displayLane}; --bar-color:${timeline.color}; --bar-soft:${barSoft}; --bar-border:${barBorder}; --bar-shadow:${barShadow}" data-deadline-project="${timeline.projectId}" title="${escapeHtml(timeline.projectName)}">
+        <span class="deadline-project-line"></span>
+        ${labelHtml}
+      </button>`;
+
+      return lineHtml;
+    }).join('');
+
+    const midMarkersHtml = activeTimelines.map((timeline, displayLane) => {
+      return (timeline.midDates || [])
+        .filter(date => date >= weekStart && date <= weekEnd)
+        .map(date => {
+          const column = daysBetween(weekStart, date);
+          return `<span class="deadline-project-mid-dot" style="--column:${column}; --lane:${displayLane}; --marker-color:${timeline.color}" aria-hidden="true"></span>`;
+        }).join('');
+    }).join('');
+
+    const columnsHtml = '<div class="deadline-week-columns">' + Array.from({length:7}, (_, dayOffset) => {
+      const columnDate = addDaysStr(weekStart, dayOffset);
+      return `<span class="deadline-week-column ${columnDate === todayStr() ? 'today' : ''}" data-calendar-column-date="${columnDate}"></span>`;
+    }).join('') + '</div>';
+    const hiddenTitle = hiddenTimelines.map(t => t.projectName).join(' · ');
+    const moreHtml = isMain && (hiddenTimelines.length || expanded)
+      ? `<button type="button" class="deadline-calendar-more" data-calendar-more-week="${weekStart}" title="${escapeHtml(hiddenTitle)}">${expanded ? '접기' : `+${hiddenTimelines.length}`}</button>` : '';
+    weeksHtml += `<div class="deadline-calendar-week" data-week-start="${weekStart}">
+      <div class="deadline-week-date-row">${dateCellsHtml}</div>
+      <div class="deadline-week-schedule" style="--schedule-height:${scheduleHeight}px">
+        ${columnsHtml}
+        ${scheduleItemsHtml}
+        ${midMarkersHtml}
+        ${moreHtml}
+      </div>
+    </div>`;
+  }
+
+  const selectedEvents = (byDate.get(selectedDate) || []).slice()
+    .sort((a,b) => a.order - b.order || deadlineEventTypeRank(a.type) - deadlineEventTypeRank(b.type));
+  const detailHtml = selectedEvents.length ? `
+    <div class="deadline-viewer-detail">
+      <h4>${deadlineViewerDateLabel(selectedDate)}</h4>
+      ${selectedEvents.map(event => `
+        <button type="button" class="deadline-viewer-item" data-deadline-project="${event.projectId}" style="--item-color:${event.color}">
+          <span class="deadline-viewer-item-type ${event.type}">${event.type === 'final' ? '최종 마감' : '작업 구간'}</span>
+          <span class="deadline-viewer-item-name">${escapeHtml(event.label)}</span>
+        </button>`).join('')}
+    </div>` : '';
+
+  overlay.querySelector('.deadline-viewer-content').innerHTML = `
+    <div class="deadline-viewer-nav">
+      <strong>${year}년 ${month + 1}월</strong>
+      <button type="button" data-deadline-prev aria-label="이전 달">‹</button>
+      <button type="button" data-deadline-next aria-label="다음 달">›</button>
+    </div>
+    ${isMain ? `<div class="main-calendar-help-row">
+      <span class="main-calendar-help-drag">프로젝트 선을 드래그하면 일정 전체가 이동해요.</span>
+    </div>` : ``}
+    <div class="deadline-calendar-month">
+      <div class="deadline-calendar-dow-row">${dowHtml}</div>
+      ${weeksHtml}
+    </div>
+    ${detailHtml}`;
+
+  overlay.querySelector('[data-deadline-prev]').onclick = () => {
+    if (isMain) { mainCalendarMonthOffset--; mainCalendarSelectedDate = null; }
+    else { deadlineViewerMonthOffset--; deadlineViewerSelectedDate = null; }
+    renderDeadlineViewer(overlay, opts);
+  };
+  overlay.querySelector('[data-deadline-next]').onclick = () => {
+    if (isMain) { mainCalendarMonthOffset++; mainCalendarSelectedDate = null; }
+    else { deadlineViewerMonthOffset++; deadlineViewerSelectedDate = null; }
+    renderDeadlineViewer(overlay, opts);
+  };
+  overlay.querySelectorAll('[data-deadline-date]').forEach(cell => {
+    cell.onclick = () => {
+      if (Date.now() < calendarDragSuppressClickUntil) return;
+      if (isMain) mainCalendarSelectedDate = cell.dataset.deadlineDate;
+      else deadlineViewerSelectedDate = cell.dataset.deadlineDate;
+      renderDeadlineViewer(overlay, opts);
+    };
+  });
+  overlay.querySelectorAll('[data-calendar-more-week]').forEach(button => {
+    button.onclick = (event) => {
+      event.stopPropagation();
+      const week = button.dataset.calendarMoreWeek;
+      if (mainCalendarExpandedWeeks.has(week)) mainCalendarExpandedWeeks.delete(week);
+      else mainCalendarExpandedWeeks.add(week);
+      renderDeadlineViewer(overlay, opts);
+    };
+  });
+  overlay.querySelectorAll('[data-deadline-project]').forEach(button => {
+    button.onclick = (event) => {
+      event.stopPropagation();
+      if (Date.now() < calendarDragSuppressClickUntil) return;
+      const projectId = button.dataset.deadlineProject;
+      if (!isMain) {
+        if (typeof overlay._closeDeadlineViewer === 'function') overlay._closeDeadlineViewer();
+        else overlay.remove();
+      }
+      view.screen = 'detail';
+      view.projectId = projectId;
+      calMonthOffset = 0;
+      calEditingField = null;
+      render();
+    };
+  });
+  if (isMain) bindCalendarProjectDrag(overlay);
+}
+
+function calendarDateAtPoint(root, clientX, clientY){
+  const target = document.elementFromPoint(clientX, clientY);
+  if (!target || !root.contains(target)) return null;
+  const dateCell = target.closest('[data-deadline-date]');
+  if (dateCell) return dateCell.dataset.deadlineDate;
+  const column = target.closest('[data-calendar-column-date]');
+  if (column) return column.dataset.calendarColumnDate;
+  const week = target.closest('.deadline-calendar-week[data-week-start]');
+  if (!week) return null;
+  const rect = week.getBoundingClientRect();
+  const col = Math.max(0, Math.min(6, Math.floor(((clientX - rect.left) / Math.max(rect.width,1)) * 7)));
+  return addDaysStr(week.dataset.weekStart, col);
+}
+function clearCalendarDropTarget(root){
+  root.querySelectorAll('.calendar-drop-target').forEach(el => el.classList.remove('calendar-drop-target'));
+}
+function markCalendarDropTarget(root, dateStr){
+  clearCalendarDropTarget(root);
+  if (!dateStr) return;
+  root.querySelectorAll(`[data-deadline-date="${dateStr}"], [data-calendar-column-date="${dateStr}"]`).forEach(el => el.classList.add('calendar-drop-target'));
+}
+function bindCalendarProjectDrag(root){
+  root.querySelectorAll('.deadline-project-bar[data-deadline-project], .deadline-final-only[data-deadline-project]').forEach(button => {
+    button.onpointerdown = (event) => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      const sourceDate = calendarDateAtPoint(root, event.clientX, event.clientY);
+      if (!sourceDate) return;
+
+      const pointerId = event.pointerId;
+      const startX = event.clientX;
+      const startY = event.clientY;
+      const isTouchLike = event.pointerType === 'touch' || event.pointerType === 'pen';
+      let dragging = false;
+      let moved = false;
+      let cancelledBeforeDrag = false;
+      let targetDate = sourceDate;
+      let longPressTimer = null;
+
+      const clearLongPressTimer = () => {
+        if (longPressTimer !== null) {
+          clearTimeout(longPressTimer);
+          longPressTimer = null;
+        }
+      };
+      const startDragging = () => {
+        if (dragging || cancelledBeforeDrag) return;
+        dragging = true;
+        clearLongPressTimer();
+        calendarDragSuppressClickUntil = Date.now() + 500;
+        try { button.setPointerCapture(pointerId); } catch (_) {}
+        button.classList.remove('calendar-longpress-ready');
+        button.classList.add('calendar-dragging');
+        document.body.classList.add('calendar-project-drag-active');
+        markCalendarDropTarget(root, targetDate);
+      };
+      const cleanup = () => {
+        clearLongPressTimer();
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onCancel);
+        button.classList.remove('calendar-longpress-ready', 'calendar-dragging');
+        document.body.classList.remove('calendar-project-drag-active');
+        clearCalendarDropTarget(root);
+      };
+      const onMove = (e) => {
+        if (e.pointerId !== pointerId) return;
+        const distance = Math.hypot(e.clientX - startX, e.clientY - startY);
+
+        if (isTouchLike && !dragging) {
+          // 길게 누르기 전에 손가락이 움직이면 달력 이동이 아니라 페이지 스크롤로 본다.
+          if (distance > 8) {
+            cancelledBeforeDrag = true;
+            clearLongPressTimer();
+            button.classList.remove('calendar-longpress-ready');
+          }
+          return;
+        }
+        if (!isTouchLike && !dragging && distance > 5) startDragging();
+        if (!dragging) return;
+
+        e.preventDefault();
+        moved = moved || distance > 3;
+        targetDate = calendarDateAtPoint(root, e.clientX, e.clientY) || targetDate;
+        markCalendarDropTarget(root, targetDate);
+      };
+      const finish = (e, cancelled = false) => {
+        if (e.pointerId !== pointerId) return;
+        const wasDragging = dragging;
+        cleanup();
+        if (!wasDragging || cancelled) return;
+
+        calendarDragSuppressClickUntil = Date.now() + 500;
+        if (!moved) return;
+        const delta = daysBetween(sourceDate, targetDate);
+        if (!delta) return;
+        const project = projects.find(p => p.id === button.dataset.deadlineProject);
+        if (!project) return;
+        const error = shiftProjectSchedule(project, delta);
+        if (error) {
+          showToast(error);
+          render();
+          return;
+        }
+        showToast(`${project.name} 일정을 ${Math.abs(delta)}일 ${delta > 0 ? '뒤로' : '앞으로'} 옮겼어요.`);
+        render();
+      };
+      const onUp = e => finish(e, false);
+      const onCancel = e => finish(e, true);
+
+      event.stopPropagation();
+      if (!isTouchLike) {
+        event.preventDefault();
+        try { button.setPointerCapture(pointerId); } catch (_) {}
+      } else {
+        button.classList.add('calendar-longpress-ready');
+        longPressTimer = setTimeout(startDragging, 400);
+      }
+
+      window.addEventListener('pointermove', onMove, { passive:false });
+      window.addEventListener('pointerup', onUp);
+      window.addEventListener('pointercancel', onCancel);
+    };
+  });
+}
+
+// 클릭 없이 잠깐 보이고 사라지는 경고. 확인 눌러야 닫히는 confirm/alert와 다름 (그냥 인지만 시키면 되는 경우용)
+let toastTimer = null;
+function showToast(message){
+  let box = document.getElementById('toastBox');
+  if (!box) {
+    const overlay = document.createElement('div');
+    overlay.className = 'toast-overlay';
+    overlay.innerHTML = '<div class="toast-box" id="toastBox"></div>';
+    document.body.appendChild(overlay);
+    box = overlay.querySelector('#toastBox');
+  }
+  box.textContent = message;
+  box.classList.remove('show');
+  requestAnimationFrame(() => box.classList.add('show'));
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => box.classList.remove('show'), 1800);
+}
+
+// 네이티브 confirm() 대체용 커스텀 확인창. onConfirm은 "삭제" 눌렀을 때만 실행됨
+function customConfirm(message, onConfirm, opts = {}){
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  const confirmLabel = opts.confirmLabel || '삭제';
+  const cancelLabel = opts.cancelLabel || '취소';
+  const confirmClass = opts.confirmClass || 'danger-btn';
+  overlay.innerHTML = `
+    <div class="confirm-box">
+      <p></p>
+      <div class="confirm-actions">
+        <button class="ghost small" id="confirmCancelBtn"></button>
+        <button class="${confirmClass}" id="confirmOkBtn"></button>
+      </div>
+    </div>`;
+  overlay.querySelector('p').textContent = message;
+  overlay.querySelector('#confirmCancelBtn').textContent = cancelLabel;
+  overlay.querySelector('#confirmOkBtn').textContent = confirmLabel;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#confirmCancelBtn').onclick = () => overlay.remove();
+  overlay.querySelector('#confirmOkBtn').onclick = () => { overlay.remove(); onConfirm(); };
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+}
+
+function moveProjectRelative(fromId, toId, placeAfter = false){
+  if (!fromId || !toId || fromId === toId) return false;
+  const beforeOrder = projects.map(p => p.id).join('|');
+  const fromIdx = projects.findIndex(p => p.id === fromId);
+  if (fromIdx === -1) return false;
+  const [moved] = projects.splice(fromIdx, 1);
+  const targetIdx = projects.findIndex(p => p.id === toId);
+  if (targetIdx === -1) {
+    projects.splice(fromIdx, 0, moved);
+    return false;
+  }
+  projects.splice(targetIdx + (placeAfter ? 1 : 0), 0, moved);
+  return projects.map(p => p.id).join('|') !== beforeOrder;
+}
+function moveProjectBefore(fromId, toId){
+  return moveProjectRelative(fromId, toId, false);
+}
+
+function clearProjectDropMarks(selector){
+  document.querySelectorAll(selector).forEach(node => node.classList.remove('drag-over','drag-before','drag-after'));
+}
+function markProjectDropTarget(target, placeAfter, insertionLine){
+  if (!target) return;
+  if (insertionLine) target.classList.add(placeAfter ? 'drag-after' : 'drag-before');
+  else target.classList.add('drag-over');
+}
+function projectDropPlaceAfter(target, clientX, clientY, axis = 'y'){
+  const rect = target.getBoundingClientRect();
+  const dx = (clientX - (rect.left + rect.width / 2)) / Math.max(rect.width, 1);
+  const dy = (clientY - (rect.top + rect.height / 2)) / Math.max(rect.height, 1);
+  if (axis === 'x') return dx > 0;
+  if (axis === 'auto') return Math.abs(dx) >= Math.abs(dy) ? dx > 0 : dy > 0;
+  return dy > 0;
+}
+
+let suppressProjectOpenUntil = 0;
+function bindTouchProjectReorder(selector, opts = {}){
+  const handleSelector = opts.handleSelector || null;
+  const insertionLine = !!opts.insertionLine;
+  const dismissHintOnMove = !!opts.dismissHintOnMove;
+  const axis = opts.axis || 'y';
+  document.querySelectorAll(selector).forEach(el => {
+    const handle = handleSelector ? el.querySelector(handleSelector) : el;
+    if (!handle) return;
+    let holdTimer = null;
+    let pointerId = null;
+    let startX = 0;
+    let startY = 0;
+    let active = false;
+    let targetEl = null;
+    let placeAfter = false;
+
+    const clearHold = () => {
+      if (holdTimer !== null) clearTimeout(holdTimer);
+      holdTimer = null;
+    };
+    const clearTarget = () => {
+      clearProjectDropMarks(selector);
+      targetEl = null;
+      placeAfter = false;
+    };
+    const cleanup = () => {
+      clearHold();
+      clearTarget();
+      el.classList.remove('touch-reorder-source');
+      handle.draggable = true;
+      document.body.classList.remove('touch-reorder-active');
+      active = false;
+      pointerId = null;
+    };
+
+    handle.onpointerdown = (e) => {
+      if (e.pointerType === 'mouse' || e.isPrimary === false) return;
+      if (!handleSelector && e.target.closest('button,input,select,textarea,a,.proj-menu')) return;
+      pointerId = e.pointerId;
+      handle.draggable = false; // iPad/Safari의 네이티브 HTML 드래그와 충돌 방지
+      startX = e.clientX;
+      startY = e.clientY;
+      clearHold();
+      holdTimer = setTimeout(() => {
+        if (pointerId !== e.pointerId) return;
+        active = true;
+        el.classList.add('touch-reorder-source');
+        document.body.classList.add('touch-reorder-active');
+        try { handle.setPointerCapture(pointerId); } catch (_) {}
+      }, 240);
+    };
+    handle.onpointermove = (e) => {
+      if (e.pointerId !== pointerId) return;
+      const distance = Math.hypot(e.clientX - startX, e.clientY - startY);
+      if (!active) {
+        if (distance > 8) clearHold();
+        return;
+      }
+      e.preventDefault();
+      const hit = document.elementFromPoint(e.clientX, e.clientY);
+      const nextTarget = hit && hit.closest ? hit.closest(selector) : null;
+      const nextAfter = !!(nextTarget && projectDropPlaceAfter(nextTarget, e.clientX, e.clientY, axis));
+      if (nextTarget === targetEl && nextAfter === placeAfter) return;
+      clearTarget();
+      if (nextTarget && nextTarget !== el) {
+        targetEl = nextTarget;
+        placeAfter = nextAfter;
+        markProjectDropTarget(targetEl, placeAfter, insertionLine);
+      }
+    };
+    const finish = (e, cancelled = false) => {
+      if (e.pointerId !== pointerId) return;
+      const wasActive = active;
+      const fromId = el.dataset.id;
+      const toId = targetEl && targetEl.dataset.id;
+      const after = placeAfter;
+      if (wasActive) {
+        e.preventDefault();
+        suppressProjectOpenUntil = Date.now() + 500;
+      }
+      cleanup();
+      const moved = !cancelled && wasActive && (insertionLine
+        ? moveProjectRelative(fromId, toId, after)
+        : moveProjectBefore(fromId, toId));
+      if (moved) {
+        if (dismissHintOnMove) dismissReorderHint();
+        render();
+      }
+    };
+    handle.onpointerup = (e) => finish(e, false);
+    handle.onpointercancel = (e) => finish(e, true);
+    handle.onlostpointercapture = (e) => {
+      if (pointerId !== null && e.pointerId === pointerId) finish(e, true);
+    };
+  });
+}
+
+// 화면을 다시 그릴 때마다 호출. 성격별 그룹으로 나눠 각자 자기 화면 요소에만 이벤트를 붙인다(요소 없으면 자동으로 건너뜀).
+function bindEvents(){
+  bindCommonEvents();
+  bindDashboardEvents();
+  bindListEvents();
+  bindDetailEvents();
+  bindBackupEvents();
+}
+
+// [이벤트 · 공통] 헤더(메인달력)·데이터복구 배너·상단 탭
+function bindCommonEvents(){
+  const mainCalendarBtn = document.getElementById('btnMainCalendar');
+  if (mainCalendarBtn) mainCalendarBtn.onclick = () => {
+    if (view.screen !== 'dash' && view.screen !== 'list') return;
+    mainCalendarOpen = !mainCalendarOpen;
+    if (!mainCalendarOpen) mainCalendarExpandedWeeks.clear();
+    render();
+  };
+  const mainCalendarRoot = document.getElementById('mainCalendarRoot');
+  if (mainCalendarRoot) renderDeadlineViewer(mainCalendarRoot, { mode:'main' });
+  const btnDownloadCorrupt = document.getElementById('btnDownloadCorrupt');
+  if (btnDownloadCorrupt) btnDownloadCorrupt.onclick = () => {
+    let raw = null;
+    try { raw = localStorage.getItem(STORAGE_KEY + '_corrupt'); } catch (_) {}
+    if (!raw) { showToast('원본 데이터를 찾을 수 없어요.'); return; }
+    const blob = new Blob([raw], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `마감을부탁해_불러오기실패원본_${todayStr()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const btnAckLoadFail = document.getElementById('btnAckLoadFail');
+  if (btnAckLoadFail) btnAckLoadFail.onclick = () => {
+    const isPartial = loadFailReason === 'partial';
+    const message = isPartial
+      ? '복구된 상태로 계속할까요? 제외된 항목 없이 지금 보이는 데이터가 자동저장돼요. 원본 다운로드는 먼저 받아두는 걸 추천해요.'
+      : '빈 상태로 계속할까요? 지금부터는 이 상태가 자동저장돼요. 원본 다운로드는 먼저 받아두는 걸 추천해요.';
+    customConfirm(message, () => {
+      loadFailed = false;
+      loadFailReason = '';
+      lastPersistedJson = null;
+      render();
+    }, { confirmLabel:'계속', confirmClass:'accent small' });
+  };
+
+  const undoRestoreBtn = document.getElementById('btnUndoRestore');
+  if (undoRestoreBtn) {
+    let hasPrevious = false;
+    try { hasPrevious = !!localStorage.getItem(BEFORE_RESTORE_KEY); } catch (_) {}
+    undoRestoreBtn.style.display = hasPrevious ? '' : 'none';
+  }
+  document.getElementById('tabDash').onclick = () => { closeProjectEdit(view.projectId); view.screen='dash'; render(); };
+  document.getElementById('tabList').onclick = () => { closeProjectEdit(view.projectId); view.screen='list'; render(); };
+}
+
+// [이벤트 · 대시보드] 프로젝트 카드 클릭·드래그 재정렬·빈 카드
+function bindDashboardEvents(){
+  document.querySelectorAll('.vcard[data-id]').forEach(el => {
+    el.onclick = () => {
+      if (Date.now() < suppressProjectOpenUntil) return;
+      view.screen='detail'; view.projectId = el.dataset.id; calMonthOffset = 0; calEditingField = null; render();
+    };
+    el.ondragstart = (e) => {
+      el.classList.add('dragging');
+      el.dataset.dragging = '1';
+      if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = 'move';
+        try { e.dataTransfer.setData('text/plain', el.dataset.id); } catch (_) {}
+      }
+    };
+    el.ondragend = () => {
+      el.classList.remove('dragging');
+      delete el.dataset.dragging;
+      clearProjectDropMarks('.vcard[data-id]');
+    };
+    el.ondragover = (e) => {
+      e.preventDefault();
+      const draggedEl = document.querySelector('.vcard.dragging') || document.querySelector('[data-dragging="1"]');
+      if (!draggedEl || draggedEl === el) return;
+      const after = projectDropPlaceAfter(el, e.clientX, e.clientY, 'auto');
+      clearProjectDropMarks('.vcard[data-id]');
+      markProjectDropTarget(el, after, true);
+      el.dataset.dropAfter = after ? '1' : '0';
+    };
+    el.ondragleave = (e) => {
+      if (e.relatedTarget && el.contains(e.relatedTarget)) return;
+      el.classList.remove('drag-before','drag-after');
+      delete el.dataset.dropAfter;
+    };
+    el.ondrop = (e) => {
+      e.preventDefault();
+      const draggedEl = document.querySelector('.vcard.dragging') || document.querySelector('[data-dragging="1"]');
+      const after = el.dataset.dropAfter === '1';
+      clearProjectDropMarks('.vcard[data-id]');
+      delete el.dataset.dropAfter;
+      if (!draggedEl || draggedEl === el) return;
+      if (moveProjectRelative(draggedEl.dataset.id, el.dataset.id, after)) render();
+    };
+  });
+  bindTouchProjectReorder('.vcard[data-id]', { insertionLine:true, axis:'auto' });
+
+  document.querySelectorAll('.vcard-empty[data-empty-slot]').forEach(el => {
+    el.onclick = () => { view.screen='list'; render(); };
+  });
+}
+
+// [이벤트 · 프로젝트 목록] 새 일정 폼·목록 카드(메뉴/복제/삭제/드래그 재정렬)
+function bindListEvents(){
+  document.querySelectorAll('.chip-row.has-tooltip .chip[data-opt]').forEach(chip => {
+    chip.classList.toggle('on', periodOptState[chip.dataset.opt]);
+    chip.onclick = () => {
+      periodOptState[chip.dataset.opt] = !periodOptState[chip.dataset.opt];
+      chip.classList.toggle('on', periodOptState[chip.dataset.opt]);
+    };
+  });
+
+  const addBtn = document.getElementById('addProjectBtn');
+  if (addBtn) addBtn.onclick = () => {
+    const name = document.getElementById('f_name').value.trim();
+    const startDate = document.getElementById('f_start').value || todayStr();
+    const deadline = document.getElementById('f_deadline').value;
+    rolloverDailyStateIfNeeded();
+    const workloadParsed = parseWorkloadText(document.getElementById('f_workload').value);
+    if (!name || !deadline) return;
+    if (!workloadParsed.ok) { showToast(workloadParsed.message); return; }
+    const segmentAmounts = workloadParsed.amounts;
+    const hasTotal = segmentAmounts.length > 0;
+    const totalVal = hasTotal ? workloadParsed.total : '';
+    const p = makeProject({
+      name, startDate, deadline, total: hasTotal ? totalVal : '',
+      unit: document.getElementById('f_unit').value,
+      includeToday: periodOptState.f_today,
+      includeDeadline: periodOptState.f_deadline_inc,
+      includeWeekend: periodOptState.f_weekend
+    });
+    const planError = validatePlanDatesForWork(p, { hasTotal });
+    if (planError) { showToast(planError); return; }
+    if (segmentAmounts.length > 1) {
+      const max = midlineMaxAllowed(p);
+      if (segmentAmounts.length > max) { showToast(`현재 일정에서는 작업 구간을 최대 ${max}개까지 만들 수 있어요.`); return; }
+      const rows = segmentAmounts.map((amount, i) => ({ id:null, name:`작업 구간 ${i+1}`, amount }));
+      if (!bulkCreateSegments(p, rows)) { showToast('작업 구간 날짜를 배치할 수 없어요. 작업일이나 작업량을 확인해주세요.'); return; }
+      const segmentError = validateSegmentStructure(p);
+      if (segmentError) { showToast(segmentError); return; }
+    }
+    projects.push(p);
+    periodOptState = { f_today: true, f_deadline_inc: true, f_weekend: true };
+    clearNewProjectDraft();
+    view.screen = 'detail'; view.projectId = p.id; calMonthOffset = 0; calEditingField = null;
+    render();
+  };
+
+  document.querySelectorAll('[data-del-proj]').forEach(el => {
+    el.onclick = (e) => {
+      e.stopPropagation();
+      const id = el.dataset.delProj;
+      const p = projects.find(x => x.id === id);
+      if (!p) return;
+      customConfirm(`"${p.name}" 프로젝트를 삭제할까요?\n되돌릴 수 없어요.`, () => {
+        if (view.projectId === id) closeProjectEdit(id);
+        bankProjectTodayContribution(p);
+        projects = projects.filter(x => x.id !== id);
+        if (view.projectId === id) { view.screen = 'list'; view.projectId = null; }
+        if (openProjMenuId === id) openProjMenuId = null;
+        render();
+      });
+    };
+  });
+
+  document.querySelectorAll('[data-proj-menu]').forEach(el => {
+    el.onclick = (e) => {
+      e.stopPropagation();
+      const id = el.dataset.projMenu;
+      openProjMenuId = (openProjMenuId === id) ? null : id;
+      render();
+    };
+  });
+  document.querySelectorAll('[data-dup-proj]').forEach(el => {
+    el.onclick = (e) => {
+      e.stopPropagation();
+      const id = el.dataset.dupProj;
+      const p = projects.find(x => x.id === id);
+      if (!p) return;
+      const copy = duplicateProject(p);
+      const idx = projects.findIndex(x => x.id === id);
+      projects.splice(idx + 1, 0, copy);
+      openProjMenuId = null;
+      render();
+    };
+  });
+  document.onclick = (e) => {
+    if (openProjMenuId === null) return;
+    if (e.target.closest('[data-proj-menu]') || e.target.closest('.proj-menu')) return;
+    openProjMenuId = null;
+    render();
+  };
+
+  document.querySelectorAll('.proj-card').forEach(el => {
+    el.onclick = () => {
+      if (Date.now() < suppressProjectOpenUntil) return;
+      view.screen='detail'; view.projectId = el.dataset.id; calMonthOffset = 0; calEditingField = null; render();
+    };
+    el.ondragstart = (e) => {
+      if (e.target.closest('button,input,select,textarea,a,.proj-menu')) {
+        e.preventDefault();
+        return;
+      }
+      el.classList.add('dragging');
+      el.dataset.dragging = '1';
+      if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = 'move';
+        try { e.dataTransfer.setData('text/plain', el.dataset.id); } catch (_) {}
+      }
+    };
+    el.ondragend = () => {
+      suppressProjectOpenUntil = Date.now() + 300;
+      el.classList.remove('dragging');
+      delete el.dataset.dragging;
+      clearProjectDropMarks('.proj-card');
+    };
+    el.ondragover = (e) => {
+      e.preventDefault();
+      const draggedEl = document.querySelector('.proj-card.dragging');
+      if (!draggedEl || draggedEl === el) return;
+      const rect = el.getBoundingClientRect();
+      const after = e.clientY > rect.top + rect.height / 2;
+      clearProjectDropMarks('.proj-card');
+      markProjectDropTarget(el, after, true);
+      el.dataset.dropAfter = after ? '1' : '0';
+    };
+    el.ondragleave = (e) => {
+      if (e.relatedTarget && el.contains(e.relatedTarget)) return;
+      el.classList.remove('drag-before','drag-after');
+      delete el.dataset.dropAfter;
+    };
+    el.ondrop = (e) => {
+      e.preventDefault();
+      const draggedEl = document.querySelector('.proj-card.dragging');
+      const after = el.dataset.dropAfter === '1';
+      clearProjectDropMarks('.proj-card');
+      delete el.dataset.dropAfter;
+      if (!draggedEl || draggedEl === el) return;
+      if (moveProjectRelative(draggedEl.dataset.id, el.dataset.id, after)) {
+        dismissReorderHint();
+        render();
+      }
+    };
+  });
+  bindTouchProjectReorder('.proj-card', { insertionLine:true, dismissHintOnMove:true });
+}
+
+// [이벤트 · 프로젝트 상세] 수정/삭제·완료 입력·작업 구간·체크리스트·미니 달력
+function bindDetailEvents(){
+  const back = document.getElementById('backToList');
+  if (back) back.onclick = () => { closeProjectEdit(view.projectId); view.screen='list'; render(); };
+
+  const delProjectBtn = document.getElementById('deleteProjectBtn');
+  if (delProjectBtn) delProjectBtn.onclick = () => {
+    const p = projects.find(x=>x.id===view.projectId);
+    customConfirm(`"${p.name}" 프로젝트를 삭제할까요?\n되돌릴 수 없어요.`, () => {
+      closeProjectEdit(view.projectId);
+      bankProjectTodayContribution(p);
+      projects = projects.filter(x=>x.id!==view.projectId);
+      view.screen = 'list'; view.projectId = null;
+      render();
+    });
+  };
+
+  const totalDoneInput = document.getElementById('totalDoneInput');
+  if (totalDoneInput) totalDoneInput.onchange = (e) => {
+    rolloverDailyStateIfNeeded();
+    const p = projects.find(x=>x.id===view.projectId);
+    if (!isNonNegativeIntegerValue(e.target.value)) { showToast('완료량은 0 이상의 정수로 입력해주세요.'); render(); return; }
+    let val = Number(e.target.value);
+    // 직접 입력분 상한 = 전체 − 체크리스트 완료분 (합쳐서 전체를 못 넘게)
+    if (p.total !== null) val = Math.min(val, p.total);
+    p.manualDone = val;
+    recomputeDone(p);
+    render();
+  };
+
+  const doneModeToggle = document.getElementById('doneModeToggle');
+  if (doneModeToggle) doneModeToggle.onclick = () => {
+    const p = projects.find(x=>x.id===view.projectId);
+    if (!p || isDdayProject(p) || p.total > 10) return;
+    doneInputModeState[p.id] = doneInputModeState[p.id] === 'buttons' ? 'number' : 'buttons';
+    render();
+  };
+
+  document.querySelectorAll('[data-quick-done]').forEach(btn => {
+    btn.onclick = () => {
+      rolloverDailyStateIfNeeded();
+      const p = projects.find(x=>x.id===view.projectId);
+      if (!p || isDdayProject(p)) return;
+      const val = Number(btn.dataset.quickDone);
+      if (!Number.isInteger(val) || val < 1 || val > Math.min(p.total, 10)) return;
+      p.manualDone = val;
+      recomputeDone(p);
+      render();
+    };
+  });
+
+  const midlineToggleBtn = document.getElementById('midlineToggleBtn');
+  if (midlineToggleBtn) midlineToggleBtn.onclick = () => {
+    const nextOpen = !bulkFormOpenState[view.projectId];
+    bulkFormOpenState[view.projectId] = nextOpen;
+    if (nextOpen) {
+      const p = projects.find(x=>x.id===view.projectId);
+      initMidlineFormState(p);
+    }
+    render();
+  };
+  const midlineDeleteAllBtn = document.getElementById('midlineDeleteAllBtn');
+  if (midlineDeleteAllBtn) midlineDeleteAllBtn.onclick = () => {
+    customConfirm('작업 구간을 전부 지울까요?', () => {
+      const p = projects.find(x=>x.id===view.projectId);
+      const unassigned = (p.checklist || []).filter(i => i.segmentId).length;
+      p.segments = [];
+      reconcileChecklistAssignments(p);
+      resetTodayTarget(p.id);
+      render();
+      if (unassigned) showToast(`연결된 할 일 ${unassigned}개는 미지정으로 옮겼어요.`);
+    });
+  };
+  const midlineEmptyCreateBtn = document.getElementById('midlineEmptyCreateBtn');
+  if (midlineEmptyCreateBtn) midlineEmptyCreateBtn.onclick = () => {
+    bulkFormOpenState[view.projectId] = true;
+    const p = projects.find(x=>x.id===view.projectId);
+    initMidlineFormState(p);
+    render();
+  };
+  const confirmBulkAdd = document.getElementById('confirmBulkAdd');
+  if (confirmBulkAdd) confirmBulkAdd.onclick = () => {
+    const p = projects.find(x=>x.id===view.projectId);
+    const useDefaultNames = window.matchMedia('(max-width:500px)').matches && midlineNames.length >= 4;
+    normalizeMidlineDefaultNames();
+    const rows = midlineNames.map((n,i) => ({ id:midlineIds[i] || null, name:useDefaultNames ? defaultSegmentName(i) : (n.trim() || defaultSegmentName(i)), amount:midlineAmounts[i] }));
+    const max = midlineMaxAllowed(p);
+    if (rows.length > max) { showToast(`작업 구간은 최대 ${max}개까지 만들 수 있어요.`); return; }
+    const segBackup = cloneSegmentsForEdit(p);
+    const checklistBackup = (p.checklist || []).map(i => ({...i}));
+    const assignedBefore = (p.checklist || []).filter(i => i.segmentId).length;
+    if (!bulkCreateSegments(p, rows, { startDate: effectiveStart(p) })) {
+      p.segments = segBackup;
+      p.checklist = checklistBackup;
+      applySpillover(p);
+      showToast('작업 구간 날짜를 배치할 수 없어요.');
+      render();
+      return;
+    }
+    const segError = validateSegmentStructure(p);
+    if (segError) {
+      p.segments = segBackup;
+      p.checklist = checklistBackup;
+      applySpillover(p);
+      showToast(segError);
+      render();
+      return;
+    }
+    resetTodayTarget(p.id);
+    midlineNames = ['', '']; midlineAmounts = [1,1]; midlineIds = [null,null]; midlineFormProjectId = null;
+    bulkFormOpenState[view.projectId] = false;
+    render();
+    if (assignedBefore) showToast(`기존 연결 ${assignedBefore}개는 미지정으로 옮겼어요.`);
+  };
+
+  document.querySelectorAll('[data-dblclick-segname]').forEach(el => {
+    el.ondblclick = () => { editingSegNameId = el.dataset.dblclickSegname; render(); };
+  });
+  const segNameInput = document.querySelector('.seg-name-input');
+  if (segNameInput) {
+    segNameInput.focus();
+    segNameInput.select();
+    const commit = () => {
+      const p = projects.find(x=>x.id===view.projectId);
+      const s = p.segments.find(s=>s.id===segNameInput.dataset.segname);
+      const val = segNameInput.value.trim();
+      if (val) s.name = val;
+      editingSegNameId = null;
+      render();
+    };
+    segNameInput.onkeydown = (e) => { if (e.key === 'Enter') commit(); };
+    segNameInput.onblur = commit;
+  }
+
+  const editProjectBtn = document.getElementById('editProjectBtn');
+  if (editProjectBtn) editProjectBtn.onclick = () => {
+    const nextOpen = !projectEditOpenState[view.projectId];
+    projectEditOpenState[view.projectId] = nextOpen;
+    if (!nextOpen) clearProjectEditDraft(view.projectId);
+    render();
+  };
+  document.querySelectorAll('#projectEditWrap .chip[data-eopt]').forEach(chip => {
+    chip.onclick = () => {
+      editPeriodState[chip.dataset.eopt] = !editPeriodState[chip.dataset.eopt];
+      chip.classList.toggle('on', editPeriodState[chip.dataset.eopt]);
+    };
+  });
+  const saveProjectEditBtn = document.getElementById('saveProjectEditBtn');
+  if (saveProjectEditBtn) saveProjectEditBtn.onclick = () => {
+    const p = projects.find(x=>x.id===view.projectId);
+    const name = document.getElementById('e_name').value.trim();
+    if (!name) return;
+    const totalVal = document.getElementById('e_total').value;
+    if (totalVal !== '' && !isPositiveIntegerValue(totalVal)) { showToast('작업량은 1 이상의 정수로 입력하거나 비워두세요.'); return; }
+    const newTotal = (totalVal === '' ? null : Number(totalVal));
+    const next = {
+      ...p,
+      segments: cloneSegmentsForEdit(p),
+      checklist: (p.checklist || []).map(i => ({...i})),
+      name,
+      startDate: document.getElementById('e_start').value || p.startDate,
+      deadline: document.getElementById('e_deadline').value || p.deadline,
+      total: newTotal,
+      unit: document.getElementById('e_unit').value,
+      includeToday: editPeriodState.today,
+      includeDeadline: editPeriodState.deadline_inc,
+      includeWeekend: editPeriodState.weekend,
+      restDays: (p.restDays || []).filter(d => d !== (document.getElementById('e_deadline').value || p.deadline))
+    };
+    const totalChanged = newTotal !== p.total;
+    const deadlineChanged = next.deadline !== p.deadline;
+    const startChanged = next.startDate !== p.startDate;
+    const includeChanged = p.includeToday !== next.includeToday || p.includeDeadline !== next.includeDeadline || p.includeWeekend !== next.includeWeekend;
+    const planError = validatePlanDatesForWork(next, { hasTotal: newTotal !== null });
+    if (planError) { showToast(planError); return; }
+    if (newTotal !== null && p.segments.length > newTotal) { showToast('전체 작업량이 작업 구간 수보다 적어요. 작업 구간을 줄인 뒤 저장해주세요.'); return; }
+    if (newTotal === null) next.segments = [];
+    else if (next.segments.length) {
+      if (totalChanged) scaleSegmentAmounts(next, p.total);
+      if (totalChanged || startChanged || deadlineChanged || includeChanged) {
+        const reallocateError = reallocateSegmentsForPlanChange(next);
+        if (reallocateError) { showToast(reallocateError); return; }
+      } else {
+        normalizeSegmentStructure(next, { refreshPlanStarts: false, baseStart: 'currentPlan' });
+      }
+    }
+    const segPlanError = validateSegmentStructure(next);
+    if (segPlanError) { showToast(segPlanError); return; }
+
+    const becameDday = newTotal === null && p.total !== null;
+    const hasDestructibleContent = becameDday && (
+      (p.segments && p.segments.length > 0) ||
+      (Number(p.manualDone) || 0) > 0 ||
+      (p.checklist || []).some(i => i.type === 'qty')
+    );
+
+    const applyChanges = () => {
+      // 작업량 제거는 완료량을 0으로 만들기 전에 오늘 진행 기여도를 먼저 보존한다.
+      if (becameDday) bankProjectTodayContribution(p);
+      p.name = next.name;
+      p.startDate = next.startDate;
+      p.deadline = next.deadline;
+      p.total = next.total;
+      p.unit = next.unit;
+      p.includeToday = next.includeToday;
+      p.includeDeadline = next.includeDeadline;
+      p.includeWeekend = next.includeWeekend;
+      p.restDays = next.restDays;
+      p.segments = cloneSegmentsForEdit(next);
+      reconcileChecklistAssignments(p);
+
+      if (becameDday) {
+        p.segments = [];
+        p.manualDone = 0;
+        p.done = 0;
+        normalizeChecklistForProject(p);
+        reconcileChecklistAssignments(p);
+      } else if (p.total !== null) {
+        p.manualDone = Math.min(toSafeNonNegativeInt(p.manualDone), p.total);
+      }
+      recomputeDone(p);
+      if (totalChanged || deadlineChanged || startChanged || includeChanged) resetTodayTarget(p.id);
+      projectEditOpenState[view.projectId] = false;
+      clearProjectEditDraft(view.projectId);
+      render();
+    };
+
+    if (hasDestructibleContent) {
+      customConfirm('작업량을 비우면 작업 구간·완료량·수량형 체크리스트 수량이 모두 초기화돼요. 계속할까요?', applyChanges, { confirmLabel: '계속', confirmClass: 'danger-btn' });
+    } else {
+      applyChanges();
+    }
+  };
+
+  document.querySelectorAll('[data-seg-cl-toggle]').forEach(el => {
+    el.onclick = (e) => {
+      e.stopPropagation();
+      const id = el.dataset.segClToggle;
+      const isOpen = segmentChecklistOpenState[id] !== false; // 기본값(undefined)=열림
+      segmentChecklistOpenState[id] = !isOpen;
+      if (!segmentChecklistOpenState[id]) checklistAddOpenState[id] = false;
+      render();
+    };
+  });
+
+  document.querySelectorAll('[data-cl-toggle]').forEach(el => {
+    el.onclick = () => {
+      const id = el.dataset.clToggle;
+      const isOpen = checklistOpenState[id] !== false; // 기본값(undefined)=열림
+      checklistOpenState[id] = !isOpen;
+      render();
+    };
+  });
+  document.querySelectorAll('[data-cl-addopen]').forEach(el => {
+    el.onclick = () => {
+      const id = el.dataset.clAddopen;
+      const p = projects.find(x=>x.id===view.projectId);
+      const isSegmentTarget = !!(p && p.segments.some(s => s.id === id));
+      checklistAddOpenState[id] = isSegmentTarget ? !checklistAddOpenState[id] : true;
+      if (isSegmentTarget) segmentChecklistOpenState[id] = true;
+      checklistOpenState[id] = true;
+      render();
+    };
+  });
+  document.querySelectorAll('[data-cl-target][name=cl_type]').forEach(el => {
+    el.onchange = () => {
+      const qtyInput = el.closest('.checklist-add').querySelector('[name=cl_qty]');
+      qtyInput.style.display = el.value === 'qty' ? '' : 'none';
+    };
+  });
+  function confirmChecklistAdd(wrap){
+    rolloverDailyStateIfNeeded();
+    const p = projects.find(x=>x.id===view.projectId);
+    const name = wrap.querySelector('[name=cl_name]').value.trim();
+    const type = wrap.querySelector('[name=cl_type]').value;
+    const qty = wrap.querySelector('[name=cl_qty]').value;
+    const segmentSelect = wrap.querySelector('[name=cl_segment]');
+    const requestedSegmentId = wrap.dataset.clSegment || (segmentSelect ? segmentSelect.value : '');
+    const segmentId = requestedSegmentId && p.segments.some(s => s.id === requestedSegmentId) ? requestedSegmentId : null;
+    if (!name) return;
+    if (type === 'qty' && isDdayProject(p)) { showToast('작업량 미지정 일정에는 수량형을 추가할 수 없어요.'); return; }
+    if (type === 'qty' && !isPositiveIntegerValue(qty)) { showToast('수량형 체크리스트는 1 이상의 정수로 입력해주세요.'); return; }
+    addChecklistItem(p, { name, type, qty: type === 'qty' ? Number(qty) : qty, segmentId });
+    if (wrap.dataset.clSegment) checklistAddOpenState[wrap.dataset.clSegment] = false;
+    if (type === 'qty') resetTodayTarget(p.id);
+    render();
+  }
+  document.querySelectorAll('[data-cl-confirm]').forEach(el => {
+    el.onclick = () => confirmChecklistAdd(el.closest('.checklist-add'));
+  });
+  document.querySelectorAll('.checklist-add [name=cl_name], .checklist-add [name=cl_qty]').forEach(el => {
+    el.onkeydown = (e) => {
+      if (e.key !== 'Enter') return;
+      confirmChecklistAdd(el.closest('.checklist-add'));
+    };
+  });
+  document.querySelectorAll('[data-cl-item]').forEach(el => {
+    el.onchange = () => {
+      const [, itemId] = el.dataset.clItem.split(':');
+      rolloverDailyStateIfNeeded();
+      const p = projects.find(x=>x.id===view.projectId);
+      toggleChecklistItem(p, itemId);
+      render();
+    };
+  });
+  document.querySelectorAll('[data-cl-assign]').forEach(el => {
+    el.onchange = () => {
+      const [, itemId] = el.dataset.clAssign.split(':');
+      const p = projects.find(x=>x.id===view.projectId);
+      const item = p && p.checklist.find(i => i.id === itemId);
+      if (!item) return;
+      item.segmentId = el.value && p.segments.some(s => s.id === el.value) ? el.value : null;
+      render();
+    };
+  });
+  document.querySelectorAll('[data-cl-del]').forEach(el => {
+    el.onclick = () => {
+      const [, itemId] = el.dataset.clDel.split(':');
+      rolloverDailyStateIfNeeded();
+      const p = projects.find(x=>x.id===view.projectId);
+      const item = p.checklist.find(i => i.id === itemId);
+      p.checklist = p.checklist.filter(i => i.id !== itemId);
+      if (item && item.type === 'qty') resetTodayTarget(p.id);
+      recomputeDone(p); // 체크돼있던 수량형 항목이 지워지면 완료량도 다시 계산
+      render();
+    };
+  });
+
+  ['d_today','d_deadline_inc','d_weekend'].forEach(fid => {
+    const el = document.getElementById(fid);
+    if (el) el.onchange = () => {
+      const p = projects.find(x=>x.id===view.projectId);
+      const prev = {
+        includeToday: p.includeToday,
+        includeDeadline: p.includeDeadline,
+        includeWeekend: p.includeWeekend,
+        segments: cloneSegmentsForEdit(p)
+      };
+      p.includeToday = document.getElementById('d_today').checked;
+      p.includeDeadline = document.getElementById('d_deadline_inc').checked;
+      p.includeWeekend = document.getElementById('d_weekend').checked;
+      const rollback = (message) => {
+        p.includeToday = prev.includeToday;
+        p.includeDeadline = prev.includeDeadline;
+        p.includeWeekend = prev.includeWeekend;
+        p.segments = prev.segments;
+        applySpillover(p);
+        showToast(message);
+        render();
+      };
+      const planError = validatePlanDatesForWork(p, { hasTotal: !isDdayProject(p) });
+      if (planError) { rollback(planError); return; }
+      const segError = reallocateSegmentsForPlanChange(p);
+      if (segError) { rollback(segError); return; }
+      resetTodayTarget(p.id);
+      render();
+    };
+  });
+
+  const calPrev = document.getElementById('calPrev');
+  if (calPrev) calPrev.onclick = () => { calMonthOffset--; render(); };
+  const calNext = document.getElementById('calNext');
+  if (calNext) calNext.onclick = () => { calMonthOffset++; render(); };
+
+  document.querySelectorAll('.cal-cell[data-date]').forEach(el => {
+    el.onclick = () => {
+      const p = projects.find(x=>x.id===view.projectId);
+      const date = el.dataset.date;
+      const isDeadlineCell = date === p.deadline;
+      const isStartCell = date === p.startDate;
+
+      if (calEditingField === 'deadline') {
+        const cancelling = isDeadlineCell;
+        if (!cancelling && date < p.startDate) { showToast('마감일이 시작일보다 빠를 수 없어요.'); return; }
+        calEditingField = null;
+        if (!cancelling) {
+          const prevDeadline = p.deadline;
+          const prevRestDays = p.restDays.slice();
+          p.deadline = date;
+          p.restDays = (p.restDays || []).filter(d => d !== p.deadline);
+          const segBackup = cloneSegmentsForEdit(p);
+          const planError = validatePlanDatesForWork(p, { hasTotal: !isDdayProject(p) });
+          if (planError) { p.deadline = prevDeadline; p.restDays = prevRestDays; p.segments = segBackup; showToast(planError); render(); return; }
+          const segError = reallocateSegmentsForPlanChange(p);
+          if (segError) { p.deadline = prevDeadline; p.restDays = prevRestDays; p.segments = segBackup; applySpillover(p); showToast(segError); render(); return; }
+          resetTodayTarget(p.id);
+        }
+        render();
+        return;
+      }
+      if (calEditingField === 'start') {
+        const cancelling = isStartCell;
+        if (!cancelling && date > p.deadline) { showToast('시작일이 마감일보다 늦을 수 없어요.'); return; }
+        calEditingField = null;
+        if (!cancelling) {
+          const prevStart = p.startDate;
+          const segBackup = cloneSegmentsForEdit(p);
+          p.startDate = date;
+          const planError = validatePlanDatesForWork(p, { hasTotal: !isDdayProject(p) });
+          if (planError) { p.startDate = prevStart; p.segments = segBackup; showToast(planError); render(); return; }
+          const segError = reallocateSegmentsForPlanChange(p);
+          if (segError) { p.startDate = prevStart; p.segments = segBackup; applySpillover(p); showToast(segError); render(); return; }
+          resetTodayTarget(p.id);
+        }
+        render();
+        return;
+      }
+      if (isDeadlineCell) { calEditingField = 'deadline'; render(); return; }
+      if (isStartCell) { calEditingField = 'start'; render(); return; }
+      if (el.dataset.locked) return;
+      if (isWeekendDate(date) && !p.includeWeekend) { showToast('주말 포함이 꺼져 있어서 이미 쉬는 날이에요. 이 날짜만 따로 쉬는 날로 지정할 순 없어요.'); return; }
+      const before = p.restDays.slice();
+      const segBackup = cloneSegmentsForEdit(p);
+      const idx = p.restDays.indexOf(date);
+      if (idx >= 0) p.restDays.splice(idx,1);
+      else p.restDays.push(date);
+      const planError = validatePlanDatesForWork(p, { hasTotal: !isDdayProject(p) });
+      if (planError) { p.restDays = before; p.segments = segBackup; showToast(planError); render(); return; }
+      const segError = reallocateSegmentsForPlanChange(p);
+      if (segError) { p.restDays = before; p.segments = segBackup; applySpillover(p); showToast(segError); render(); return; }
+      resetTodayTarget(p.id);
+      render();
+    };
+  });
+
+  if (document.getElementById('midlineBar')) bindBulkEvents();
+
+  document.querySelectorAll('.segDeadlineInput').forEach(el => {
+    el.onchange = (e) => {
+      const p = projects.find(x=>x.id===view.projectId);
+      const sorted = p.segments.slice().sort((a,b)=> new Date(a.deadline)-new Date(b.deadline));
+      const s = p.segments.find(s=>s.id===e.target.dataset.seg);
+      const idx = sorted.findIndex(x => x.id === s.id);
+      const val = e.target.value;
+      if (idx === sorted.length - 1) { showToast('마지막 작업 구간의 마감은 프로젝트 마감일을 따라가요.'); render(); return; }
+      if (val < p.startDate || val >= p.deadline) {
+        showToast(`작업 구간은 ${p.startDate} ~ ${p.deadline} 사이 날짜만 가능해요.`);
+        render();
+        return;
+      }
+      if (!isBaseWorkableDate(p, val)) { showToast('작업 구간은 작업 가능한 날로만 지정할 수 있어요.'); render(); return; }
+      const prevDeadline = idx > 0 ? sorted[idx-1].deadline : p.startDate;
+      const nextDeadline = idx < sorted.length - 1 ? sorted[idx+1].deadline : p.deadline;
+      const badPrevOrder = idx > 0 ? val <= prevDeadline : val < prevDeadline;
+      if (badPrevOrder || val >= nextDeadline) { showToast('작업 구간 날짜 순서가 앞뒤 구간과 맞지 않아요.'); render(); return; }
+      const segBackup = cloneSegmentsForEdit(p);
+      s.deadline = val;
+      const segError = validateNormalizedSegments(p, { refreshPlanStarts: true, baseStart: 'currentPlan' });
+      if (segError) { p.segments = segBackup; applySpillover(p); showToast(segError); render(); return; }
+      resetTodayTarget(p.id);
+      render();
+    };
+  });
+
+  document.querySelectorAll('[data-delseg]').forEach(el => {
+    el.onclick = () => {
+      const p = projects.find(x=>x.id===view.projectId);
+      const unassigned = deleteSegment(p, el.dataset.delseg);
+      resetTodayTarget(p.id);
+      render();
+      if (unassigned) showToast(`연결된 할 일 ${unassigned}개는 미지정으로 옮겼어요.`);
+    };
+  });
+}
+
+// [이벤트 · 백업/불러오기] 백업 저장·불러오기·이전 데이터 복구
+function bindBackupEvents(){
+  document.getElementById('btnBackup').onclick = () => {
+    const data = JSON.stringify(buildPersistedData(), null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `마감을부탁해_백업_${todayStr()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  document.getElementById('btnRestore').onclick = () => {
+    document.getElementById('restoreFile').click();
+  };
+  const undoBtn = document.getElementById('btnUndoRestore');
+  if (undoBtn) undoBtn.onclick = () => {
+    let raw = null;
+    try { raw = localStorage.getItem(BEFORE_RESTORE_KEY); } catch (_) {}
+    if (!raw) { showToast('복구할 이전 데이터가 없어요.'); return; }
+    customConfirm('불러오기 직전 데이터로 되돌릴까요? 현재 데이터와 서로 교체됩니다.', () => {
+      try {
+        const previous = JSON.parse(raw);
+        const prepared = prepareLoadedData(previous, { rebaseDailyState: true });
+        if (!prepared) throw new Error('invalid');
+        const currentRaw = JSON.stringify(buildPersistedData());
+        commitRestoreStorage(prepared.raw, currentRaw); // 저장이 성공한 뒤에만 화면 상태를 교체
+        activatePreparedData(prepared);
+        view.screen = 'dash'; view.projectId = null;
+        render();
+        showToast('이전 데이터로 복구했어요.');
+      } catch (_) {
+        showToast('이전 데이터를 복구할 수 없어요. 현재 데이터는 유지됩니다.');
+      }
+    }, { confirmLabel:'복구', confirmClass:'accent small' });
+  };
+
+  document.getElementById('restoreFile').onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (Number(data.schemaVersion) > SCHEMA_VERSION) throw new Error('newer schema');
+        const prepared = prepareLoadedData(data, { rebaseDailyState: true });
+        if (!prepared) throw new Error('invalid');
+        const previewStats = prepared.stats;
+        const details = [
+          `백업 ${previewStats.inputCount}개 중 ${previewStats.keptCount}개를 불러옵니다.`,
+          previewStats.invalidProjects ? `깨진 프로젝트 ${previewStats.invalidProjects}개는 제외됩니다.` : '',
+          previewStats.clearedSegments ? `깨진 작업 구간 ${previewStats.clearedSegments}개는 삭제됩니다.` : '',
+          '현재 데이터는 불러오기 직전 상태로 별도 보관됩니다.'
+        ].filter(Boolean).join(' ');
+        customConfirm(details, () => {
+          try {
+            const currentRaw = JSON.stringify(buildPersistedData());
+            commitRestoreStorage(prepared.raw, currentRaw); // 저장 실패 시 현재 화면과 데이터는 바꾸지 않음
+            activatePreparedData(prepared);
+            view.screen = 'dash'; view.projectId = null;
+            render();
+            const notes = [];
+            if (prepared.stats.invalidProjects > 0) notes.push(`프로젝트 ${prepared.stats.invalidProjects}개 제외`);
+            if (prepared.stats.clearedSegments > 0) notes.push(`작업 구간 ${prepared.stats.clearedSegments}개 삭제`);
+            showToast(notes.length ? `불러오기 완료 — ${notes.join(', ')}` : '불러오기를 완료했어요.');
+          } catch (_) {
+            showToast('백업을 적용하지 못했어요. 현재 데이터는 유지됩니다.');
+          }
+        }, { confirmLabel:'불러오기', confirmClass:'accent small' });
+      } catch (err) {
+        alert('백업 파일을 읽을 수 없어요. 올바른 백업 json인지 확인해주세요.');
+      }
+    };
+    reader.onerror = () => { alert('파일을 읽는 중 오류가 났어요. 다시 시도해주세요.'); };
+    reader.onloadend = () => { e.target.value = ''; };
+    reader.readAsText(file);
+  };
+
+}
+
+let midnightTimer = null;
+function scheduleMidnightRollover(){
+  clearTimeout(midnightTimer);
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1);
+  midnightTimer = setTimeout(() => {
+    if (rolloverDailyStateIfNeeded()) render();
+    scheduleMidnightRollover();
+  }, Math.max(next - now, 1000));
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    if (rolloverDailyStateIfNeeded()) render();
+    scheduleMidnightRollover();
+  }
+});
+
+// ===== 앱 시작 =====
+loadLocal();
+render();
+scheduleMidnightRollover();
+</script>
+</body>
+</html>
