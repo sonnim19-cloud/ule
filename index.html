@@ -756,10 +756,12 @@ async function syncWithDrive(){
     const remote = await downloadDriveFile(file.id);
     if (JSON.stringify(remote) === lastPersistedJson) { driveLastSyncedAt = Date.now(); return; } // 이미 동일
     const remoteSavedAt = Number(remote && remote.savedAt) || 0;
-    if (remoteSavedAt > lastChangedAt) {
+    // 이 기기가 "완전히 새것"(프로젝트도 없고 한 번도 실제로 바뀐 적 없음)이면 덮어쓸 게 없으니 확인창 없이 바로 받아온다.
+    const localIsPristine = projects.length === 0 && lastChangedAt === 0;
+    if (remoteSavedAt > lastChangedAt || localIsPristine) {
       const prepared = prepareLoadedData(remote, { rebaseDailyState: true });
       if (!prepared) { driveLastSyncedAt = Date.now(); return; } // 원격 데이터가 이상하면 조용히 무시(로컬 유지)
-      customConfirm('다른 기기에서 저장된 더 최신 데이터가 있어요. 불러올까요?\n(지금 데이터는 불러오기 직전 상태로 별도 보관돼요.)', () => {
+      const applyRemote = () => {
         try {
           const currentRaw = JSON.stringify(buildPersistedData());
           commitRestoreStorage(prepared.raw, currentRaw);
@@ -767,11 +769,13 @@ async function syncWithDrive(){
           view.screen = 'dash'; view.projectId = null;
           driveLastSyncedAt = Date.now();
           render();
-          showToast('다른 기기 데이터를 불러왔어요.');
+          showToast('구글 드라이브 데이터를 불러왔어요.');
         } catch (_) {
           showToast('불러오지 못했어요. 지금 데이터는 그대로예요.');
         }
-      }, { confirmLabel:'불러오기', confirmClass:'accent small' });
+      };
+      if (localIsPristine) applyRemote();
+      else customConfirm('다른 기기에서 저장된 더 최신 데이터가 있어요. 불러올까요?\n(지금 데이터는 불러오기 직전 상태로 별도 보관돼요.)', applyRemote, { confirmLabel:'불러오기', confirmClass:'accent small' });
     } else {
       await uploadDriveFile(buildPersistedData());
       driveLastSyncedAt = Date.now();
@@ -4076,6 +4080,13 @@ document.addEventListener('visibilitychange', () => {
 
 // ===== 앱 시작 =====
 loadLocal();
+// 이 기기에 저장된 데이터가 전혀 없는(완전히 새로운) 경우: "방금 막 생긴 빈 상태"를 실제 변경으로 착각하지 않게
+// 기준 시각을 가장 오래된 값(0)으로 남겨둔다. 이래야 나중에 구글 드라이브 동기화에서 "이 기기가 최신"이라고
+// 잘못 판단해 진짜 데이터가 있는 드라이브 쪽을 덮어쓰는 사고가 안 생긴다.
+if (!lastPersistedJson) {
+  lastChangedAt = 0;
+  lastPersistedJson = JSON.stringify(buildPersistedData());
+}
 render();
 scheduleMidnightRollover();
 </script>
