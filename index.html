@@ -466,7 +466,7 @@
 <body>
 
 <header style="position:relative">
-  <h1 id="appTitle">마감을 부탁해<span class="version">v2.3.8</span></h1>
+  <h1 id="appTitle">마감을 부탁해<span class="version">v2.4</span></h1>
   <nav>
     <button id="tabDash" class="active" data-i18n="nav.dash">대시보드</button>
     <button id="tabList" data-i18n="nav.list">프로젝트</button>
@@ -537,7 +537,7 @@ const LANG = {
     'dash.streakSuffix': '일째',
     'dash.todayTotalGoal': '오늘 전체 목표',
     'dash.more': '더보기',
-    'dash.startDday': '시작 D-',
+    'dash.startDday': '시작 D-{n}',
     // 캘린더
     'cal.prevMonth': '이전 달',
     'cal.nextMonth': '다음 달',
@@ -718,7 +718,7 @@ const LANG = {
     'viewer.dragHelp': '프로젝트 선을 드래그하면 일정 전체가 이동해요.',
     'confirm.cancelLabel': '취소',
     'detail.copySuffix': ' 사본',
-    'license.promptMessage': '구글 드라이브 동기화는 유료 기능이에요.\n검로드 구매 시 받은 라이선스 키를 입력해주세요.',
+    'license.promptMessage': 'Google Drive 동기화는 구매 버전 기능이에요.\n검로드 구매 시 받은 라이선스 키를 입력해주세요.',
     'license.placeholder': '라이선스 키 입력',
     'license.verifyBtn': '확인',
     'license.emptyError': '라이선스 키를 입력해주세요.',
@@ -769,9 +769,9 @@ const LANG = {
     'btn.backup': 'Backup',
     'btn.restore': 'Restore',
     'btn.undoRestore': 'Undo Restore',
-    'btn.googleSync': 'Google Sync',
-    'status.relaxed': 'Relaxed',
-    'status.danger': 'Danger',
+    'btn.googleSync': 'Google Drive Sync',
+    'status.relaxed': 'Ahead',
+    'status.danger': 'At Risk',
     'status.done': 'Done',
     'status.inprogress': 'In Progress',
     'status.overdue': 'Overdue',
@@ -779,9 +779,9 @@ const LANG = {
     'status.rest': 'Off',
     'status.over': 'Over',
     'status.unassigned': 'Unassigned',
-    'unit.cut': 'ct',
-    'unit.sheet': 'sh',
-    'unit.piece': 'pc',
+    'unit.cut': 'cuts',
+    'unit.sheet': 'pages',
+    'unit.piece': 'items',
     'dow.sun': 'Sun', 'dow.mon': 'Mon', 'dow.tue': 'Tue', 'dow.wed': 'Wed', 'dow.thu': 'Thu', 'dow.fri': 'Fri', 'dow.sat': 'Sat',
     'dash.todayQuota': "Today's Quota",
     'dash.todayDone': "Today's Target",
@@ -795,7 +795,7 @@ const LANG = {
     'dash.streakSuffix': '-day streak',
     'dash.todayTotalGoal': "Today's overall goal",
     'dash.more': 'More',
-    'dash.startDday': 'Starts in D-',
+    'dash.startDday': 'Starts in {n} days',
     'cal.prevMonth': 'Previous month',
     'cal.nextMonth': 'Next month',
     'cal.collapse': 'Collapse',
@@ -825,7 +825,7 @@ const LANG = {
     'list.deadlinePrefix': 'Due',
     'list.total': 'Total',
     'list.done': 'Done',
-    'list.ddayNoAmount': 'No workload (D-DAY)',
+    'list.ddayNoAmount': 'Deadline only',
     'menu.more': 'More',
     'menu.duplicate': 'Duplicate',
     'menu.delete': 'Delete',
@@ -923,7 +923,7 @@ const LANG = {
     'err.totalLessThanSegCount': 'Total workload is less than the number of segments. Reduce segments and save again.',
     'err.workloadMinOrEmpty': 'Enter a whole number of 1 or more, or leave it blank.',
     'err.completedMinZero': 'Enter a whole number of 0 or more.',
-    'err.noQtyForDday': 'Quantity-type items cannot be added to a project with no workload.',
+    'err.noQtyForDday': 'Quantity-type items cannot be added to deadline-only projects.',
     'err.qtyMin1': 'Enter a whole number of 1 or more for quantity-type items.',
     'err.deadlineBeforeStart': 'Deadline cannot be before the start date.',
     'err.startAfterDeadlineShort': 'Start date cannot be after the deadline.',
@@ -965,7 +965,7 @@ const LANG = {
     'viewer.dragHelp': 'Drag a project line to move its entire schedule.',
     'confirm.cancelLabel': 'Cancel',
     'detail.copySuffix': ' (copy)',
-    'license.promptMessage': 'Google Drive sync is a paid feature.\nPlease enter the license key you received from your Gumroad purchase.',
+    'license.promptMessage': 'Google Drive sync is included in the purchased version.\nPlease enter the license key from your Gumroad purchase.',
     'license.placeholder': 'Enter license key',
     'license.verifyBtn': 'Verify',
     'license.emptyError': 'Please enter a license key.',
@@ -977,7 +977,7 @@ const LANG = {
     'banner.corruptFilenamePrefix': 'DeadlineBuddy_LoadFailed_Original_',
     'banner.confirmPartial': "Continue with the recovered state? What you see now (with no items excluded) will be autosaved. It's recommended to download the original first.",
     'banner.confirmEmpty': "Continue with an empty state? This state will be autosaved from now on. It's recommended to download the original first.",
-    'detail.noAmount': 'No workload set',
+    'detail.noAmount': 'Deadline only',
     'detail.workDone': 'Completed',
     'detail.startsFrom': 'Starts on ',
     'detail.basisSuffix': ' basis ',
@@ -988,7 +988,7 @@ const LANG = {
     'detail.completedSum': 'Done',
     'detail.segCount': 'Segments',
     'detail.segTooltip': 'You can split the workload into multiple segments.',
-    'detail.noAmountNoSeg': 'No workload set, so segments cannot be created.',
+    'detail.noAmountNoSeg': 'Deadline-only projects cannot use segments.',
     'detail.noSegYet': 'No segments yet.',
     'detail.create': 'Create',
     'detail.segDone': 'Done',
@@ -1021,7 +1021,14 @@ function tf(key, vars){
   return str;
 }
 // 프로젝트에 저장된 단위 원본값('컷'/'장'/'개')을 현재 언어의 표시용 단위로 변환
-function unitLabel(unit){
+function unitLabel(unit, amount){
+  if (currentLang === 'en') {
+    const singular = Number(amount) === 1;
+    if (unit === '컷') return singular ? ' cut' : ' cuts';
+    if (unit === '장') return singular ? ' page' : ' pages';
+    if (unit === '개') return singular ? ' item' : ' items';
+    return unit ? ` ${unit}` : '';
+  }
   if (unit === '컷') return t('unit.cut');
   if (unit === '장') return t('unit.sheet');
   if (unit === '개') return t('unit.piece');
@@ -2037,7 +2044,13 @@ function calcProjectRisk(project){
   }
   if (notStartedYet(project)) {
     const startsIn = daysBetween(todayStr(), project.startDate);
-    return { risk: 'notstarted', startsIn, notStartedLabel: t('dash.startDday')+startsIn };
+    return {
+      risk: 'notstarted',
+      startsIn,
+      notStartedLabel: currentLang === 'en'
+        ? `Starts in ${startsIn} ${startsIn === 1 ? 'day' : 'days'}`
+        : tf('dash.startDday', { n: startsIn })
+    };
   }
   const remaining = project.total - project.done;
   const today = todayStr();
@@ -2417,18 +2430,18 @@ function renderDashboard(){
       cardColor = RISK_HEX.done;
       ribbonLabel = t('status.done');
       todayVal = t('status.done');
-      remainVal = `0${unitLabel(p.unit)}`;
+      remainVal = `0${unitLabel(p.unit, 0)}`;
       ringPct = 100;
       ringLabelHtml = `<span class="pct">100%</span>`;
     } else if (pr.risk === 'notstarted') {
       cardColor = RISK_HEX.notstarted;
       ribbonLabel = pr.notStartedLabel;
-      remainVal = `${p.total}${unitLabel(p.unit)}`;
+      remainVal = `${p.total}${unitLabel(p.unit, p.total)}`;
     } else {
       const seg = disp.seg;
       nameLabel = seg ? `${escapeHtml(p.name)} · ${escapeHtml(seg.name)}` : escapeHtml(p.name);
-      remainVal = seg ? `${seg.amount - seg.done}${unitLabel(p.unit)}` : `${pr.remaining}${unitLabel(p.unit)}`;
-      todayVal = (!disp.workableToday && !disp.overdue && !disp.isDeadlineDay) ? t('status.rest') : (disp.overdue ? t('status.over') : `${disp.todayRemaining ?? disp.perDay}${unitLabel(p.unit)}`);
+      remainVal = seg ? `${seg.amount - seg.done}${unitLabel(p.unit, seg.amount - seg.done)}` : `${pr.remaining}${unitLabel(p.unit, pr.remaining)}`;
+      todayVal = (!disp.workableToday && !disp.overdue && !disp.isDeadlineDay) ? t('status.rest') : (disp.overdue ? t('status.over') : `${disp.todayRemaining ?? disp.perDay}${unitLabel(p.unit, disp.todayRemaining ?? disp.perDay)}`);
       cardColor = RISK_HEX[pr.risk] || '#6b7280';
       ringPct = pr.pct;
       ribbonLabel = riskLabel(pr.risk);
@@ -2484,8 +2497,8 @@ function ringSvg(pct, color){
 function renderList(){
   const rows = projects.map(p => {
     const pr = calcProjectRisk(p);
-    const doneStr = isDdayProject(p) ? '' : ` · ${t('list.done')} ${p.done}${unitLabel(p.unit)}`;
-    const totalStr = isDdayProject(p) ? t('list.ddayNoAmount') : `${t('list.total')} ${p.total}${unitLabel(p.unit)}${doneStr}`;
+    const doneStr = isDdayProject(p) ? '' : ` · ${t('list.done')} ${p.done}${unitLabel(p.unit, p.done)}`;
+    const totalStr = isDdayProject(p) ? t('list.ddayNoAmount') : `${t('list.total')} ${p.total}${unitLabel(p.unit, p.total)}${doneStr}`;
     const badgeText = pr.risk === 'dday' ? pr.ddayLabel : pr.risk === 'notstarted' ? pr.notStartedLabel : riskLabel(pr.risk);
     const badgeClass = pr.risk === 'dday' ? pr.badgeVariant : pr.risk;
     return `<div class="card proj-card" data-id="${p.id}" draggable="true">
@@ -2667,7 +2680,7 @@ function renderChecklistItem(project, item, unit, showAssignment = true){
         <span class="cl-name ${item.checked?'checked':''}" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>
         <button class="cl-del-x" data-cl-del="${project.id}:${item.id}" aria-label="${t('cl.deleteItem')}">×</button>
       </span>
-      ${item.type === 'qty' ? `<span class="cl-qty">${item.qty}${escapeHtml(unitLabel(unit))}</span>` : ''}
+      ${item.type === 'qty' ? `<span class="cl-qty">${item.qty}${escapeHtml(unitLabel(unit, item.qty))}</span>` : ''}
       ${assignment}
     </div>`;
 }
@@ -2873,10 +2886,10 @@ function renderDetail(id){
   } else {
     const label = disp.seg ? escapeHtml(disp.seg.name) + t('detail.basisSuffix') : '';
     const restToday = (!disp.workableToday && !disp.overdue && !disp.isDeadlineDay);
-    const mainVal = restToday ? t('status.rest') : (disp.overdue ? t('minical.legend.deadline') + ' ' + t('status.overdue') : `${disp.todayRemaining ?? disp.perDay}${unitLabel(p.unit)}`);
+    const mainVal = restToday ? t('status.rest') : (disp.overdue ? t('minical.legend.deadline') + ' ' + t('status.overdue') : `${disp.todayRemaining ?? disp.perDay}${unitLabel(p.unit, disp.todayRemaining ?? disp.perDay)}`);
     const avgLine = restToday
-      ? `${t('detail.nextWorkdayAvg')} ${disp.perDay}${unitLabel(p.unit)}`
-      : (disp.overdue || disp.isDeadlineDay ? '' : `${t('detail.remainingDaysAvg')} ${disp.perDay}${unitLabel(p.unit)}`);
+      ? `${t('detail.nextWorkdayAvg')} ${disp.perDay}${unitLabel(p.unit, disp.perDay)}`
+      : (disp.overdue || disp.isDeadlineDay ? '' : `${t('detail.remainingDaysAvg')} ${disp.perDay}${unitLabel(p.unit, disp.perDay)}`);
     todayLine = `
       <p class="row" style="font-size:14px"><b>${label}${t('dash.todayDone')}</b><strong>${mainVal}</strong></p>
       ${avgLine ? `<p class="muted" style="font-size:12px;text-align:right;margin:2px 0 0">${avgLine}</p>` : ''}
@@ -2894,7 +2907,7 @@ function renderDetail(id){
           const n = i + 1;
           const on = n <= manual;
           const current = n === manual;
-          return `<button type="button" class="quick-done-btn ${on?'on':''} ${current?'current':''}" data-quick-done="${n}" aria-pressed="${current?'true':'false'}" title="${t('detail.setManualDoneTo').replace('{n}', n).replace('{unit}', escapeHtml(unitLabel(p.unit)))}">${n}</button>`;
+          return `<button type="button" class="quick-done-btn ${on?'on':''} ${current?'current':''}" data-quick-done="${n}" aria-pressed="${current?'true':'false'}" title="${t('detail.setManualDoneTo').replace('{n}', n).replace('{unit}', escapeHtml(unitLabel(p.unit, n)))}">${n}</button>`;
         }).join('')}
       </div>
       <p class="quick-done-help">${t('detail.qtyClickHelp')}</p>
@@ -2908,7 +2921,7 @@ function renderDetail(id){
       </div>
     </div>
     ${quickDoneButtons}
-    ${qtySum > 0 ? `<p class="muted" style="font-size:12px;text-align:right;margin:4px 0 0">${t('detail.checklistSum')} ${qtySum}${unitLabel(p.unit)} + ${t('detail.manualSum')} ${manual}${unitLabel(p.unit)} = ${t('detail.completedSum')} ${p.done}${unitLabel(p.unit)}</p>` : ''}`;
+    ${qtySum > 0 ? `<p class="muted" style="font-size:12px;text-align:right;margin:4px 0 0">${t('detail.checklistSum')} ${qtySum}${unitLabel(p.unit, qtySum)} + ${t('detail.manualSum')} ${manual}${unitLabel(p.unit, manual)} = ${t('detail.completedSum')} ${p.done}${unitLabel(p.unit, p.done)}</p>` : ''}`;
 
   const badgeText = pr.risk === 'dday' ? pr.ddayLabel : pr.risk === 'notstarted' ? pr.notStartedLabel : riskLabel(pr.risk);
   const badgeClass = pr.risk === 'dday' ? pr.badgeVariant : pr.risk;
@@ -2935,7 +2948,7 @@ function renderDetail(id){
       const sr = calcSegmentRisk(p, s);
       const isDone = s.done >= s.amount;
       const isLastSeg = s.id === lastSegId;
-      const todayPart = (sr.isActive && !sr.overdue) ? ` · ${t('dash.today')} ${sr.isDeadlineDay?t('status.deadline'):Math.ceil(sr.perDay)+unitLabel(p.unit)}` : '';
+      const todayPart = (sr.isActive && !sr.overdue) ? ` · ${t('dash.today')} ${sr.isDeadlineDay?t('status.deadline'):Math.ceil(sr.perDay)+unitLabel(p.unit, Math.ceil(sr.perDay))}` : '';
       const segChecklistOpen = segmentChecklistOpenState[s.id] !== false;
       const nameHtml = editingSegNameId === s.id
         ? `<input class="seg-name-input" value="${escapeHtml(s.name)}" data-segname="${s.id}" />`
@@ -2945,7 +2958,7 @@ function renderDetail(id){
         <div class="seg-row-top">
           <span class="seg-name-slot" style="${isEditingName ? 'flex:1;min-width:0;width:auto' : ''}">${nameHtml}</span>
           <span class="right-group">
-            <span class="seg-meta">${t('detail.segDone')} ${s.done}/${s.amount}${unitLabel(p.unit)}${todayPart}</span>
+            <span class="seg-meta">${t('detail.segDone')} ${s.done}/${s.amount}${unitLabel(p.unit, s.amount)}${todayPart}</span>
             <span class="badge ${sr.risk}">${riskLabel(sr.risk)}</span>
             <input type="date" value="${s.deadline}" data-seg="${s.id}" class="segDeadlineInput seg-deadline-pill num-right" ${isLastSeg ? `disabled title="${t('detail.lastSegDisabledTitle')}"` : ''} />
             <button class="danger-btn" data-delseg="${s.id}">${t('menu.delete')}</button>
@@ -3007,9 +3020,9 @@ function renderDetail(id){
       </div>
       <div class="info-stats">
         <div class="info-stat"><span class="lbl">${t('list.deadlinePrefix')}</span><span class="val">${p.deadline}</span></div>
-        <div class="info-stat"><span class="lbl">${t('detail.total')}</span><span class="val">${dday ? t('status.unassigned') : p.total+unitLabel(p.unit)}</span></div>
-        <div class="info-stat"><span class="lbl">${t('detail.done')}</span><span class="val">${dday ? '-' : p.done+unitLabel(p.unit)}</span></div>
-        <div class="info-stat"><span class="lbl">${t('detail.remaining')}</span><span class="val">${dday ? '-' : (p.total-p.done)+unitLabel(p.unit)}</span></div>
+        <div class="info-stat"><span class="lbl">${t('detail.total')}</span><span class="val">${dday ? t('status.unassigned') : p.total+unitLabel(p.unit, p.total)}</span></div>
+        <div class="info-stat"><span class="lbl">${t('detail.done')}</span><span class="val">${dday ? '-' : p.done+unitLabel(p.unit, p.done)}</span></div>
+        <div class="info-stat"><span class="lbl">${t('detail.remaining')}</span><span class="val">${dday ? '-' : (p.total-p.done)+unitLabel(p.unit, p.total-p.done)}</span></div>
       </div>
       <div id="projectEditWrap">${projectEditOpenState[p.id] ? renderProjectEditForm(p) : ''}</div>
       <div class="subcard">
