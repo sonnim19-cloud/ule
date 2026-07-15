@@ -8,14 +8,14 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root{
-    --bg:#f4f5f7; --panel:#fff; --border:#e3e6ea; --text:#1f2328; --muted:#6b7280;
-    --relaxed:#0f6e56; --relaxed-bg:#e1f5ee;
-    --neutral:#556270; --neutral-bg:#eceff1;
-    --danger:#a32d2d; --danger-bg:#fcebeb;
-    --dday:#3a3f8f; --dday-bg:#eaeafb;
-    --notstarted:#556270; --notstarted-bg:#eceff1;
-    --accent:#2f6fdb; --accent-bg:#eaf1fc;
-    --midline:#a8621a; --midline-bg:#faeeda;
+    --bg:#f4f6f8; --panel:#ffffff; --border:#e2e6eb; --text:#20242b; --muted:#6b7684;
+    --relaxed:#12735c; --relaxed-bg:#e2f4ee;
+    --neutral:#5a6472; --neutral-bg:#edeff2;
+    --danger:#a5333a; --danger-bg:#fbeaec;
+    --dday:#3f4590; --dday-bg:#eceefa;
+    --notstarted:#5a6472; --notstarted-bg:#edeff2;
+    --accent:#3763c9; --accent-bg:#e9eefb;
+    --midline:#a9691d; --midline-bg:#f9edda;
   }
   * { box-sizing: border-box; }
   body { margin:0; font-family:"Segoe UI","Malgun Gothic",-apple-system,sans-serif; background:var(--bg); color:var(--text); }
@@ -23,30 +23,31 @@
   header h1 { font-size:16px; margin:0; font-weight:600; justify-self:start; }
   header .version { font-size:11px; color:var(--muted); font-weight:400; margin-left:4px; }
   nav { display:flex; gap:2px; justify-self:center; background:var(--border); border-radius:10px; padding:3px; }
-  nav button { background:transparent; border:none; padding:6px 16px; border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted); font-weight:600; }
+  nav button { background:transparent; border:none; padding:6px 16px; border-radius:8px; cursor:pointer; font-size:14px; color:var(--muted); font-weight:600; }
   nav button.active { background:var(--panel); color:var(--text); box-shadow:0 1px 3px rgba(0,0,0,.12); }
-  main { max-width:720px; margin:0 auto; padding:20px 16px 60px; }
+  main { max-width:800px; margin:0 auto; padding:20px 16px 60px; }
   .card { background:var(--panel); border:1px solid var(--border); border-radius:3px; padding:16px 18px; margin-bottom:14px; }
-  .card h2 { font-size:15px; margin:0 0 10px; }
+  .card h2 { font-size:17px; margin:0 0 10px; }
   .row { display:flex; justify-content:space-between; align-items:baseline; }
-  .muted { color:var(--muted); font-size:13px; }
-  .badge { font-size:12px; padding:3px 9px; border-radius:6px; font-weight:600; display:inline-block; }
+  .proj-card-body .row strong { font-size:17px; }
+  .muted { color:var(--muted); font-size:14px; }
+  .badge { font-size:13px; padding:3px 9px; border-radius:6px; font-weight:600; display:inline-block; }
   .badge.relaxed { background:var(--relaxed-bg); color:var(--relaxed); }
   .badge.done { background:var(--relaxed-bg); color:var(--relaxed); }
   .badge.neutral { background:var(--neutral-bg); color:var(--neutral); }
   .badge.danger { background:var(--danger-bg); color:var(--danger); }
-  .badge.over { background:#ffd9d9; color:#b30000; font-weight:800; letter-spacing:.02em; }
-  .badge.deadline { background:#ffdcdc; color:#d90000; font-weight:800; letter-spacing:.02em; animation:pulse-urgent 1.6s ease-in-out infinite; }
-  @keyframes pulse-urgent { 0%,100%{ box-shadow:0 0 0 0 rgba(217,0,0,.35); } 50%{ box-shadow:0 0 0 4px rgba(217,0,0,.12); } }
+  .badge.over { background:#f5dde0; color:#8a2a33; font-weight:800; letter-spacing:.02em; }
+  .badge.deadline { background:#f5dde0; color:#7a2029; font-weight:800; letter-spacing:.02em; animation:pulse-urgent 1.6s ease-in-out infinite; }
+  @keyframes pulse-urgent { 0%,100%{ box-shadow:0 0 0 0 rgba(122,32,41,.35); } 50%{ box-shadow:0 0 0 4px rgba(122,32,41,.12); } }
   .badge.dday { background:var(--dday-bg); color:var(--dday); }
   .badge.notstarted { background:var(--notstarted-bg); color:var(--notstarted); }
-  button.primary { background:#1f2328; color:#fff; border:none; padding:9px 16px; border-radius:2px; cursor:pointer; font-size:13px; }
-  button.accent { background:var(--accent); color:#fff; border:none; padding:9px 16px; border-radius:2px; cursor:pointer; font-size:13px; }
-  button.ghost { background:transparent; border:1px solid var(--border); padding:7px 12px; border-radius:2px; cursor:pointer; font-size:13px; color:var(--text); }
+  button.primary { background:#1f2328; color:#fff; border:none; padding:9px 16px; border-radius:2px; cursor:pointer; font-size:14px; }
+  button.accent { background:var(--accent); color:#fff; border:none; padding:9px 16px; border-radius:2px; cursor:pointer; font-size:14px; }
+  button.ghost { background:transparent; border:1px solid var(--border); padding:7px 12px; border-radius:2px; cursor:pointer; font-size:14px; color:var(--text); }
   button.danger-btn { background:transparent; border:1px solid var(--danger); color:var(--danger); padding:5px 10px; border-radius:2px; cursor:pointer; font-size:12px; }
   button.small { padding:5px 10px; font-size:12px; }
   button.icon-btn { background:transparent; border:none; cursor:pointer; font-size:16px; padding:4px; color:var(--muted); }
-  input, select { font:inherit; font-size:13px; border:1px solid var(--border); border-radius:2px; padding:7px 9px; background:#fff; }
+  input, select { font:inherit; font-size:14px; border:1px solid var(--border); border-radius:2px; padding:7px 9px; background:#fff; }
   input:focus, select:focus { outline:none; border-color:var(--accent); }
   /* select 화살표를 number input 스핀 화살표와 톤이 맞도록 커스텀 */
   select { appearance:none; -webkit-appearance:none; -moz-appearance:none;
@@ -63,11 +64,11 @@
   /* 새 프로젝트 폼 */
   .field-box { display:flex; align-items:center; border:1px solid var(--border); border-radius:2px; padding:0 10px; background:#fff; min-width:0; }
   .field-box:focus-within { border-color:var(--accent); }
-  .field-box label { font-size:12px; color:var(--muted); width:38px; flex:0 0 auto; }
-  .field-box input, .field-box select { border:none; background-color:transparent; padding:7px 0; font-size:13px; flex:1; min-width:0; }
+  .field-box label { font-size:13px; color:var(--muted); width:38px; flex:0 0 auto; }
+  .field-box input, .field-box select { border:none; background-color:transparent; padding:7px 0; font-size:14px; flex:1; min-width:0; }
   .field-box input:focus, .field-box select:focus { border-color:transparent; }
   .field-box select { flex:0 0 auto; width:52px; }
-  .form-line1 { display:flex; gap:8px; margin-bottom:0; }
+  .form-line1 { display:flex; gap:8px; margin-bottom:2px; }
   .form-line1 .name-box { flex:1.6; }
   .form-line1 .total-box { flex:1; }
   .total-box input[type=number] { appearance:textfield; -moz-appearance:textfield; }
@@ -110,7 +111,7 @@
   .deadline-viewer-nav button { display:flex; align-items:center; justify-content:center; width:36px; height:36px; padding:0; border:1px solid rgba(31,35,40,.09); background:#fff; color:var(--muted); cursor:pointer; font-size:20px; line-height:1; box-shadow:0 3px 10px rgba(31,35,40,.06); transition:transform .15s,border-color .15s,color .15s,box-shadow .15s; }
   .deadline-viewer-nav [data-deadline-prev] { grid-column:2; grid-row:1; border-radius:10px 5px 5px 10px; }
   .deadline-viewer-nav [data-deadline-next] { grid-column:3; grid-row:1; border-radius:5px 10px 10px 5px; }
-  .deadline-viewer-nav button:hover, .deadline-viewer-nav button:focus-visible { border-color:#9bbce8; color:var(--accent); box-shadow:0 5px 14px rgba(47,111,219,.10); outline:none; transform:translateY(-1px); }
+  .deadline-viewer-nav button:hover, .deadline-viewer-nav button:focus-visible { border-color:#9bbce8; color:var(--accent); box-shadow:0 5px 14px rgba(55,99,201,.12); outline:none; transform:translateY(-1px); }
 
   .deadline-calendar-month { background:transparent; }
   .deadline-calendar-dow-row,
@@ -140,7 +141,7 @@
   .deadline-week-columns { position:absolute; inset:0; z-index:0; display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); pointer-events:none; }
   .deadline-week-column { position:relative; border-right:1px dashed #e7ebf0; }
   .deadline-week-column:last-child { border-right:none; }
-  .deadline-week-column.today { background:linear-gradient(180deg,rgba(47,111,219,.055),rgba(47,111,219,.14)); box-shadow:inset 0 0 0 1px rgba(47,111,219,.10); }
+  .deadline-week-column.today { background:linear-gradient(180deg,rgba(55,99,201,.055),rgba(55,99,201,.14)); box-shadow:inset 0 0 0 1px rgba(55,99,201,.12); }
   .deadline-project-mid-dot { position:absolute; z-index:3; left:calc((100% / 7) * (var(--column) + .5) - 4px); top:calc(var(--lane) * 24px + 18px); width:8px; height:8px; border-radius:50%; background:var(--marker-color); pointer-events:none; }
 
   .deadline-project-bar { position:absolute; z-index:1; left:var(--line-left); width:var(--line-width); top:calc(var(--lane) * 24px + 6px); height:20px; padding:0; border:none; background:transparent; cursor:pointer; overflow:visible; }
@@ -200,6 +201,81 @@
   @media (max-width:600px){ .two-col { grid-template-columns:1fr; } }
   .cal-card { display:flex; flex-direction:column; justify-content:center; }
 
+  /* 프로젝트 상세: 상단 요약 카드와 작업 구간 카드를 분리 */
+  .detail-page .detail-main-card { border-radius:10px; }
+  .detail-page .detail-summary-box {
+    padding:0 0 14px;
+    margin:0 0 14px;
+    border:0;
+    border-bottom:1px solid var(--border);
+    border-radius:0;
+    background:transparent;
+  }
+  .detail-page .detail-quota-box {
+    margin:0;
+    padding:12px 14px;
+    border:1px solid #e5eaf0;
+    border-radius:10px;
+    background:#f7f9fc;
+  }
+  .detail-page .detail-segment-card { border-radius:10px; }
+  .detail-page .detail-segment-card > .subcard {
+    margin-top:0;
+    padding-top:0;
+    border-top:0;
+  }
+  .detail-page .detail-quota-box > p:first-child { margin-top:0; }
+  .detail-page .detail-quota-box > :last-child { margin-bottom:0; }
+  .detail-page .detail-project-title { font-size:19px; }
+  .detail-page .info-stat .lbl { font-size:11px; }
+  .detail-page .card h2 { font-size:18px; }
+  .detail-page .cal-grid { font-size:12px; }
+  .detail-page .cal-nav { font-size:13px; }
+  .detail-page .cal-cell.today-mark {
+    border-color:var(--accent);
+    background:var(--accent);
+    color:#fff;
+  }
+  .detail-page .two-col { align-items:stretch; }
+  .detail-page .detail-lower-card {
+    height:100%;
+    min-height:280px;
+    padding:16px;
+    border-radius:10px;
+  }
+  .detail-page .cal-card { justify-content:flex-start; }
+  .detail-page .seg-row-top {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center;
+    gap:12px;
+    flex-wrap:nowrap;
+  }
+  .detail-page .seg-name-slot {
+    width:auto;
+    flex:initial;
+    min-width:0;
+  }
+  .detail-page .seg-row-top .right-group {
+    margin-left:0;
+    flex-wrap:nowrap;
+    justify-content:flex-end;
+  }
+  .detail-page .checklist-add .cl-add-btn {
+    align-self:stretch;
+    width:32px;
+    height:32px;
+    min-height:32px;
+    flex:0 0 32px;
+  }
+  @media (max-width:600px){
+    .detail-page .seg-row-top { grid-template-columns:1fr; gap:7px; }
+    .detail-page .seg-row-top .right-group {
+      justify-content:flex-start;
+      flex-wrap:wrap;
+    }
+  }
+
   .proj-card { cursor:grab; position:relative; }
   .proj-card:active { cursor:grabbing; }
   .proj-card:hover { border-color:#c7cbd1; }
@@ -219,36 +295,40 @@
   body.touch-reorder-active { user-select:none; -webkit-user-select:none; overscroll-behavior:none; }
   .touch-reorder-source { opacity:.55 !important; cursor:grabbing !important; }
   .proj-menu { position:absolute; top:100%; right:0; margin-top:4px; background:var(--panel); border:1px solid var(--border); border-radius:4px; box-shadow:0 4px 12px rgba(0,0,0,.15); z-index:10; overflow:hidden; min-width:84px; }
-  .proj-menu button { display:block; width:100%; text-align:left; padding:8px 12px; font-size:13px; background:none; border:none; cursor:pointer; color:var(--text); }
+  .proj-menu button { display:block; width:100%; text-align:left; padding:8px 12px; font-size:14px; background:none; border:none; cursor:pointer; color:var(--text); }
   .proj-menu button:hover { background:var(--bg); }
   .proj-menu button.proj-menu-danger { color:var(--danger); }
   .info-stats { display:flex; gap:18px; flex-wrap:wrap; margin-top:10px; }
   .info-stat { display:flex; flex-direction:column; gap:2px; }
   .info-stat .lbl { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; }
   .info-stat .val { font-size:14px; font-weight:600; }
-  .seg-row { border:1px solid var(--border); border-radius:2px; margin-bottom:7px; font-size:13px; padding:9px 10px; }
+  .seg-row { border:1px solid var(--border); border-radius:2px; margin-bottom:7px; font-size:14px; padding:9px 10px; }
   .seg-row-top { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .seg-name-slot { display:inline-block; width:90px; flex:0 0 90px; }
+  .seg-name-slot { display:inline-flex; align-items:center; gap:2px; width:112px; flex:0 0 112px; min-width:0; }
+  .seg-rename-btn { flex:0 0 auto; background:none; border:none; cursor:pointer; color:var(--muted); padding:2px; display:inline-flex; align-items:center; }
+  .seg-rename-btn:hover, .seg-rename-btn:focus-visible { color:var(--accent); outline:none; }
+  .seg-del-btn { flex:0 0 auto; background:none; border:none; cursor:pointer; color:var(--danger); padding:2px; display:inline-flex; align-items:center; }
+  .seg-del-btn:hover, .seg-del-btn:focus-visible { opacity:.7; outline:none; }
   .seg-name { cursor:pointer; display:inline-block; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom; }
   .seg-collapse-arrow { background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:13px; line-height:1; padding:0 2px 0 0; vertical-align:1px; }
   .seg-collapse-arrow:hover { color:var(--accent); }
-  .seg-name-input { font-size:13px; padding:3px 6px; width:100%; }
+  .seg-name-input { font-size:14px; padding:3px 6px; width:100%; }
   .seg-deadline-pill { border:none; border-radius:6px; background:var(--midline-bg); color:var(--midline); padding:3px 9px; font-weight:600; font-size:12px; width:112px; }
   .seg-row-top .danger-btn { border:none; border-radius:6px; padding:3px 9px; font-size:12px; font-weight:600; background:var(--danger-bg); }
   .seg-row-top .right-group { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; margin-left:auto; }
   .seg-row.active { border-color:#378add; background:#f4f8fe; }
   .seg-row.done { opacity:.55; }
-  .seg-meta { color:var(--muted); font-size:12px; }
+  .seg-meta { color:var(--muted); font-size:13px; }
   .checkbox-row { display:flex; gap:8px; font-size:11px; margin-bottom:12px; flex-wrap:nowrap; justify-content:center; }
   .checkbox-row label { display:flex; align-items:center; gap:3px; white-space:nowrap; }
   .back-btn { background:transparent; border:none; cursor:pointer; font-size:13px; color:var(--muted); padding:0; margin-bottom:10px; }
   hr { border:none; border-top:1px solid var(--border); margin:14px 0; }
-  .empty { text-align:center; color:var(--muted); font-size:13px; padding:30px 0; }
+  .empty { text-align:center; color:var(--muted); font-size:14px; padding:30px 0; }
   .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; text-align:center; font-size:11px; }
   .cal-cell { padding:5px 0; border-radius:2px; cursor:pointer; user-select:none; }
   .cal-cell.dow { color:var(--muted); cursor:default; font-weight:600; }
   .cal-cell.pad { visibility:hidden; }
-  .cal-cell.rest { background:#eceff1; color:#556270; font-weight:600; }
+  .cal-cell.rest { background:#edeff2; color:#5a6472; font-weight:600; }
   .cal-cell.start-mark { background:var(--accent-bg); color:var(--accent); font-weight:700; }
   .cal-cell.middeadline-mark { background:var(--midline-bg); color:var(--midline); font-weight:700; }
   .cal-cell.deadline-mark { background:var(--danger-bg); color:var(--danger); font-weight:700; }
@@ -259,21 +339,50 @@
   .cal-legend span.dot { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:3px; vertical-align:-1px; }
   .cal-hint { font-size:11px; color:var(--muted); margin-top:8px; line-height:1.5; }
   .top-actions { display:flex; gap:8px; justify-self:end; align-items:center; flex-wrap:nowrap; }
+  .top-actions button { white-space:nowrap; }
   .top-actions .top-action-spacer { width:1px; height:22px; margin:0 2px; background:var(--border); flex:0 0 auto; }
   .main-calendar-toggle.active { border-color:var(--accent); background:var(--accent-bg); color:var(--accent); font-weight:700; }
   #btnGoogleSync.connected { border-color:var(--accent); color:var(--accent); }
   #btnGoogleSync.syncing { opacity:.55; }
-  .top-actions .btn-emoji { display:none; }
+  .top-actions .btn-emoji { display:none; align-items:center; justify-content:center; }
+  .top-actions .btn-emoji svg { display:block; }
   .detail-actions { display:flex; gap:5px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
-  @media (max-width:900px){
+  @media (max-width:1040px){
     .top-actions .btn-full { display:none; }
-    .top-actions .btn-emoji { display:inline; }
+    .top-actions .btn-emoji { display:inline-flex; }
     .top-actions { gap:5px; }
     .top-actions .top-action-spacer { margin:0; height:20px; }
   }
+
+  /* 중간 폭부터 헤더를 2줄로 바꿔 제목이 세로로 찌그러지지 않게 한다. */
+  @media (max-width:860px){
+    header {
+      grid-template-columns:minmax(100px,1fr) auto;
+      grid-template-areas:
+        "title actions"
+        "nav nav";
+      padding:12px 14px;
+      gap:10px;
+    }
+    header h1 {
+      grid-area:title;
+      min-width:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    nav {
+      grid-area:nav;
+      justify-self:center;
+    }
+    .top-actions {
+      grid-area:actions;
+    }
+  }
+
   @media (max-width:520px){
     header { grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"title actions" "nav nav"; padding:12px 14px; gap:10px; }
-    header h1 { grid-area:title; white-space:nowrap; min-width:0; }
+    header h1 { grid-area:title; white-space:nowrap; min-width:0; overflow:hidden; text-overflow:ellipsis; }
     nav { grid-area:nav; justify-self:stretch; }
     nav button { flex:1; padding:7px 10px; }
     .top-actions { grid-area:actions; }
@@ -316,9 +425,9 @@
   .deadline-calendar-more { position:absolute; z-index:4; right:6px; bottom:5px; height:19px; padding:1px 7px; border:1px solid #d8dee8; border-radius:7px; background:rgba(255,255,255,.94); color:var(--accent); cursor:pointer; font-size:9px; font-weight:800; box-shadow:0 2px 7px rgba(31,35,40,.08); }
   .deadline-calendar-more:hover { border-color:var(--accent); }
   .deadline-project-bar.calendar-dragging, .deadline-final-only.calendar-dragging { opacity:.45; cursor:grabbing; }
-  .deadline-project-bar.calendar-longpress-ready, .deadline-final-only.calendar-longpress-ready { outline:2px solid rgba(47,111,219,.28); outline-offset:2px; }
+  .deadline-project-bar.calendar-longpress-ready, .deadline-final-only.calendar-longpress-ready { outline:2px solid rgba(55,99,201,.28); outline-offset:2px; }
   .deadline-calendar-date-cell.calendar-drop-target .deadline-calendar-date { background:var(--accent); color:#fff; }
-  .deadline-week-column.calendar-drop-target { background:rgba(47,111,219,.16); box-shadow:inset 0 0 0 1px rgba(47,111,219,.22); }
+  .deadline-week-column.calendar-drop-target { background:rgba(55,99,201,.16); box-shadow:inset 0 0 0 1px rgba(55,99,201,.22); }
   body.calendar-project-drag-active { user-select:none; -webkit-user-select:none; cursor:grabbing; overscroll-behavior:none; }
   .deadline-project-bar, .deadline-final-only { touch-action:pan-y; }
   @media (max-width:500px){
@@ -329,18 +438,21 @@
   }
 
   /* 체크리스트 */
-  .checklist-item { display:flex; align-items:center; gap:7px; font-size:13px; padding:4px 0; min-width:0; }
+  .checklist-item { display:flex; align-items:center; gap:7px; font-size:14px; padding:4px 0; min-width:0; }
   .checklist-item input[type=checkbox] { width:15px; height:15px; flex:0 0 auto; }
   .cl-name-wrap { display:flex; align-items:center; gap:1px; flex:1 1 auto; min-width:0; }
   .checklist-item .cl-name { flex:0 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .checklist-item .cl-name.checked { text-decoration:line-through; color:var(--muted); }
   .checklist-item .cl-qty { color:var(--muted); font-size:12px; flex:0 0 auto; }
-  .checklist-add { display:flex; gap:6px; margin-top:6px; align-items:center; min-width:0; flex-wrap:wrap; }
-  .checklist-add input, .checklist-add select { font-size:12.5px; }
-  .checklist-add input[name=cl_name] { flex:1 1 110px; min-width:0; }
-  .checklist-add input[name=cl_qty] { width:60px; }
-  .checklist-add select { width:76px; flex:0 0 auto; }
-  .checklist-add select[name=cl_segment] { width:104px; max-width:32%; min-width:86px; }
+  /* 체크리스트 추가 폼: 오른쪽 카드 안에서도 모든 입력 요소를 한 줄에 유지한다. */
+  .checklist-add { display:flex; gap:4px; margin-top:6px; align-items:stretch; width:100%; min-width:0; flex-wrap:nowrap; }
+  .checklist-add input, .checklist-add select, .checklist-add button { height:32px; min-height:32px; }
+  .checklist-add input, .checklist-add select { min-width:0; font-size:11.5px; padding-top:5px; padding-bottom:5px; }
+  .checklist-add select { flex:0 0 auto; padding-left:6px; padding-right:18px; background-position:right 5px center; text-overflow:ellipsis; white-space:nowrap; overflow:hidden; }
+  .checklist-add select[name=cl_type] { width:64px; }
+  .checklist-add select[name=cl_segment] { width:78px; max-width:none; }
+  .checklist-add input[name=cl_qty] { flex:0 0 52px; width:52px; padding-left:5px; padding-right:5px; }
+  .checklist-add input[name=cl_name] { flex:1 1 64px; width:0; min-width:48px; padding-left:7px; padding-right:7px; }
   /* 실제 select는 투명하게 덮고, 보이는 라벨은 별도 요소로 그려 정렬/색을 브라우저마다 동일하게 유지한다. */
   .cl-segment-picker {
     position:relative; display:inline-flex; align-items:center; justify-content:center;
@@ -370,10 +482,17 @@
   @media (max-width:500px){
     .checklist-item { gap:5px; }
     .cl-segment-picker { width:auto; min-width:0; max-width:82px; padding-left:5px; padding-right:5px; }
-    .checklist-add select[name=cl_segment] { max-width:38%; }
+    .checklist-add { gap:3px; }
+    .checklist-add select[name=cl_type] { width:58px; }
+    .checklist-add select[name=cl_segment] { width:68px; max-width:none; }
+    .checklist-add input[name=cl_qty] { flex-basis:46px; width:46px; }
+    .checklist-add input[name=cl_name] { min-width:38px; padding-left:5px; padding-right:5px; }
   }
+  .cl-edit-name { flex:1 1 auto; min-width:0; font-size:13px; padding:3px 6px; }
+  .cl-edit-qty { flex:0 0 64px; width:64px; font-size:13px; padding:3px 6px; }
   .cl-del-x { flex:0 0 auto; background:none; border:none; color:var(--danger); cursor:pointer; font-size:14px; line-height:1; padding:0 3px; }
-  .cl-add-btn { background:#e4f5df; color:#2f6b1f; border:none; width:24px; height:24px; border-radius:4px; cursor:pointer; font-size:15px; line-height:1; flex:0 0 auto; }
+  .cl-add-btn { display:inline-flex; align-items:center; justify-content:center; flex:0 0 32px; width:32px; height:32px; padding:0; border:1px solid var(--neutral); border-radius:2px; background:var(--neutral); color:#fff; cursor:pointer; font-size:17px; font-weight:600; line-height:1; }
+  .cl-add-btn:hover, .cl-add-btn:focus-visible { background:#3f4a56; border-color:#3f4a56; outline:none; }
   .cl-head-arrow { font-size:16px; cursor:pointer; color:var(--muted); margin-left:auto; }
   .has-tooltip { position:relative; }
   .has-tooltip:hover .tooltip-bubble { display:block; }
@@ -381,7 +500,7 @@
 
   /* 작업량 10 이하: 직접 완료 입력 방식을 숫자 입력/버튼형으로 전환 */
   .done-input-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px; flex-wrap:wrap; min-width:0; }
-  .done-input-label { color:var(--muted); font-size:13px; min-width:0; flex:1 1 auto; }
+  .done-input-label { color:var(--muted); font-size:14px; min-width:0; flex:1 1 auto; }
   .done-input-control { display:flex; align-items:center; justify-content:flex-end; gap:6px; flex:0 1 auto; flex-wrap:wrap; min-width:0; max-width:100%; }
   .done-input-control input[type=number] { max-width:100%; }
   .done-mode-toggle { background:transparent; border:1px solid var(--border); padding:5px 8px; border-radius:4px; cursor:pointer; font-size:11px; color:var(--muted); white-space:nowrap; }
@@ -410,13 +529,12 @@
   .goal-bar-shine { position:absolute; top:0; left:0; right:0; height:40%; background:linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0)); border-radius:10px 10px 0 0; }
   .goal-bar-row { position:relative; z-index:1; height:100%; display:flex; align-items:center; justify-content:space-between; padding:0 14px; gap:10px; }
   .goal-bar-row .streak-text { font-size:12px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .goal-bar-row .pct-pill { font-size:11px; font-weight:700; padding:4px 10px; border-radius:6px; white-space:nowrap; color:#fff; background:rgba(47,111,219,.75); flex:0 0 auto; }
-  .dash-grid { display:grid; gap:14px; grid-template-columns:repeat(4,minmax(0,1fr)); grid-auto-rows:250px; align-items:start; }
-  @media (max-width:640px){
-    .dash-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-    .dash-grid .vcard-empty { order:-1; }
+  .goal-bar-row .pct-pill { font-size:11px; font-weight:700; padding:4px 10px; border-radius:6px; white-space:nowrap; color:#fff; background:rgba(55,99,201,.75); flex:0 0 auto; }
+  .dash-grid { display:grid; gap:14px; grid-template-columns:repeat(4,minmax(0,165px)); justify-content:space-between; grid-auto-rows:250px; align-items:start; }
+  /* 태블릿/좁은 창: 세로형 카드 2열 */
+  @media (max-width:860px){
+    .dash-grid { grid-template-columns:repeat(2,minmax(0,165px)); justify-content:center; grid-auto-rows:250px; gap:10px; }
   }
-  @media (max-width:500px){ .dash-grid { grid-template-columns:repeat(1,minmax(0,1fr)); grid-auto-rows:56px; } }
   .vcard { background:var(--panel); border-radius:16px; padding:0 14px 18px; width:100%; min-width:0; height:250px; min-height:250px; max-height:250px; position:relative; text-align:center; cursor:grab; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; overflow:hidden;
     box-shadow:0 0 0 1px var(--card-shadow-1), 0 8px 20px -6px var(--card-shadow-2); }
   .vcard.dragging { opacity:.4; }
@@ -431,22 +549,24 @@
   .vcard-ring-wrap { position:relative; width:92px; height:92px; margin:56px auto 0; }
   .vcard-ring-label { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
   .vcard-ring-label .pct { font-size:18px; font-weight:700; }
-  .vcard-name { display:block; width:100%; min-width:0; font-size:14px; font-weight:700; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .vcard-name { display:block; width:100%; min-width:0; padding:0 2px; font-size:16px; font-weight:700; letter-spacing:-.02em; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .vcard-stats { display:flex; justify-content:center; gap:14px; width:100%; min-width:0; overflow:hidden; }
   .vcard-stat { min-width:0; }
-  .vcard-stat .lbl { font-size:11px; color:var(--muted); }
-  .vcard-stat .val { display:block; max-width:100%; font-size:13px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .vcard-stat .lbl { font-size:12px; color:var(--muted); }
+  .vcard-stat .val { display:block; max-width:100%; font-size:14px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
   .vcard-standard { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; width:100%; min-width:0; overflow:hidden; }
   .vcard-compact { display:none; width:100%; }
+  /* 휴대폰: 기존 가로 막대 카드 */
   @media (max-width:500px){
+    .dash-grid { grid-template-columns:repeat(1,minmax(0,1fr)); grid-auto-rows:56px; gap:10px; }
     .vcard { height:56px; min-height:56px; max-height:56px; padding:0; box-shadow:none; align-items:stretch; }
     .vcard-standard { display:none; }
     .vcard-compact { display:block; position:relative; overflow:hidden; border-radius:16px; }
     .vcard-compact-fill { position:absolute; top:0; left:0; bottom:0; }
     .vcard-compact-row { position:relative; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px 12px; text-align:left; }
-    .vcard-compact-name { font-size:13px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .vcard-compact-stats { font-size:11px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .vcard-compact-name { font-size:14px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .vcard-compact-stats { font-size:12px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .vcard-compact-badge { font-size:12px; font-weight:700; flex:0 0 auto; }
     .vcard-empty { height:56px; min-height:56px; max-height:56px; padding:14px; border-radius:16px; font-size:20px; }
     .vcard.drag-before::before,
@@ -464,25 +584,32 @@
   .midline-handle::after { content:""; position:absolute; top:0; bottom:0; left:9px; width:6px; background:var(--panel); border:1px solid var(--accent); border-radius:3px; }
   .midline-names { display:flex; gap:6px; margin-bottom:6px; }
   .midline-names input { flex:1; min-width:0; font-size:12px; padding:5px 7px; }
+
 </style>
 </head>
 <body>
 
 <header style="position:relative">
-  <h1 id="appTitle">마감을 부탁해<span class="version">v2.4</span></h1>
+  <h1 id="appTitle">마감을 부탁해<span class="version">v2.8</span></h1>
   <nav>
     <button id="tabDash" class="active" data-i18n="nav.dash">대시보드</button>
     <button id="tabList" data-i18n="nav.list">프로젝트</button>
   </nav>
   <div class="top-actions">
-    <button class="ghost small main-calendar-toggle" id="btnMainCalendar" aria-label="메인달력" aria-expanded="false"><span class="btn-full" data-i18n="btn.mainCalendar">메인달력</span><span class="btn-emoji">🗓️</span></button>
+    <button class="ghost small main-calendar-toggle" id="btnMainCalendar" aria-label="메인달력" aria-expanded="false"><span class="btn-full" data-i18n="btn.mainCalendar">메인달력</span><span class="btn-emoji"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><line x1="3.5" y1="9.5" x2="20.5" y2="9.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="16" y1="2.5" x2="16" y2="6.5"/></svg></span></button>
     <span class="top-action-spacer" aria-hidden="true"></span>
-    <button class="ghost small" id="btnBackup" aria-label="백업"><span class="btn-full" data-i18n="btn.backup">백업</span><span class="btn-emoji">💾</span></button>
-    <button class="ghost small" id="btnRestore" aria-label="불러오기"><span class="btn-full" data-i18n="btn.restore">불러오기</span><span class="btn-emoji">📁</span></button>
-    <button class="ghost small" id="btnUndoRestore" aria-label="불러오기 전 데이터 복구" style="display:none"><span class="btn-full" data-i18n="btn.undoRestore">이전 데이터</span><span class="btn-emoji">↩</span></button>
+    <button class="ghost small" id="btnBackup" aria-label="백업"><span class="btn-full" data-i18n="btn.backup">백업</span><span class="btn-emoji"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4.5 19.5h15"/></svg></span></button>
+    <button class="ghost small" id="btnRestore" aria-label="불러오기"><span class="btn-full" data-i18n="btn.restore">불러오기</span><span class="btn-emoji"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5v11a1.5 1.5 0 0 0 1.5 1.5h14a1.5 1.5 0 0 0 1.5-1.5V9.5A1.5 1.5 0 0 0 19 8h-6.5L10 5.5H5A1.5 1.5 0 0 0 3.5 7z"/></svg></span></button>
+    <button class="ghost small" id="btnUndoRestore" aria-label="불러오기 전 데이터 복구" style="display:none"><span class="btn-full" data-i18n="btn.undoRestore">이전 데이터</span><span class="btn-emoji"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 8.5L4 12l4.5 3.5"/><path d="M4 12h11a4.5 4.5 0 0 1 0 9h-2"/></svg></span></button>
     <span class="top-action-spacer" aria-hidden="true"></span>
-    <button class="ghost small" id="btnGoogleSync" aria-label="구글 동기화"><span class="btn-full" data-i18n="btn.googleSync">구글 동기화</span><span class="btn-emoji">☁️</span></button>
-    <button class="ghost small icon-btn" id="btnLangToggle" aria-label="Language" title="한국어 / English" style="font-size:16px">🌐</button>
+    <button class="ghost small" id="btnGoogleSync" aria-label="구글 동기화"><span class="btn-full" data-i18n="btn.googleSync">구글 동기화</span><span class="btn-emoji"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17.5A4 4 0 0 1 7.5 9.6 5 5 0 0 1 17 10.5a3.7 3.7 0 0 1-.7 7"/><path d="M9.5 15.5l2-2 2 2"/><path d="M11.5 13.5v5"/></svg></span></button>
+    <button class="ghost small icon-btn" id="btnLangToggle" aria-label="Language" title="한국어 / English" style="font-size:16px;display:inline-flex;align-items:center;justify-content:center">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <path d="M12 3c2.5 2.6 4 6 4 9s-1.5 6.4-4 9c-2.5-2.6-4-6-4-9s1.5-6.4 4-9z"/>
+      </svg>
+    </button>
     <input type="file" id="restoreFile" accept="application/json" style="display:none" />
   </div>
 </header>
@@ -552,6 +679,7 @@ const LANG = {
     // 프로젝트 상세
     'detail.notFound': '<p>프로젝트를 찾을 수 없어요.</p>',
     'detail.edit': '수정',
+    'detail.renameSeg': '이름 수정',
     'detail.editProject': '프로젝트 수정',
     'detail.delete': '삭제',
     'detail.deleteProject': '프로젝트 삭제',
@@ -630,6 +758,7 @@ const LANG = {
     'sync.firstBackupDone': '구글 드라이브에 처음으로 백업했어요.',
     'sync.loadedFromDrive': '구글 드라이브 데이터를 불러왔어요.',
     'sync.loadFailedKeepCurrent': '불러오지 못했어요. 지금 데이터는 그대로예요.',
+    'sync.invalidRemoteKeepCurrent': '구글 드라이브 데이터를 읽을 수 없어요. 지금 데이터는 그대로예요.',
     'sync.newerRemoteConfirm': '다른 기기에서 저장된 더 최신 데이터가 있어요. 불러올까요?\n(지금 데이터는 불러오기 직전 상태로 별도 보관돼요.)',
     'sync.syncedToDrive': '구글 드라이브에 동기화했어요.',
     'sync.syncFailed': '구글 드라이브 동기화에 실패했어요. 다시 시도해주세요.',
@@ -638,6 +767,13 @@ const LANG = {
     'sync.lastSyncSuffix': '— 눌러서 지금 동기화',
     'sync.syncingNow': '동기화 중...',
     'sync.signInPrompt': '구글 계정으로 로그인해서 기기 간 데이터를 동기화해요.',
+    'sync.bothChangedConfirm': '다른 기기에서도 변경된 데이터가 드라이브에 있어요. 이 기기 데이터로 덮어쓸까요?\n(불러오기를 원하면 취소 후 드라이브 데이터를 먼저 확인해주세요.)',
+    'sync.overwriteBtn': '덮어쓰기',
+    'sync.sessionExpired': '구글 로그인이 만료됐어요. 동기화 버튼을 눌러 다시 로그인해주세요.',
+    'banner.backupTitle': '백업한 지 오래됐어요',
+    'banner.backupMsg': '브라우저 데이터가 정리되면 기록이 사라질 수 있어요. 파일로 백업해두면 안전해요.',
+    'banner.backupNow': '지금 백업',
+    'banner.backupLater': '나중에',
     'banner.partialTitle': '일부 데이터를 복구했어요',
     'banner.failTitle': '이전 데이터를 불러오지 못했어요',
     'banner.newerFormatMsg': '저장된 데이터가 이 앱보다 새 버전 형식이라 안전하게 불러오지 못했어요.',
@@ -727,7 +863,7 @@ const LANG = {
     'license.closeBtn': '닫기',
     'license.emptyError': '라이선스 키를 입력해주세요.',
     'license.verifying': '확인하는 중...',
-    'license.unlockSuccess': '인증 완료!\n구글 동기화를 사용 할 수 있습니다..',
+    'license.unlockSuccess': '인증 완료!\n구글 동기화를 사용할 수 있습니다.',
     'license.invalidKey': '유효하지 않은 라이선스 키입니다. 다시 확인해주세요.',
     'license.networkError': '인증 서버에 연결할 수 없습니다. 연결을 확인하고 재시도해주세요.',
     'license.tooltipLocked': '제품키를 입력하면 구글 동기화를 사용할 수 있습니다.',
@@ -738,7 +874,9 @@ const LANG = {
     'detail.noAmount': '작업량 미지정',
     'detail.workDone': '작업 완료',
     'detail.startsFrom': '부터 시작 예정',
+    'detail.startsOn': '{date}부터 시작 예정',
     'detail.basisSuffix': ' 기준 ',
+    'detail.todayBySegment': '{name} 기준 오늘 해야 할 양',
     'detail.completedLabel': '완료된 일감',
     'detail.qtyClickHelp': '완료된 일감 숫자를 클릭해주세요.',
     'detail.checklistSum': '체크리스트',
@@ -756,7 +894,6 @@ const LANG = {
     'detail.remainingDaysAvg': '남은날 기준 평균',
     'detail.setManualDoneTo': '직접 완료 {n}{unit}로 설정',
     'detail.midlineHelp': '프로젝트 마감일까지의 작업량과 기간을 단계별 비율로 나눌 수 있어요.<br>예: 콘티 30% · 밑색 70%',
-    'detail.dblclickRename': '이름을 더블클릭하면 수정할 수 있어요.',
     'detail.cannotMakeSegments': '남은 작업 가능일 또는 작업량이 부족해서 작업 구간을 만들 수 없어요.',
     'detail.checklistTitle': '체크리스트',
     'detail.backToList': '목록으로',
@@ -809,6 +946,7 @@ const LANG = {
     'cal.changeDeadline': 'Deadline',
     'detail.notFound': '<p>Project not found.</p>',
     'detail.edit': 'Edit',
+    'detail.renameSeg': 'Rename',
     'detail.editProject': 'Edit project',
     'detail.delete': 'Delete',
     'detail.deleteProject': 'Delete project',
@@ -881,6 +1019,7 @@ const LANG = {
     'sync.firstBackupDone': 'Backed up to Google Drive for the first time.',
     'sync.loadedFromDrive': 'Loaded data from Google Drive.',
     'sync.loadFailedKeepCurrent': "Couldn't load. Your current data is unchanged.",
+    'sync.invalidRemoteKeepCurrent': "Couldn't read the Google Drive data. Your current data is unchanged.",
     'sync.newerRemoteConfirm': 'There is newer data saved on another device. Load it?\n(Your current data will be kept separately as a pre-load backup.)',
     'sync.syncedToDrive': 'Synced to Google Drive.',
     'sync.syncFailed': 'Google Drive sync failed. Please try again.',
@@ -889,6 +1028,13 @@ const LANG = {
     'sync.lastSyncSuffix': '— tap to sync now',
     'sync.syncingNow': 'Syncing...',
     'sync.signInPrompt': 'Sign in with Google to sync data across devices.',
+    'sync.bothChangedConfirm': 'Drive also has changes from another device. Overwrite it with this device\u2019s data?\n(To load instead, cancel and check the Drive data first.)',
+    'sync.overwriteBtn': 'Overwrite',
+    'sync.sessionExpired': 'Google sign-in expired. Tap the sync button to sign in again.',
+    'banner.backupTitle': 'It\u2019s been a while since your last backup',
+    'banner.backupMsg': 'Browser data can be cleared and your records lost. A file backup keeps them safe.',
+    'banner.backupNow': 'Back up now',
+    'banner.backupLater': 'Later',
     'banner.partialTitle': 'Some data was recovered',
     'banner.failTitle': "Couldn't load previous data",
     'banner.newerFormatMsg': "The saved data is in a newer format than this app, so it couldn't be loaded safely.",
@@ -985,7 +1131,9 @@ const LANG = {
     'detail.noAmount': 'Deadline only',
     'detail.workDone': 'Completed',
     'detail.startsFrom': 'Starts on ',
+    'detail.startsOn': 'Starts on {date}',
     'detail.basisSuffix': ' basis ',
+    'detail.todayBySegment': "Today's workload — {name}",
     'detail.completedLabel': 'Completed amount',
     'detail.qtyClickHelp': 'Click the number of completed items.',
     'detail.checklistSum': 'Checklist',
@@ -1003,7 +1151,6 @@ const LANG = {
     'detail.remainingDaysAvg': 'Average over remaining days',
     'detail.setManualDoneTo': 'Set completed to {n}{unit}',
     'detail.midlineHelp': 'Split the workload and time until the deadline into stepped percentages.<br>e.g. Storyboard 30% · Coloring 70%',
-    'detail.dblclickRename': 'Double-click a name to rename it.',
     'detail.cannotMakeSegments': 'Not enough remaining workdays or workload to create segments.',
     'detail.checklistTitle': 'Checklist',
     'detail.backToList': 'Back to list',
@@ -1237,8 +1384,82 @@ let googleTokenExpiresAt = 0;
 let driveFileId = null;
 let driveTokenClient = null;
 let driveSyncBusy = false;
-let driveLastSyncedAt = null; // 이 세션에서 마지막으로 성공 동기화한 시각(ms) — 새로고침하면 초기화됨(재로그인 필요, v1 한계)
+let driveConflictPending = false; // 충돌 확인창이 열린 동안 자동 업로드를 막아 사용자 선택 전에 덮어쓰지 않음
+let driveLastSyncedAt = null; // 마지막으로 성공 동기화한 시각(ms) — localStorage에 함께 저장해 새로고침 후에도 표시 유지
 let drivePushTimer = null;
+let lastSeenRemoteSavedAt = null; // 마지막으로 확인한 드라이브 데이터의 savedAt — 양쪽이 동시에 바뀐 충돌을 감지하는 기준
+let driveRemoteModifiedTime = null; // 마지막으로 확인한 드라이브 파일의 modifiedTime — 자동 푸시 전에 다른 기기가 썼는지 확인하는 용도
+
+// 동기화 메타(마지막 동기화 시각, 마지막으로 본 원격 savedAt)를 localStorage에 보관 — 새로고침해도 유지
+const SYNC_META_KEY = STORAGE_KEY + '_sync_meta';
+function loadSyncMeta(){
+  try {
+    const raw = localStorage.getItem(SYNC_META_KEY);
+    if (!raw) return;
+    const meta = JSON.parse(raw);
+    if (meta && Number.isFinite(meta.lastSyncedAt)) driveLastSyncedAt = meta.lastSyncedAt;
+    if (meta && Number.isFinite(meta.lastSeenRemoteSavedAt)) lastSeenRemoteSavedAt = meta.lastSeenRemoteSavedAt;
+  } catch (_) {}
+}
+function saveSyncMeta(){
+  try {
+    localStorage.setItem(SYNC_META_KEY, JSON.stringify({ lastSyncedAt: driveLastSyncedAt, lastSeenRemoteSavedAt }));
+  } catch (_) {}
+}
+function markSynced(remoteSavedAt){
+  driveLastSyncedAt = Date.now();
+  if (Number.isFinite(remoteSavedAt)) lastSeenRemoteSavedAt = remoteSavedAt;
+  saveSyncMeta();
+  markBackedUp(); // 드라이브 동기화도 백업으로 간주 — 백업 유도 배너 기준 갱신
+}
+
+// ===== 백업 유도 배너 =====
+// localStorage는 브라우저 데이터 정리(특히 iOS Safari의 장기 미방문 사이트 정리)로 사라질 수 있어,
+// 마지막 백업(파일 저장 또는 드라이브 동기화)에서 일정 기간이 지나면 배너로 백업을 유도한다.
+const BACKUP_META_KEY = STORAGE_KEY + '_backup_meta';
+const BACKUP_NUDGE_AFTER_MS = 14 * 24 * 60 * 60 * 1000; // 마지막 백업 후 14일
+const BACKUP_SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;       // "나중에" 누르면 7일 숨김
+let backupMeta = { lastBackupAt: 0, snoozeUntil: 0 };
+function loadBackupMeta(){
+  try {
+    const raw = localStorage.getItem(BACKUP_META_KEY);
+    if (raw) {
+      const m = JSON.parse(raw);
+      if (m && typeof m === 'object') {
+        backupMeta.lastBackupAt = Number(m.lastBackupAt) || 0;
+        backupMeta.snoozeUntil = Number(m.snoozeUntil) || 0;
+      }
+    }
+  } catch (_) {}
+  // 첫 실행이면 지금을 기준점으로 — 새로 시작한 사용자에게 곧바로 배너를 띄우지 않기 위함
+  if (!backupMeta.lastBackupAt) { backupMeta.lastBackupAt = Date.now(); saveBackupMeta(); }
+}
+function saveBackupMeta(){
+  try { localStorage.setItem(BACKUP_META_KEY, JSON.stringify(backupMeta)); } catch (_) {}
+}
+function markBackedUp(){
+  backupMeta.lastBackupAt = Date.now();
+  saveBackupMeta();
+}
+function shouldShowBackupNudge(){
+  if (loadFailed || !projects.length) return false;
+  const now = Date.now();
+  if (now < backupMeta.snoozeUntil) return false;
+  const lastSafe = Math.max(backupMeta.lastBackupAt, driveLastSyncedAt || 0);
+  return now - lastSafe > BACKUP_NUDGE_AFTER_MS;
+}
+function renderBackupNudgeBanner(){
+  if (!shouldShowBackupNudge()) return '';
+  return `
+    <div class="card" style="border-color:var(--midline);background:var(--midline-bg)">
+      <p style="margin:0 0 8px;font-size:14px;color:var(--midline);font-weight:600">${t('banner.backupTitle')}</p>
+      <p class="muted" style="margin:0 0 12px">${t('banner.backupMsg')}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="ghost small" id="btnBackupLater">${t('banner.backupLater')}</button>
+        <button class="accent small" id="btnBackupNow">${t('banner.backupNow')}</button>
+      </div>
+    </div>`;
+}
 
 function isGoogleSignedIn(){
   return !!googleAccessToken && Date.now() < googleTokenExpiresAt;
@@ -1274,7 +1495,12 @@ async function driveFetch(url, options = {}){
     ...options,
     headers: { ...(options.headers || {}), Authorization: `Bearer ${googleAccessToken}` }
   });
-  if (res.status === 401) { googleAccessToken = null; googleTokenExpiresAt = 0; } // 만료됨 — 다음 시도 때 재로그인 유도
+  if (res.status === 401) { // 만료됨 — 토큰 비우고 재로그인 유도
+    googleAccessToken = null; googleTokenExpiresAt = 0;
+    const err = new Error('drive auth expired');
+    err.isAuthExpired = true;
+    throw err;
+  }
   if (!res.ok) throw new Error('drive api ' + res.status);
   return res;
 }
@@ -1291,28 +1517,35 @@ async function downloadDriveFile(fileId){
   const res = await driveFetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`);
   return res.json();
 }
-async function uploadDriveFile(jsonObj){
+async function uploadDriveFile(jsonObj, opts = {}){
   const body = JSON.stringify(jsonObj);
+  // keepalive: 탭이 닫히는 중에도 요청이 유지되게 함(64KB 제한이 있어 큰 데이터는 일반 요청으로 폴백)
+  const keepalive = !!opts.keepalive && body.length < 60000;
   if (driveFileId) {
-    const res = await driveFetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`, {
+    const res = await driveFetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media&fields=id,modifiedTime`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body
+      body,
+      keepalive
     });
-    return (await res.json()).id;
+    const updated = await res.json();
+    driveRemoteModifiedTime = updated.modifiedTime || driveRemoteModifiedTime;
+    return updated.id;
   }
   const boundary = 'magamsyncboundary';
   const metadata = { name: DRIVE_FILE_NAME, parents: ['appDataFolder'] };
   const multipart =
     `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n` +
     `--${boundary}\r\nContent-Type: application/json\r\n\r\n${body}\r\n--${boundary}--`;
-  const res = await driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+  const res = await driveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,modifiedTime', {
     method: 'POST',
     headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
-    body: multipart
+    body: multipart,
+    keepalive
   });
   const created = await res.json();
   driveFileId = created.id;
+  driveRemoteModifiedTime = created.modifiedTime || null;
   return created.id;
 }
 
@@ -1320,69 +1553,120 @@ async function uploadDriveFile(jsonObj){
 // 드라이브에 파일이 없으면 지금 데이터로 새로 만들고, 있으면 내용을 비교해서
 // 다른 기기 게 더 최신이면 확인창을 띄우고(불러오기 기능과 동일한 안전 절차), 이 기기가 더 최신이면 조용히 올린다.
 async function syncWithDrive(){
-  if (!isGoogleSignedIn() || driveSyncBusy) return;
+  if (!isGoogleSignedIn() || driveSyncBusy || driveConflictPending) return;
   driveSyncBusy = true; render();
   try {
     const file = await findDriveFile();
     if (!file) {
       await uploadDriveFile(buildPersistedData());
-      driveLastSyncedAt = Date.now();
+      markSynced(lastChangedAt);
       showToast(t('sync.firstBackupDone'));
       return;
     }
     driveFileId = file.id;
+    driveRemoteModifiedTime = file.modifiedTime || driveRemoteModifiedTime;
     const remote = await downloadDriveFile(file.id);
-    if (JSON.stringify(remote) === lastPersistedJson) { driveLastSyncedAt = Date.now(); return; } // 이미 동일
     const remoteSavedAt = Number(remote && remote.savedAt) || 0;
-    // 이 기기가 "완전히 새것"(프로젝트도 없고 한 번도 실제로 바뀐 적 없음)이면 덮어쓸 게 없으니 확인창 없이 바로 받아온다.
+    if (JSON.stringify(remote) === lastPersistedJson) { markSynced(remoteSavedAt); return; }
+
     const localIsPristine = projects.length === 0 && lastChangedAt === 0;
     if (remoteSavedAt > lastChangedAt || localIsPristine) {
       const prepared = prepareLoadedData(remote, { rebaseDailyState: true });
-      if (!prepared) { driveLastSyncedAt = Date.now(); return; } // 원격 데이터가 이상하면 조용히 무시(로컬 유지)
+      if (!prepared) {
+        // 손상됐거나 더 새로운 형식인 원격 데이터는 동기화 성공으로 기록하지 않는다.
+        showToast(t('sync.invalidRemoteKeepCurrent'));
+        return;
+      }
       const applyRemote = () => {
         try {
           const currentRaw = JSON.stringify(buildPersistedData());
           commitRestoreStorage(prepared.raw, currentRaw);
           activatePreparedData(prepared);
           view.screen = 'dash'; view.projectId = null;
-          driveLastSyncedAt = Date.now();
+          markSynced(remoteSavedAt);
           render();
           showToast(t('sync.loadedFromDrive'));
         } catch (_) {
           showToast(t('sync.loadFailedKeepCurrent'));
+        } finally {
+          driveConflictPending = false;
         }
       };
-      if (localIsPristine) applyRemote();
-      else customConfirm(t('sync.newerRemoteConfirm'), applyRemote, { confirmLabel:t('sync.loadBtn'), confirmClass:'accent small' });
+      if (localIsPristine) {
+        applyRemote();
+      } else {
+        driveConflictPending = true;
+        customConfirm(t('sync.newerRemoteConfirm'), applyRemote, {
+          confirmLabel:t('sync.loadBtn'),
+          confirmClass:'accent small',
+          onCancel:() => { driveConflictPending = false; }
+        });
+      }
     } else {
-      await uploadDriveFile(buildPersistedData());
-      driveLastSyncedAt = Date.now();
-      showToast(t('sync.syncedToDrive'));
+      const remoteChangedSinceLastSeen =
+        lastSeenRemoteSavedAt !== null && remoteSavedAt !== lastSeenRemoteSavedAt;
+      const pushLocal = async () => {
+        try {
+          await uploadDriveFile(buildPersistedData());
+          markSynced(lastChangedAt);
+          render();
+          showToast(t('sync.syncedToDrive'));
+        } catch (_) {
+          showToast(t('sync.syncFailed'));
+        } finally {
+          driveConflictPending = false;
+        }
+      };
+      if (remoteChangedSinceLastSeen) {
+        driveConflictPending = true;
+        customConfirm(t('sync.bothChangedConfirm'), pushLocal, {
+          confirmLabel:t('sync.overwriteBtn'),
+          onCancel:() => { driveConflictPending = false; }
+        });
+      } else {
+        await pushLocal();
+      }
     }
   } catch (e) {
-    showToast(t('sync.syncFailed'));
+    showToast(e && e.isAuthExpired ? t('sync.sessionExpired') : t('sync.syncFailed'));
   } finally {
     driveSyncBusy = false; render();
   }
 }
 
 // 데이터가 바뀔 때마다(디바운스) 조용히 드라이브에 올림. saveLocal()이 실제로 저장했을 때만 호출됨
+async function pushToDriveNow(){
+  if (driveSyncBusy || driveConflictPending || !isLicenseUnlocked() || !isGoogleSignedIn()) return;
+  driveSyncBusy = true;
+  try {
+    // 올리기 전에 파일 메타를 확인한다. 마지막으로 본 이후 다른 기기가 썼다면
+    // 바로 덮어쓰지 않고 전체 동기화와 충돌 확인 절차로 전환한다.
+    if (driveFileId && driveRemoteModifiedTime) {
+      try {
+        const metaRes = await driveFetch(`https://www.googleapis.com/drive/v3/files/${driveFileId}?fields=modifiedTime`);
+        const meta = await metaRes.json();
+        if (meta.modifiedTime && meta.modifiedTime !== driveRemoteModifiedTime) {
+          driveSyncBusy = false;
+          await syncWithDrive();
+          return;
+        }
+      } catch (_) { /* 메타 확인 실패는 무시하고 업로드 시도 */ }
+    }
+    await uploadDriveFile(buildPersistedData());
+    markSynced(lastChangedAt);
+  } catch (_) {
+    // 조용히 실패 — 다음 저장 시점에 다시 시도됨. "구글 동기화" 버튼으로 언제든 수동 확인 가능.
+  } finally {
+    driveSyncBusy = false;
+  }
+}
 function schedulePushToDrive(){
   if (!isLicenseUnlocked() || !isGoogleSignedIn()) return;
   clearTimeout(drivePushTimer);
-  drivePushTimer = setTimeout(async () => {
-    if (driveSyncBusy || !isLicenseUnlocked() || !isGoogleSignedIn()) return;
-    driveSyncBusy = true;
-    try {
-      await uploadDriveFile(buildPersistedData());
-      driveLastSyncedAt = Date.now();
-    } catch (_) {
-      // 조용히 실패 — 다음 저장 시점에 다시 시도됨. "구글 동기화" 버튼으로 언제든 수동 확인 가능.
-    } finally {
-      driveSyncBusy = false;
-    }
-  }, 2000);
+  drivePushTimer = setTimeout(() => { drivePushTimer = null; pushToDriveNow(); }, 2000);
 }
+// 탭 종료 직전에는 원격 변경 확인을 생략한 강제 업로드를 하지 않는다.
+// 2초 안에 페이지가 닫혀도 로컬 저장본은 다음 실행 시 안전하게 동기화된다.
 
 // 불러온 프로젝트 배열 검증·정규화. 배열이 아니거나 필수 필드(id/name/deadline) 없으면 null 반환
 const ALLOWED_UNITS = ['컷', '장', '개', ''];
@@ -1926,7 +2210,7 @@ function bulkCreateSegments(project, rows, opts = {}){
     const old = row.id ? oldById.get(row.id) : null;
     return {
       id: row.id || uid(),
-      name: row.name || `작업 구간 ${i+1}`,
+      name: row.name || defaultSegmentName(i),
       amount: toSafePositiveInt(row.amount),
       deadline: project.deadline,
       planStartDate: project.startDate,
@@ -2035,6 +2319,18 @@ function riskFromRatio(perDay, baseline, days){
   return 'danger';
 }
 
+// 작업 구간 라벨은 화면에 표시되는 올림 하루량끼리 비교한다.
+// 현재 필요량이 계획 당시 필요량보다 작으면 여유, 같으면 진행중, 크면 위험이다.
+function segmentRiskFromDailyQuota(perDay, baseline, days){
+  if (days < 0) return 'over';
+  if (days <= 0) return 'danger';
+  const currentQuota = Math.ceil(Math.max(Number(perDay) || 0, 0));
+  const plannedQuota = Math.ceil(Math.max(Number(baseline) || 0, 0));
+  if (currentQuota < plannedQuota) return 'relaxed';
+  if (currentQuota === plannedQuota) return 'neutral';
+  return 'danger';
+}
+
 // 프로젝트 전체 위험도 (대시보드/목록/헤더 배지에 항상 이걸 씀 — 구간과 무관)
 function calcProjectRisk(project){
   if (isDdayProject(project)) {
@@ -2079,7 +2375,7 @@ function calcSegmentRisk(project, seg){
   const perDay = (overdue || isDeadlineDay) ? remaining : remaining / Math.max(days,1);
   const baselineDays = Math.max(projectWorkableDays(project, seg.planStartDate, seg.deadline), 1);
   const baseline = seg.amount / baselineDays;
-  const risk = overdue ? 'over' : isDeadlineDay ? 'deadline' : riskFromRatio(perDay, baseline, days);
+  const risk = overdue ? 'over' : isDeadlineDay ? 'deadline' : segmentRiskFromDailyQuota(perDay, baseline, days);
   const active = getActiveSegment(project);
   const isActive = active && active.id === seg.id;
   return { risk, days, perDay: Math.max(perDay,0), overdue, isDeadlineDay, isActive };
@@ -2395,7 +2691,7 @@ function render(){
         ? (driveLastSyncedAt ? `${t('sync.lastSyncPrefix')} ${new Date(driveLastSyncedAt).toLocaleTimeString()} ${t('sync.lastSyncSuffix')}` : t('sync.syncingNow'))
         : t('sync.signInPrompt');
   }
-  const banner = loadFailed ? renderLoadFailedBanner() : '';
+  const banner = loadFailed ? renderLoadFailedBanner() : renderBackupNudgeBanner();
   if (view.screen === 'dash') main.innerHTML = banner + renderDashboard();
   else if (view.screen === 'list') main.innerHTML = banner + renderList();
   else if (view.screen === 'detail') main.innerHTML = banner + renderDetail(view.projectId);
@@ -2404,7 +2700,7 @@ function render(){
 }
 
 // CSS 변수(var(--x))에 투명도 문자열을 그대로 붙이면 문법 오류라 배경이 안 먹음 — 리본/글로우 테두리는 항상 실제 hex로 계산
-const RISK_HEX = { done:'#0f6e56', relaxed:'#0f6e56', neutral:'#556270', danger:'#a32d2d', over:'#b30000', deadline:'#d90000', dday:'#3a3f8f', notstarted:'#556270' };
+const RISK_HEX = { done:'#12735c', relaxed:'#12735c', neutral:'#5a6472', danger:'#a5333a', over:'#7a2029', deadline:'#7a2029', dday:'#3f4590', notstarted:'#5a6472' };
 const DEADLINE_VIEWER_PROJECT_COLORS = ['#3f6fb5','#28766b','#7561a8','#6d7b3f','#8a6849','#4f627f','#3d7d91','#6f5b7c'];
 function hexToRgba(hex, alpha){
   const n = parseInt(hex.slice(1),16);
@@ -2479,8 +2775,8 @@ function renderDashboard(){
     </div>`;
   });
 
-  // 화면 폭과 관계없이 새 일정 추가용 + 카드는 하나만 표시
-  cards.push(`<div class="vcard-empty" id="goAddSlot" data-empty-slot="1">+</div>`);
+  // 새 일정 추가용 + 카드는 프로젝트 카드보다 먼저 표시
+  cards.unshift(`<div class="vcard-empty" id="goAddSlot" data-empty-slot="1">+</div>`);
 
   return `${renderTodayGoalBar()}${renderMainCalendarBlock()}<div class="card">
     <div class="dash-grid">${cards.join('')}</div>
@@ -2589,6 +2885,16 @@ function workloadFieldHtml(value, unit){
   </div>`;
 }
 
+function editWorkloadFieldHtml(value, unit){
+  return `<div class="workload-field-wrap">
+    <div class="field-box total-box workload-box">
+      <label>${t('form.workload')}</label>
+      <input id="e_total" class="workload-input" type="number" min="1" step="1" inputmode="numeric" value="${escapeHtml(value)}" placeholder="80" />
+      <select id="e_unit"><option value="" ${!unit?'selected':''}></option><option value="컷" ${unit==='컷'?'selected':''}>${t('unit.cut')}</option><option value="장" ${unit==='장'?'selected':''}>${t('unit.sheet')}</option><option value="개" ${unit==='개'?'selected':''}>${t('unit.piece')}</option></select>
+    </div>
+  </div>`;
+}
+
 function projectForm(){
   const draft = newProjectDraftState || {};
   const startDate = draft.startDate || todayStr();
@@ -2652,10 +2958,11 @@ let doneInputModeState = {}; // projectId -> 'number' | 'buttons', 기본은 숫
 
 function renderChecklistHeader(target){
   const isOpen = checklistOpenState[target.id] !== false; // 기본 열림 — 명시적으로 닫은 적 없으면 항상 열림
+  const addOpen = !!checklistAddOpenState[target.id];
   const items = target.checklist || [];
   return `
     <span style="display:flex;align-items:center;gap:6px;flex:1">
-      <button class="icon-btn" style="font-size:14px;padding:0 4px" data-cl-addopen="${target.id}" aria-label="${t('cl.addItem')}">+</button>
+      <button class="icon-btn" style="font-size:14px;padding:0 4px" data-cl-addopen="${target.id}" aria-label="${t('cl.addItem')}">${addOpen ? '−' : '+'}</button>
       <span style="flex:1"></span>
       <span class="muted" style="font-size:12px">${items.length}${t('cl.countSuffix')}</span>
       <span class="cl-head-arrow" data-cl-toggle="${target.id}">${isOpen?'▾':'▸'}</span>
@@ -2678,14 +2985,23 @@ function renderChecklistItem(project, item, unit, showAssignment = true){
         ${checklistSegmentOptions(project, assignedSegment ? assignedSegment.id : null)}
       </select>
     </span>` : '';
+  if (editingChecklistItemId === item.id) {
+    // 더블클릭 수정 모드 — 이름(+수량형이면 수량) 인라인 편집
+    return `
+    <div class="checklist-item">
+      <input type="checkbox" ${item.checked?'checked':''} disabled />
+      <input class="cl-edit-name" value="${escapeHtml(item.name)}" data-cl-edit-name="${project.id}:${item.id}" aria-label="${t('cl.itemName')}" />
+      ${item.type === 'qty' ? `<input class="cl-edit-qty" type="number" min="1" step="1" value="${item.qty}" data-cl-edit-qty="${project.id}:${item.id}" aria-label="${t('cl.qty')}" />` : ''}
+    </div>`;
+  }
   return `
     <div class="checklist-item">
       <input type="checkbox" ${item.checked?'checked':''} data-cl-item="${project.id}:${item.id}" />
       <span class="cl-name-wrap">
-        <span class="cl-name ${item.checked?'checked':''}" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>
+        <span class="cl-name ${item.checked?'checked':''}" title="${escapeHtml(item.name)}" data-cl-rename="${project.id}:${item.id}">${escapeHtml(item.name)}</span>
         <button class="cl-del-x" data-cl-del="${project.id}:${item.id}" aria-label="${t('cl.deleteItem')}">×</button>
       </span>
-      ${item.type === 'qty' ? `<span class="cl-qty">${item.qty}${escapeHtml(unitLabel(unit, item.qty))}</span>` : ''}
+      ${item.type === 'qty' ? `<span class="cl-qty" data-cl-rename="${project.id}:${item.id}">${item.qty}${escapeHtml(unitLabel(unit, item.qty))}</span>` : ''}
       ${assignment}
     </div>`;
 }
@@ -2697,7 +3013,7 @@ function renderChecklistAddForm(project, segmentId = null){
     <div class="checklist-add" ${segmentId ? `data-cl-segment="${segmentId}"` : ''}>
       <select name="cl_type" data-cl-target="${project.id}"><option value="memo">${t('cl.memo')}</option>${isDdayProject(project) ? '' : `<option value="qty">${t('cl.qty')}</option>`}</select>
       ${assignmentSelect}
-      <input name="cl_qty" type="number" min="1" step="1" placeholder="${t('cl.qtyPlaceholder')}" style="display:none" data-cl-target="${project.id}" />
+      <input name="cl_qty" type="number" min="1" step="1" placeholder="${currentLang === 'en' ? 'Qty' : '수량'}" aria-label="${t('cl.qtyPlaceholder')}" style="display:none" data-cl-target="${project.id}" />
       <input name="cl_name" placeholder="${t('cl.itemName')}" data-cl-target="${project.id}" />
       <button class="cl-add-btn" data-cl-confirm="${project.id}" aria-label="${t('cl.addItemAria')}">+</button>
     </div>`;
@@ -2709,7 +3025,7 @@ function renderChecklistBody(project, unit){
   const items = project.checklist || [];
   const itemsHtml = items.length ? (`<div style="margin-top:8px">` + items.map(i => renderChecklistItem(project, i, unit, true)).join('') + `</div>`)
     : `<div style="margin-top:8px;min-height:70px;display:flex;align-items:center;justify-content:center"><p class="muted" style="font-size:12px;margin:0">${t('cl.noItems')}</p></div>`;
-  const addOpen = items.length > 0 || !!checklistAddOpenState[project.id];
+  const addOpen = !!checklistAddOpenState[project.id];
   return `${itemsHtml}${addOpen ? renderChecklistAddForm(project) : ''}`;
 }
 
@@ -2766,7 +3082,7 @@ function renderMiniCalendar(project){
       <span><span class="dot" style="background:var(--accent-bg);border:1px solid var(--accent)"></span>${t('minical.legend.start')}</span>
       <span><span class="dot" style="background:var(--midline-bg)"></span>${t('minical.legend.segment')}</span>
       <span><span class="dot" style="background:var(--danger-bg)"></span>${t('minical.legend.deadline')}</span>
-      <span><span class="dot" style="background:#eceff1"></span>${t('minical.legend.rest')}</span>
+      <span><span class="dot" style="background:#edeff2"></span>${t('minical.legend.rest')}</span>
     </div>`;
   const hint = calEditingField
     ? `<p class="cal-hint" style="color:var(--accent)">${t('minical.editHintPrefix')} ${calEditingField === 'start' ? t('cal.changeStart') : t('cal.changeDeadline')} ${t('minical.editHint')}</p>`
@@ -2780,7 +3096,7 @@ function renderMiniCalendar(project){
   return `
     <div class="cal-nav">
       <button id="calPrev">‹</button>
-      <span>${year}${t('minical.year')} ${month+1}${t('minical.month')}</span>
+      <span>${deadlineViewerMonthTitle(year, month)}</span>
       <button id="calNext">›</button>
     </div>
     <div class="cal-grid">${cells}</div>
@@ -2794,6 +3110,7 @@ let projectEditOpenState = {}; // projectId -> bool
 let projectEditDraftState = {}; // projectId -> 저장 전 편집폼 임시값(렌더가 다시 돌아도 입력값 유지)
 let bulkFormOpenState = {}; // projectId -> bool, 작업 구간 생성/재지정 슬라이더 폼 펼침 상태
 let editingSegNameId = null; // 더블클릭으로 이름 수정 중인 작업 구간 id
+let editingChecklistItemId = null; // 더블클릭으로 수정 중인 체크리스트 항목 id
 let editPeriodState = { today: true, deadline_inc: true, weekend: true };
 
 function captureProjectEditDraft(){
@@ -2842,15 +3159,9 @@ function renderProjectEditForm(p){
         <label>${t('form.name')}</label>
         <input id="e_name" value="${escapeHtml(editName)}" />
       </div>
-      <div class="field-box total-box">
-        <label>${t('form.workload')}</label>
-        <input id="e_total" type="number" min="1" step="1" class="num-right" value="${escapeHtml(editTotal)}" placeholder="80" />
-        <select id="e_unit">
-          <option value="" ${!editUnit?'selected':''}></option>
-          <option value="컷" ${editUnit==='컷'?'selected':''}>${t('unit.cut')}</option><option value="장" ${editUnit==='장'?'selected':''}>${t('unit.sheet')}</option><option value="개" ${editUnit==='개'?'selected':''}>${t('unit.piece')}</option>
-        </select>
-      </div>
+      ${editWorkloadFieldHtml(editTotal, editUnit)}
     </div>
+    <div class="form-divider"></div>
     <div class="form-line2">
       <div class="field-box date-box">
         <label>${t('form.start')}</label>
@@ -2861,12 +3172,12 @@ function renderProjectEditForm(p){
         <label>${t('form.deadline')}</label>
         <input id="e_deadline" type="date" value="${editDeadline}" class="num-right" />
       </div>
-    </div>
-    <div class="chip-row has-tooltip">
-      <span class="chip ${editPeriodState.today?'on':''}" data-eopt="today">${t('form.includeStart')}</span>
-      <span class="chip ${editPeriodState.deadline_inc?'on':''}" data-eopt="deadline_inc">${t('form.includeDeadline')}</span>
-      <span class="chip ${editPeriodState.weekend?'on':''}" data-eopt="weekend">${t('form.includeWeekend')}</span>
-      <span class="tooltip-bubble">${t('form.periodTooltip')}</span>
+      <div class="chip-row has-tooltip" style="margin:0">
+        <span class="chip ${editPeriodState.today?'on':''}" data-eopt="today">${t('form.includeStart')}</span>
+        <span class="chip ${editPeriodState.deadline_inc?'on':''}" data-eopt="deadline_inc">${t('form.includeDeadline')}</span>
+        <span class="chip ${editPeriodState.weekend?'on':''}" data-eopt="weekend">${t('form.includeWeekend')}</span>
+        <span class="tooltip-bubble">${t('form.periodTooltip')}</span>
+      </div>
     </div>
     <div class="form-actions">
       <button class="accent" id="saveProjectEditBtn">${t('form.save')}</button>
@@ -2887,16 +3198,18 @@ function renderDetail(id){
   } else if (pr.risk === 'done') {
     todayLine = `<p class="row" style="font-size:14px"><b>${t('detail.workDone')}</b><strong>${t('status.done')}</strong></p>`;
   } else if (pr.risk === 'notstarted') {
-    todayLine = `<p style="font-size:14px">${p.startDate}${t('detail.startsFrom')}</p>`;
+    todayLine = `<p style="font-size:14px">${tf('detail.startsOn', { date: p.startDate })}</p>`;
   } else {
-    const label = disp.seg ? escapeHtml(disp.seg.name) + t('detail.basisSuffix') : '';
+    const todayLabel = disp.seg
+      ? tf('detail.todayBySegment', { name: escapeHtml(disp.seg.name) })
+      : t('dash.todayDone');
     const restToday = (!disp.workableToday && !disp.overdue && !disp.isDeadlineDay);
-    const mainVal = restToday ? t('status.rest') : (disp.overdue ? t('minical.legend.deadline') + ' ' + t('status.overdue') : `${disp.todayRemaining ?? disp.perDay}${unitLabel(p.unit, disp.todayRemaining ?? disp.perDay)}`);
+    const mainVal = restToday ? t('status.rest') : (disp.overdue ? t('status.overdue') : `${disp.todayRemaining ?? disp.perDay}${unitLabel(p.unit, disp.todayRemaining ?? disp.perDay)}`);
     const avgLine = restToday
       ? `${t('detail.nextWorkdayAvg')} ${disp.perDay}${unitLabel(p.unit, disp.perDay)}`
       : (disp.overdue || disp.isDeadlineDay ? '' : `${t('detail.remainingDaysAvg')} ${disp.perDay}${unitLabel(p.unit, disp.perDay)}`);
     todayLine = `
-      <p class="row" style="font-size:14px"><b>${label}${t('dash.todayDone')}</b><strong>${mainVal}</strong></p>
+      <p class="row" style="font-size:14px"><b>${todayLabel}</b><strong>${mainVal}</strong></p>
       ${avgLine ? `<p class="muted" style="font-size:12px;text-align:right;margin:2px 0 0">${avgLine}</p>` : ''}
     `;
   }
@@ -2937,7 +3250,7 @@ function renderDetail(id){
       <div class="subcard">
         <div class="row" style="align-items:center">
           <span class="has-tooltip">
-            <strong style="font-size:13px">${t('detail.segCount')} (0${t('cl.countUnit')})</strong>
+            <strong style="font-size:14px">${t('detail.segCount')} (0${t('cl.countUnit')})</strong>
             <span class="tooltip-bubble">${t('detail.segTooltip')}</span>
           </span>
         </div>
@@ -2957,7 +3270,7 @@ function renderDetail(id){
       const segChecklistOpen = segmentChecklistOpenState[s.id] !== false;
       const nameHtml = editingSegNameId === s.id
         ? `<input class="seg-name-input" value="${escapeHtml(s.name)}" data-segname="${s.id}" />`
-        : `<button class="seg-collapse-arrow" data-seg-cl-toggle="${s.id}" aria-label="${escapeHtml(s.name)} ${t('detail.segNameEditAria')} ${segChecklistOpen ? t('cal.collapse') : t('detail.checklistExpand')}">${segChecklistOpen ? '▾' : '▸'}</button><span class="seg-name" data-dblclick-segname="${s.id}">${isDone?'✓ ':''}${escapeHtml(s.name)}</span>`;
+        : `<button class="seg-collapse-arrow" data-seg-cl-toggle="${s.id}" aria-label="${escapeHtml(s.name)} ${t('detail.segNameEditAria')} ${segChecklistOpen ? t('cal.collapse') : t('detail.checklistExpand')}">${segChecklistOpen ? '▾' : '▸'}</button><span class="seg-name" data-dblclick-segname="${s.id}">${isDone?'✓ ':''}${escapeHtml(s.name)}</span><button class="seg-rename-btn" data-renameseg="${s.id}" aria-label="${escapeHtml(s.name)} ${t('detail.renameSeg')}" title="${t('detail.renameSeg')}"><svg xmlns="http://www.w3.org/2000/svg" height="13" width="13" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg></button>`;
       const isEditingName = editingSegNameId === s.id;
       return `<div class="seg-row ${sr.isActive?'active':''} ${isDone?'done':''}">
         <div class="seg-row-top">
@@ -2966,7 +3279,7 @@ function renderDetail(id){
             <span class="seg-meta">${t('detail.segDone')} ${s.done}/${s.amount}${unitLabel(p.unit, s.amount)}${todayPart}</span>
             <span class="badge ${sr.risk}">${riskLabel(sr.risk)}</span>
             <input type="date" value="${s.deadline}" data-seg="${s.id}" class="segDeadlineInput seg-deadline-pill num-right" ${isLastSeg ? `disabled title="${t('detail.lastSegDisabledTitle')}"` : ''} />
-            <button class="danger-btn" data-delseg="${s.id}">${t('menu.delete')}</button>
+            <button class="seg-del-btn" data-delseg="${s.id}" aria-label="${escapeHtml(s.name)} ${t('menu.delete')}" title="${t('menu.delete')}"><svg xmlns="http://www.w3.org/2000/svg" height="17" width="17" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Z"/></svg></button>
           </span>
         </div>
         ${renderSegmentChecklist(p, s)}
@@ -2980,14 +3293,14 @@ function renderDetail(id){
 
     const sliderBlock = sliderOpen ? `
       <div id="bulkFormWrap">${renderBulkForm()}</div>
-      <button class="primary small" id="confirmBulkAdd" style="width:100%;margin-top:8px">${t('detail.create')}</button>
+      <button class="primary small" id="confirmBulkAdd" style="width:100%;margin:8px 0 12px">${t('detail.create')}</button>
     ` : '';
 
     midlineSection = `
       <div class="subcard">
         <div class="row" style="align-items:center">
           <span class="has-tooltip">
-            <strong style="font-size:13px">${t('detail.segCount')} (${p.segments.length}${t('cl.countUnit')})</strong>
+            <strong style="font-size:14px">${t('detail.segCount')} (${p.segments.length}${t('cl.countUnit')})</strong>
             <span class="tooltip-bubble">${t('detail.segTooltip')}</span>
           </span>
           ${p.segments.length ? `<span class="midline-header-actions">
@@ -2996,14 +3309,14 @@ function renderDetail(id){
           </span>` : ''}
         </div>
         <div class="midline-help">${t('detail.midlineHelp')}</div>
-        ${p.segments.length ? `<p class="muted" style="font-size:12px;margin:4px 0 8px">${t('detail.dblclickRename')}</p>${segRows}` : ''}
-        ${!canMakeMidline ? `<p class="muted" style="font-size:12px">${t('detail.cannotMakeSegments')}</p>` : `${emptyBlock}${sliderBlock}`}
+        ${p.segments.length ? `${canMakeMidline ? sliderBlock : ''}${segRows}` : ''}
+        ${!canMakeMidline ? `<p class="muted" style="font-size:12px">${t('detail.cannotMakeSegments')}</p>` : (p.segments.length ? '' : `${emptyBlock}${sliderBlock}`)}
       </div>`;
   }
 
-  const calendarCard = `<div class="card cal-card">${renderMiniCalendar(p)}</div>`;
+  const calendarCard = `<div class="card cal-card detail-lower-card">${renderMiniCalendar(p)}</div>`;
   const checklistCard = `
-    <div class="card">
+    <div class="card detail-lower-card">
       <div class="row" style="align-items:center">
         <h2 style="margin:0">${t('detail.checklistTitle')}</h2>
         ${renderChecklistHeader(p)}
@@ -3013,30 +3326,34 @@ function renderDetail(id){
   const calAndChecklist = `<div class="two-col">${calendarCard}${checklistCard}</div>`;
 
   return `
-    <button class="back-btn" id="backToList">&larr; ${t('detail.backToList')}</button>
-    <div class="card">
-      <div class="row detail-head" style="align-items:center">
-        <h2 style="margin:0">${escapeHtml(p.name)}</h2>
-        <div class="detail-actions">
-          <span class="badge ${badgeClass}">${badgeText}</span>
-          <button class="icon-btn" id="editProjectBtn" aria-label="${t('detail.editProject')}" title="${t('detail.edit')}" style="font-size:14px">✎</button>
-          <button class="icon-btn" id="deleteProjectBtn" aria-label="${t('detail.deleteProject')}" title="${t('detail.delete')}" style="font-size:14px;color:var(--danger)">✕</button>
+    <div class="detail-page">
+      <button class="back-btn" id="backToList">&larr; ${t('detail.backToList')}</button>
+      <div class="card detail-main-card">
+        <div class="detail-summary-box">
+          <div class="row detail-head" style="align-items:center">
+            <h2 class="detail-project-title" style="margin:0">${escapeHtml(p.name)}</h2>
+            <div class="detail-actions">
+              <span class="badge ${badgeClass}">${badgeText}</span>
+              <button class="icon-btn" id="editProjectBtn" aria-label="${t('detail.editProject')}" title="${t('detail.edit')}" style="font-size:14px">✎</button>
+              <button class="icon-btn" id="deleteProjectBtn" aria-label="${t('detail.deleteProject')}" title="${t('detail.delete')}" style="font-size:14px;color:var(--danger)">✕</button>
+            </div>
+          </div>
+          <div class="info-stats">
+            <div class="info-stat"><span class="lbl">${t('list.deadlinePrefix')}</span><span class="val">${p.deadline}</span></div>
+            <div class="info-stat"><span class="lbl">${t('detail.total')}</span><span class="val">${dday ? t('status.unassigned') : p.total+unitLabel(p.unit, p.total)}</span></div>
+            <div class="info-stat"><span class="lbl">${t('detail.done')}</span><span class="val">${dday ? '-' : p.done+unitLabel(p.unit, p.done)}</span></div>
+            <div class="info-stat"><span class="lbl">${t('detail.remaining')}</span><span class="val">${dday ? '-' : (p.total-p.done)+unitLabel(p.unit, p.total-p.done)}</span></div>
+          </div>
+          <div id="projectEditWrap">${projectEditOpenState[p.id] ? renderProjectEditForm(p) : ''}</div>
+        </div>
+        <div class="detail-quota-box">
+          ${todayLine}
+          ${doneInput}
         </div>
       </div>
-      <div class="info-stats">
-        <div class="info-stat"><span class="lbl">${t('list.deadlinePrefix')}</span><span class="val">${p.deadline}</span></div>
-        <div class="info-stat"><span class="lbl">${t('detail.total')}</span><span class="val">${dday ? t('status.unassigned') : p.total+unitLabel(p.unit, p.total)}</span></div>
-        <div class="info-stat"><span class="lbl">${t('detail.done')}</span><span class="val">${dday ? '-' : p.done+unitLabel(p.unit, p.done)}</span></div>
-        <div class="info-stat"><span class="lbl">${t('detail.remaining')}</span><span class="val">${dday ? '-' : (p.total-p.done)+unitLabel(p.unit, p.total-p.done)}</span></div>
-      </div>
-      <div id="projectEditWrap">${projectEditOpenState[p.id] ? renderProjectEditForm(p) : ''}</div>
-      <div class="subcard">
-        ${todayLine}
-        ${doneInput}
-      </div>
-      ${midlineSection}
+      ${midlineSection ? `<div class="card detail-segment-card">${midlineSection}</div>` : ''}
+      ${calAndChecklist}
     </div>
-    ${calAndChecklist}
   `;
 }
 
@@ -3047,8 +3364,8 @@ let midlineIds = [null, null];
 let midlineFormProjectId = null;
 let midlineDragIdx = null;
 
-const AUTO_SEGMENT_NAME_RE = /^(?:작업\s*구간|구간)\s*\d+$/;
-function defaultSegmentName(index){ return `작업 구간 ${index + 1}`; }
+const AUTO_SEGMENT_NAME_RE = /^(?:(?:작업\s*구간|구간)\s*\d+|segment\s*\d+)$/i;
+function defaultSegmentName(index){ return currentLang === 'en' ? `Segment ${index + 1}` : `작업 구간 ${index + 1}`; }
 function normalizeMidlineDefaultNames(){
   midlineNames = midlineNames.map((name, index) => {
     const trimmed = String(name ?? '').trim();
@@ -3095,7 +3412,7 @@ function midlinePercents(){
   return result;
 }
 
-const MIDLINE_PASTELS = ['#ffd9d9','#ffe6bf','#fff6b8','#d9f2d3','#c8ecdf','#c6e3f7','#d8d1f4','#f6d0e8'];
+const MIDLINE_PASTELS = ['#dde4f2','#d8ece4','#f6e8d4','#f0dde0','#dce6f5','#e2ecdd','#e6e3f4','#d9ece6'];
 
 function renderBulkForm(){
   const manyMobileClass = midlineNames.length >= 4 ? ' hide-mobile-many' : '';
@@ -3236,6 +3553,13 @@ function deadlineViewerDateLabel(dateStr){
     return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   }
   return `${d.getFullYear()}${t('viewer.dateSep1')} ${d.getMonth()+1}${t('viewer.dateSep2')} ${d.getDate()}${t('viewer.dateSep3')}`;
+}
+
+function deadlineViewerMonthTitle(year, month){
+  if (currentLang === 'en') {
+    return new Date(year, month, 1).toLocaleDateString('en-US', { month:'long', year:'numeric' });
+  }
+  return `${year}${t('minical.year')} ${month + 1}${t('minical.month')}`;
 }
 function deadlineViewerProjectColor(projectId){
   const id = String(projectId || '');
@@ -3489,7 +3813,7 @@ function renderDeadlineViewer(overlay, opts = {}){
 
   overlay.querySelector('.deadline-viewer-content').innerHTML = `
     <div class="deadline-viewer-nav">
-      <strong>${year}${t('minical.year')} ${month + 1}${t('minical.month')}</strong>
+      <strong>${deadlineViewerMonthTitle(year, month)}</strong>
       <button type="button" data-deadline-prev aria-label="${t('viewer.prevMonth')}">‹</button>
       <button type="button" data-deadline-next aria-label="${t('viewer.nextMonth')}">›</button>
     </div>
@@ -3710,9 +4034,13 @@ function customConfirm(message, onConfirm, opts = {}){
   overlay.querySelector('#confirmCancelBtn').textContent = cancelLabel;
   overlay.querySelector('#confirmOkBtn').textContent = confirmLabel;
   document.body.appendChild(overlay);
-  overlay.querySelector('#confirmCancelBtn').onclick = () => overlay.remove();
+  const cancel = () => {
+    overlay.remove();
+    if (typeof opts.onCancel === 'function') opts.onCancel();
+  };
+  overlay.querySelector('#confirmCancelBtn').onclick = cancel;
   overlay.querySelector('#confirmOkBtn').onclick = () => { overlay.remove(); onConfirm(); };
-  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+  overlay.onclick = (e) => { if (e.target === overlay) cancel(); };
 }
 
 // Gumroad License Verify API로 키를 검증. 성공 시 true, 실패 시 false를 resolve.
@@ -4060,7 +4388,7 @@ function bindListEvents(){
     if (segmentAmounts.length > 1) {
       const max = midlineMaxAllowed(p);
       if (segmentAmounts.length > max) { showToast(tf('err.maxSegmentsNCurrentSchedule', { n: max })); return; }
-      const rows = segmentAmounts.map((amount, i) => ({ id:null, name:`작업 구간 ${i+1}`, amount }));
+      const rows = segmentAmounts.map((amount, i) => ({ id:null, name:defaultSegmentName(i), amount }));
       if (!bulkCreateSegments(p, rows)) { showToast(t('err.cannotPlaceSegmentDates')); return; }
       const segmentError = validateSegmentStructure(p);
       if (segmentError) { showToast(segmentError); return; }
@@ -4261,7 +4589,6 @@ function bindDetailEvents(){
     if (rows.length > max) { showToast(tf('err.maxSegmentsN', { n: max })); return; }
     const segBackup = cloneSegmentsForEdit(p);
     const checklistBackup = (p.checklist || []).map(i => ({...i}));
-    const assignedBefore = (p.checklist || []).filter(i => i.segmentId).length;
     if (!bulkCreateSegments(p, rows, { startDate: effectiveStart(p) })) {
       p.segments = segBackup;
       p.checklist = checklistBackup;
@@ -4282,12 +4609,17 @@ function bindDetailEvents(){
     resetTodayTarget(p.id);
     midlineNames = ['', '']; midlineAmounts = [1,1]; midlineIds = [null,null]; midlineFormProjectId = null;
     bulkFormOpenState[view.projectId] = false;
+    const assignmentAfter = new Map((p.checklist || []).map(item => [item.id, item.segmentId]));
+    const unassignedCount = checklistBackup.filter(item => item.segmentId && !assignmentAfter.get(item.id)).length;
     render();
-    if (assignedBefore) showToast(tf('toast.unassignedExisting', { n: assignedBefore }));
+    if (unassignedCount) showToast(tf('toast.unassignedExisting', { n: unassignedCount }));
   };
 
   document.querySelectorAll('[data-dblclick-segname]').forEach(el => {
-    el.ondblclick = () => { editingSegNameId = el.dataset.dblclickSegname; render(); };
+    el.ondblclick = () => { editingSegNameId = el.dataset.dblclickSegname; editingChecklistItemId = null; render(); };
+  });
+  document.querySelectorAll('[data-renameseg]').forEach(el => {
+    el.onclick = () => { editingSegNameId = el.dataset.renameseg; editingChecklistItemId = null; render(); };
   });
   const segNameInput = document.querySelector('.seg-name-input');
   if (segNameInput) {
@@ -4429,7 +4761,7 @@ function bindDetailEvents(){
       const id = el.dataset.clAddopen;
       const p = projects.find(x=>x.id===view.projectId);
       const isSegmentTarget = !!(p && p.segments.some(s => s.id === id));
-      checklistAddOpenState[id] = isSegmentTarget ? !checklistAddOpenState[id] : true;
+      checklistAddOpenState[id] = !checklistAddOpenState[id];
       if (isSegmentTarget) segmentChecklistOpenState[id] = true;
       checklistOpenState[id] = true;
       render();
@@ -4486,6 +4818,65 @@ function bindDetailEvents(){
       render();
     };
   });
+  document.querySelectorAll('[data-cl-rename]').forEach(el => {
+    el.ondblclick = () => {
+      const [, itemId] = el.dataset.clRename.split(':');
+      editingChecklistItemId = itemId;
+      editingSegNameId = null;
+      render();
+    };
+  });
+  // 체크리스트 인라인 수정 커밋: Enter 또는 포커스 이탈 시 저장, Esc는 취소.
+  // 이름은 비어있지 않을 때만 반영, 수량은 1 이상 정수만 반영하고 완료량을 다시 계산한다.
+  const clEditName = document.querySelector('[data-cl-edit-name]');
+  if (clEditName) {
+    const [, itemId] = clEditName.dataset.clEditName.split(':');
+    const clEditQty = document.querySelector('[data-cl-edit-qty]');
+    clEditName.focus();
+    clEditName.select();
+    let clEditDone = false;
+    const commit = () => {
+      if (clEditDone) return; clEditDone = true;
+      rolloverDailyStateIfNeeded();
+      const p = projects.find(x=>x.id===view.projectId);
+      const item = p && p.checklist.find(i => i.id === itemId);
+      if (item) {
+        const name = clEditName.value.trim();
+        if (name) item.name = name;
+        if (item.type === 'qty' && clEditQty) {
+          const q = Math.floor(Number(clEditQty.value));
+          if (Number.isFinite(q) && q >= 1 && q !== item.qty) {
+            item.qty = q;
+            resetTodayTarget(p.id);
+            recomputeDone(p); // 체크된 수량형이면 완료량도 바뀌므로 재계산
+          }
+        }
+      }
+      editingChecklistItemId = null;
+      render();
+    };
+    const cancel = () => {
+      if (clEditDone) return; clEditDone = true;
+      editingChecklistItemId = null;
+      render();
+    };
+    const bindKeys = (inp) => {
+      inp.onkeydown = (e) => {
+        if (e.key === 'Enter') commit();
+        else if (e.key === 'Escape') cancel();
+      };
+      inp.onblur = () => {
+        // 이름↔수량 입력 간 포커스 이동은 커밋하지 않음
+        setTimeout(() => {
+          const active = document.activeElement;
+          if (active === clEditName || active === clEditQty) return;
+          commit();
+        }, 0);
+      };
+    };
+    bindKeys(clEditName);
+    if (clEditQty) bindKeys(clEditQty);
+  }
   document.querySelectorAll('[data-cl-del]').forEach(el => {
     el.onclick = () => {
       const [, itemId] = el.dataset.clDel.split(':');
@@ -4638,7 +5029,7 @@ function bindDetailEvents(){
 
 // [이벤트 · 백업/불러오기] 백업 저장·불러오기·이전 데이터 복구
 function bindBackupEvents(){
-  document.getElementById('btnBackup').onclick = () => {
+  const doBackupDownload = () => {
     const data = JSON.stringify(buildPersistedData(), null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -4647,6 +5038,16 @@ function bindBackupEvents(){
     a.download = `${t('backup.filenamePrefix')}${todayStr()}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    markBackedUp();
+  };
+  document.getElementById('btnBackup').onclick = () => { doBackupDownload(); render(); };
+  const btnBackupNow = document.getElementById('btnBackupNow');
+  if (btnBackupNow) btnBackupNow.onclick = () => { doBackupDownload(); render(); };
+  const btnBackupLater = document.getElementById('btnBackupLater');
+  if (btnBackupLater) btnBackupLater.onclick = () => {
+    backupMeta.snoozeUntil = Date.now() + BACKUP_SNOOZE_MS;
+    saveBackupMeta();
+    render();
   };
 
   document.getElementById('btnRestore').onclick = () => {
@@ -4737,6 +5138,8 @@ document.addEventListener('visibilitychange', () => {
 
 // ===== 앱 시작 =====
 loadLocal();
+loadSyncMeta();
+loadBackupMeta();
 // 이 기기에 저장된 데이터가 전혀 없는(완전히 새로운) 경우: "방금 막 생긴 빈 상태"를 실제 변경으로 착각하지 않게
 // 기준 시각을 가장 오래된 값(0)으로 남겨둔다. 이래야 나중에 구글 드라이브 동기화에서 "이 기기가 최신"이라고
 // 잘못 판단해 진짜 데이터가 있는 드라이브 쪽을 덮어쓰는 사고가 안 생긴다.
